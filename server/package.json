@@ -1,0 +1,14 @@
+{
+  "name": "dashboard-gadget-server",
+  "version": "1.0.0",
+  "description": "The server for the arduino communication",
+  "author": "Benjamin Buff <benjamin.buff@students.fhnw.ch> & Beat Temperli <beat.temperli@students.fhnw.ch>",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.13.4",
+    "socket.io": "^1.4.6"
+  }
+}

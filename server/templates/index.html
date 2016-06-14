@@ -1,0 +1,76 @@
+<html>
+<head>
+    <title>Dashboard Gadget: Interface</title>
+</head>
+<body>
+    <h1>Interaktives Dashboard-Gadget: Test-Interface Browser</h1>
+
+    <section>
+        <p>Display: 160 x 160px</p>
+
+        <canvas id="display" width="160" height="160" style="width: 160px; height: 160px; border: 5px solid #dd9900;"></canvas>
+
+        <div style="margin-top: 20px;">
+            <button id="btn-left">LEFT</button>
+            <button id="btn-right">RIGHT</button>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <input id="input-id" placeholder="12">
+            <button id="btn-start">START</button>
+        </div>
+    </section>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+        var start = document.getElementById('btn-start');
+        var canvas = document.getElementById("display");
+        var context = canvas.getContext("2d");
+
+        socket.on('hello', function (data) {
+            console.log(data);
+
+            if (data.draw) {
+                context.fillStyle = "#ffffff";
+                context.fillRect(0, 0, 160, 160);
+
+                context.fillStyle = "#000000";
+                var draw = data.draw.split("");
+                var x = 0;
+                for (var i = 0; i < 160; i++) {
+                    for (var j = 0; j < 160; j++) {
+                        if (draw[x] === '1') {
+                            context.fillRect(j, i, 1, 1);
+                        }
+                        x++;
+                    }
+                }
+
+            }
+        });
+
+        socket.on('send-error', function (data) {
+            console.log('FEHLER!');
+            console.log(data.message);
+        });
+
+        start.onclick = function () {
+            var id = document.getElementById('input-id').value;
+            console.log('simulate the "login" with id: ' + id);
+            socket.emit('login', {'id': id});
+        };
+
+    </script>
+
+</body>
+</html>
+
+<!-- <script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io.connect('http://localhost');
+  socket.on('news', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+  });
+</script> -->
