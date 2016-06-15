@@ -1,0 +1,88 @@
+<html>
+<head>
+    <title>Dashboard Gadget: Interface</title>
+</head>
+<body>
+    <h1>Interaktives Dashboard-Gadget: Image-Converter</h1>
+
+    <section>
+        <canvas id="display" width="160" height="160" style="width: 160px; height: 160px; border: 5px solid #dd9900;"></canvas>
+
+        <div style="margin-top: 20px;">
+            Upload image
+            <input type="file" id="btn-image-upload">
+            <button id="btn-convert">Start / Convert</button>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <div id="output" style="width: 500px; font-family: monospace;">Output...</div>
+        </div>
+    </section>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var start = document.getElementById('btn-convert');
+        var upload = document.getElementById('btn-image-upload');
+        var output = document.getElementById('output');
+        var canvas = document.getElementById("display");
+        var context = canvas.getContext("2d");
+        var image = new Image();
+        var fr = new FileReader();
+
+        generateOutput = function () {
+
+            var outputString = '"" + <br>';
+            var oneLine = "";
+            var char = 0;
+            var data;
+
+            for (var i = 0; i < 160; i++) {
+                for (var j = 0; j < 160; j++) {
+                    char = '0';
+                    data = context.getImageData(j,i,1,1).data;
+                    if (data[0] === 0 && data[1] === 0 && data[2] === 0 && data[3] === 255) {
+                        char = '1';
+                    }
+                    oneLine += char;
+                }
+
+                outputString += '"' + oneLine + '" + <br>';
+                oneLine = "";
+            }
+
+            outputString += '"";';
+            output.style.fontSize = 5;
+            output.innerHTML = outputString;
+         };
+
+        loadImageToCanvas = function () {
+            image.src = fr.result;
+            context.drawImage(image, 0, 0);
+            generateOutput();
+        };
+
+        start.onclick = function () {
+
+            output.innerHTML = 'Output...';
+
+            if (upload.files.length > 0) {
+                var file = upload.files[0];
+
+                if (file.type !== 'image/png') {
+                    output.innerHTML = 'Please upload a PNG!';
+                    return;
+                }
+                console.log(file);
+
+                fr.onload = loadImageToCanvas;   // onload fires after reading is complete
+                fr.readAsDataURL(file);
+
+            } else {
+                output.innerHTML = 'Please select a file first.';
+            }
+        }
+
+    </script>
+
+</body>
+</html>

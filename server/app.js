@@ -23,6 +23,10 @@ app.get('/', function(req, res){
     }
 });
 
+app.get('/helper', function(req, res){
+    res.sendFile(__dirname + '/templates/image-helper.html');
+});
+
 io.on('connection', function (socket) {
     console.log('connection has started. ' + 'id: ' + socket.id);
 
