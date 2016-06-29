@@ -16,6 +16,7 @@ function connection () {
     add = function (id) {
         if (getPosition(id) === null) {
             connections.push({'id': id});
+            console.log('All connections:');
             console.log(connections);
         } else {
             console.log('error: id already added.');
@@ -25,6 +26,7 @@ function connection () {
     remove = function (id) {
         var i = getPosition(id);
         connections.splice(i, 1);
+        console.log('All connections:');
         console.log(connections);
     };
 
