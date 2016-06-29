@@ -8,6 +8,8 @@
     <section>
         <canvas id="display" width="160" height="160" style="width: 160px; height: 160px; border: 5px solid #dd9900;"></canvas>
 
+        <canvas id="display-output" width="160" height="160" style="width: 160px; height: 160px; border: 5px solid #8BA870; margin-left: 100px; float: right;"></canvas>
+
         <div style="margin-top: 20px;">
             Upload image
             <input type="file" id="btn-image-upload">
@@ -26,12 +28,16 @@
         var output = document.getElementById('output');
         var canvas = document.getElementById("display");
         var context = canvas.getContext("2d");
+        var canvasOutput = document.getElementById("display-output");
+        var contextOutput = canvasOutput.getContext("2d");
+
         var image = new Image();
         var fr = new FileReader();
 
         generateOutput = function () {
 
             var outputString = '"" + <br>';
+            var outputStringCanvas = '';
             var oneLine = "";
             var char = 0;
             var data;
@@ -48,6 +54,7 @@
 //                        console.log(data);
                     }
                     oneLine += char;
+                    outputStringCanvas += char;
                 }
 
                 outputString += '"' + oneLine + '" + <br>';
@@ -57,6 +64,22 @@
             outputString += '"";';
             output.style.fontSize = 5;
             output.innerHTML = outputString;
+
+            // now draw to the output-canvas
+            contextOutput.fillStyle = "#ffffff";
+            contextOutput.fillRect(0, 0, 160, 160);
+
+            contextOutput.fillStyle = "#000000";
+            var draw = outputStringCanvas.split("");
+            var x = 0;
+            for (var i = 0; i < 160; i++) {
+                for (var j = 0; j < 160; j++) {
+                    if (draw[x] === '1') {
+                        contextOutput.fillRect(j, i, 1, 1);
+                    }
+                    x++;
+                }
+            }
          };
 
         loadImageToCanvas = function () {

@@ -9,18 +9,18 @@ var Connection = new connection();
 var Graphic = new graphic();
 
 
-function handler (req, res) {
-    fs.readFile(__dirname + '/templates/index.html',
-        function (err, data) {
-            if (err) {
-                res.writeHead(500);
-                return res.end('Error loading index.html');
-            }
-
-            res.writeHead(200);
-            res.end(data);
-        });
-}
+// function handler (req, res) {
+//     fs.readFile(__dirname + '/templates/index.html',
+//         function (err, data) {
+//             if (err) {
+//                 res.writeHead(500);
+//                 return res.end('Error loading index.html');
+//             }
+//
+//             res.writeHead(200);
+//             res.end(data);
+//         });
+// }
 
 app.get('/', function (req, res) {
 
@@ -53,7 +53,6 @@ app.get('/helper', function (req, res){
 });
 
 app.get('*', function (req, res) {
-    console.log(req);
     console.log('connection on "/*"');
     res.send("a * request.");
 });
