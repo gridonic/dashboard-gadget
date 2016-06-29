@@ -28,7 +28,7 @@
         var canvas = document.getElementById("display");
         var context = canvas.getContext("2d");
 
-        socket.on('hello', function (data) {
+        socket.on('show', function (data) {
             console.log(data);
 
             if (data.draw) {
@@ -48,6 +48,10 @@
                 }
 
             }
+        });
+
+        socket.on('access', function (data) {
+            socket.emit('hello-world', {'message': 'full graphic'});
         });
 
         socket.on('send-error', function (data) {

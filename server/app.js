@@ -70,8 +70,12 @@ io.on('connection', function (socket) {
     socket.on('hello-world', function (message) {
         console.log('socketHELLO');
         console.log(message);
-        // socket.emit('show', { draw: Graphic.getLogo() });
-        socket.emit('show', { draw: '111111110000000011111111' });
+
+        if (message == 'full graphic' || message.message == 'full graphic') {
+            socket.emit('show', { draw: Graphic.getLogo() });
+        } else {
+            socket.emit('show', {draw: '111111110000000011111111'});
+        }
     });
 
     socket.on('login', function (data) {
