@@ -5,7 +5,8 @@
   "author": "Benjamin Buff <benjamin.buff@students.fhnw.ch> & Beat Temperli <beat.temperli@students.fhnw.ch>",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "concurrently 'mongod --dbpath ./data/db' 'node app.js'",
+    "stop": "concurrently -k"
   },
   "dependencies": {
     "express": "^4.13.4",

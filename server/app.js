@@ -4,27 +4,12 @@ var io = require('socket.io')(http);
 var fs = require('fs');
 var connection = require('./server/connection.js');
 var graphic = require('./server/graphic.js');
-var mongodb = require('mongodb');
-
-var MongoClient = mongodb.MongoClient;
-var url = 'mongodb://localhost:27017/test';
+var db = require('./server/db.js');
 
 var Connection = new connection();
+var Db = new db();
 var Graphic = new graphic();
 
-
-// function handler (req, res) {
-//     fs.readFile(__dirname + '/templates/index.html',
-//         function (err, data) {
-//             if (err) {
-//                 res.writeHead(500);
-//                 return res.end('Error loading index.html');
-//             }
-//
-//             res.writeHead(200);
-//             res.end(data);
-//         });
-// }
 
 app.get('/', function (req, res) {
 
@@ -102,7 +87,8 @@ io.on('connection', function (socket) {
     });
 });
 
-http.listen(3000, function(){
+http.listen(3000, function() {
+    console.log('');
     console.log('==============================================================');
     console.log('||   listening to           http://localhost:3000           ||');
     console.log('||   test-interface under   http://localhost:3000/?html=1   ||');
@@ -110,16 +96,3 @@ http.listen(3000, function(){
     console.log('');
 });
 
-// Use connect method to connect to the Server
-MongoClient.connect(url, function (err, db) {
-    if (err) {
-        console.log('Unable to connect to the mongoDB server. Error:', err);
-    } else {
-        console.log('Connection established to', url);
-
-        // DB Stuff
-
-        //Close connection
-        db.close();
-    }
-});
