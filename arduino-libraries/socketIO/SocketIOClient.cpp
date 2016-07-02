@@ -216,7 +216,7 @@ bool SocketIOClient::readHandshake() {
 
 	/* ---------------------------------------------------------------------
 	 * from here: btemperli, 29.6.2016
-	 * saves 40 bytes of saving and 4 of dynamic ram.
+	 * saves 40 bytes of saving and 4 bytes of dynamic ram.
 	 * --------------------------------------------------------------------- */
 
 	int i = 0;
