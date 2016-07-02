@@ -3,8 +3,9 @@
 ## Pre installation
 ### MongoDB
 
-`$ brew update`
-`$ brew install mongodb`
+    `$ brew update`
+
+    `$ brew install mongodb`
 
 ### NPM concurrently
 
