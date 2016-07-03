@@ -80,19 +80,32 @@ io.on('connection', function (socket) {
         }
     });
 
+    socket.on('createUser', function (data) {
+        console.log('socketCreateUser');
+        console.log(data);
+
+        Db.createUser('testUserName', 'testPassword');
+    });
+
     socket.on('disconnect', function() {
         console.log('socketDISCONNECT');
         console.log('disconnect user');
         Connection.delete(socket.id);
     });
+
+    socket.on('error', function (error) {
+        console.log("error on socket.");
+        console.log(error.message);
+    })
 });
 
 http.listen(3000, function() {
     console.log('');
-    console.log('==============================================================');
-    console.log('||   listening to           http://localhost:3000           ||');
-    console.log('||   test-interface under   http://localhost:3000/?html=1   ||');
-    console.log('==============================================================');
+    console.log('=================================================================');
+    console.log('||   listening to              http://localhost:3000           ||');
+    console.log('||   test-interface under      http://localhost:3000/?html=1   ||');
+    console.log('||   mongodb should run on     http://localhost:9999           ||');
+    console.log('=================================================================');
     console.log('');
 });
 

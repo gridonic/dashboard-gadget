@@ -1,37 +1,74 @@
 'use strict';
 
 var mongodb = require('mongodb');
-var MongoClient = mongodb.MongoClient;
+// var MongoClient = mongodb.MongoClient;
+var mongoose = require('mongoose');
+var user = require('./model/user.js');
 
 function db () {
 
     // functions
     var initDB;
-    var remove;
-    var getPosition;
+    var setupSchema;
+    var createUser;
+    // var create;
+    // var loginUser;
 
     // variables
-    var url = 'mongodb://localhost:27017/test';
+    var url = 'mongodb://localhost:9999/test';
+    var User = new user();
+    var connected = false;
 
-    // this.add = function () { return add(); };
+    // global / public functions
+    this.createUser = function () { return createUser(); };
+
+    /* ======================================================================
+     * start the private functions
+     * ====================================================================== */
+
+    /**
+     * Create a user if we does not exist.
+     *
+     * @param username
+     * @param password
+     * @returns {boolean}
+     */
+    createUser = function (username, password) {
+        
+        if (!connected) {
+            return false;
+        }
+        
+        // todo: check if user already exists!
+
+        var createdUser = User.create(username, password);
+        return createdUser;
+    };
+    
+
+    setupSchema = function () {
+        User.construct(mongoose);
+    };
 
     initDB = function () {
-        console.log('initDB');
 
-        // Use connect method to connect to the Server
-        MongoClient.connect(url, function (err, db) {
-            if (err) {
-                console.log('Unable to connect to the mongoDB server. Error:', err);
-            } else {
-                console.log('Connection established to', url);
+        mongoose.connect(url);
 
-                // DB Stuff
-
-                //Close connection
-                db.close();
-            }
+        var db = mongoose.connection;
+        db.on('error', function (a, b, c) {
+            console.log('error');
+            console.log(a);
+            console.log(b);
+            console.log(c);
         });
-        
+        db.on('error', console.error.bind(console, 'connection error:'));
+
+        db.once('open', function() {
+            // we're connected!
+            console.log('database is open and connected.!');
+            connected = true;
+            setupSchema();
+        });
     };
 
     initDB();
