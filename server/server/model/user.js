@@ -48,8 +48,6 @@ function user () {
             password: password
         });
 
-        console.log(createdUser);
-
         createdUser.save(function (err, createdUser) {
             if (err) {
                 console.log('could not save createdUser.');

@@ -20,7 +20,7 @@ function db () {
     var connected = false;
 
     // global / public functions
-    this.createUser = function () { return createUser(); };
+    this.createUser = function (username, password) { return createUser(username, password); };
 
     /* ======================================================================
      * start the private functions
