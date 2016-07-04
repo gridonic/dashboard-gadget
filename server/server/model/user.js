@@ -1,10 +1,13 @@
 'use strict';
 
-function user () {
+function user (DB) {
 
     // functions
     var construct;
     var create;
+    var getUser;
+    var findUserByUsername;
+    var hashPassword;
 
     // variables
     var userModel;
@@ -12,8 +15,16 @@ function user () {
     var userMongoose;
 
     this.construct = function (mongoose) { return construct(mongoose); };
-    this.create = function (username, password) { return create(username, password); };
+    this.findUserByUsername = function (username, password, callback) { return findUserByUsername(username, password, callback); };
+    this.create = function (username, password, callback) { return create(username, password, callback); };
+    this.getUser = function (username, password, callback) { return getUser(username, password, callback); };
 
+    /**
+     * Construct the UserSchema and the UserModel.
+     * Do it the mongoose way.
+     *
+     * @param mongoose
+     */
     construct = function (mongoose) {
 
         userMongoose = mongoose;
@@ -40,26 +51,69 @@ function user () {
         console.log('constructed the userModel!');
     };
 
-    create = function (username, password) {
+    /**
+     * Create a user by its username and password.
+     *
+     * @param username
+     * @param password
+     * @returns {*}
+     */
+    create = function (username, password, callback) {
 
-        // todo: hash the password with bcrypt (https://github.com/ncb000gt/node.bcrypt.js)
+        var hashedPassword = hashPassword(password);
+
         var createdUser = new userModel({
             username: username,
-            password: password
+            password: hashedPassword
         });
 
         createdUser.save(function (err, createdUser) {
             if (err) {
                 console.log('could not save createdUser.');
                 console.log(err);
+                callback(false);
                 return false;
             }
 
+            callback(true);
+
             createdUser.sayHello();
         });
+    };
 
-        console.log('user successfully created, return it.');
-        return createdUser;
+    getUser = function (username, password, callback) {
+
+        var hashedPassword = hashPassword(password);
+
+        userModel.find({username: username}, function (err, result) {
+            var user = result[result.length - 1];
+            console.log(user);
+
+            if (user.password === hashedPassword) {
+                user.password = null;
+                callback(user);
+            } else {
+                callback(null);
+            }
+        });
+
+    };
+
+    /**
+     * Check if a user with username already exists.
+     * @param username: we want to find
+     * @param password:  we need the password for sending it to the callback.
+     * @param callback: call this after creating the user
+     */
+    findUserByUsername = function (username, password, callback) {
+        userModel.find({username: username}, function (err, result) {
+            DB.createUserFinally(err, result, username, password, callback);
+        });
+    };
+
+    hashPassword = function (password) {
+        // todo: hash the password with bcrypt (https://github.com/ncb000gt/node.bcrypt.js)
+        return password;
     }
     
 }

@@ -83,8 +83,31 @@ io.on('connection', function (socket) {
     socket.on('createUser', function (data) {
         console.log('socketCreateUser');
         console.log(data);
+        
+        var loadUser = function () {
+            Db.getUser(data.username, data.password, function (user) {
+                if (user) {
+                    socket.emit('send-success', {
+                        'message': 'The user "' + data.username + '" was successfully created!',
+                        'user': user
+                    });
+                } else {
+                    socket.emit('send-error', {
+                        'message': 'The user could not be created.'
+                    });
+                }
+            });
+        };
 
-        Db.createUser('testUserName', 'testPassword');
+        Db.createUser(data.username, data.password, function (created) {
+            if (created) {
+                console.log('user created');
+                loadUser();
+            } else {
+                console.log('username found! - return false!');
+                socket.emit('send-error', {'message': 'The username "' + data.username + '" already exists!'});
+            }
+        });
     });
 
     socket.on('disconnect', function() {
@@ -96,7 +119,12 @@ io.on('connection', function (socket) {
     socket.on('error', function (error) {
         console.log("error on socket.");
         console.log(error.message);
-    })
+    });
+
+    socket.on('success', function (data) {
+        console.log("success on socket.");
+        console.log(data.message);
+    });
 });
 
 http.listen(3000, function() {
