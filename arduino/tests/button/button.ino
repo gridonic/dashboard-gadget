@@ -1,28 +1,30 @@
-const int redPin = 11;
-const int greenPin = 10;
-const int bluePin = 9;
-const int photoPin = A0;     // the number of the pushbutton pin
-int photoRead = 1023;
+//const int redPin = 11;
+//const int greenPin = 10;
+//const int bluePin = 9;
+const int photoPinA = A15;     // the number of the pushbutton pin
+int photoReadA = 1023;
 
-int photoLimit = 5;
+int photoLimit = 20;
+int loopIndex = 0;
 
 void setup()
 {
   Serial.begin(9600);      // open the serial port at 9600 bps:
 
   Serial.println("start the shit.");
-  pinMode(redPin, OUTPUT);
-  pinMode(greenPin, OUTPUT);
-  pinMode(bluePin, OUTPUT);
+//  pinMode(redPin, OUTPUT);
+//  pinMode(greenPin, OUTPUT);
+//  pinMode(bluePin, OUTPUT);
 }
 
 void loop()
 {
 
-  if (photoRead < photoLimit) {
-    setColor(50, 0, 0);
+  if (photoReadA < photoLimit) {
+    Serial.println("PUSH THE BUTTON!");
+//    setColor(50, 0, 0);
   } else {
-    setColor(255, 0, 0); // red
+//    setColor(255, 0, 0); // red
   }
 
 //  delay(1000);
@@ -40,22 +42,25 @@ void loop()
 //  delay(1000);
 //  setColor(0, 255, 255); // aqua
 //  Serial.println("aqua");
-  delay(100);
+  delay(10);
 
-  photoRead = analogRead(photoPin);
-  Serial.print("photocell: ");
-  Serial.println(photoRead);
+  if (loopIndex % 50 == 0) {
+    photoReadA = analogRead(photoPinA);
+    Serial.print("photocell A: ");
+    Serial.println(photoReadA);
+  }
 
+  loopIndex++;
 }
-
-void setColor(int red, int green, int blue)
-{
-
-    red = 255 - red;
-    green = 255 - green;
-    blue = 255 - blue;
-
-    analogWrite(redPin, red);
-//    analogWrite(greenPin, green);
-//    analogWrite(bluePin, blue);
-}
+//
+//void setColor(int red, int green, int blue)
+//{
+//
+//    red = 255 - red;
+//    green = 255 - green;
+//    blue = 255 - blue;
+//
+//    analogWrite(redPin, red);
+////    analogWrite(greenPin, green);
+////    analogWrite(bluePin, blue);
+//}
