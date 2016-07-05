@@ -35,6 +35,38 @@
         var canvas = document.getElementById("display");
         var context = canvas.getContext("2d");
 
+        var WAITING_DEFAULT = 0;
+        var WAITING_CREATE_USER = 1;
+        var actualWaiting = WAITING_DEFAULT;
+
+        var handleError = function (data) {
+            console.log('FEHLER!');
+            console.log(data);
+
+            switch (actualWaiting) {
+                case WAITING_CREATE_USER:
+                    console.log('output: ' + data.message);
+                    actualWaiting = WAITING_DEFAULT;
+                    break;
+                default:
+                    console.log('no output, not waiting for something.');
+            }
+        };
+
+        var handleSuccess = function (data) {
+            console.log('SUCCESS!');
+            console.log(data);
+
+            switch (actualWaiting) {
+                case WAITING_CREATE_USER:
+                    console.log('output: ' + data.message);
+                    actualWaiting = WAITING_DEFAULT;
+                    break;
+                default:
+                    console.log('no output, not waiting for something.');
+            }
+        };
+
         socket.on('show', function (data) {
             console.log(data);
 
@@ -62,15 +94,11 @@
         });
 
         socket.on('send-error', function (data) {
-            console.log('FEHLER!');
-            console.log(data.message);
-            console.log(data);
+            handleError(data);
         });
 
         socket.on('send-success', function (data) {
-            console.log('SUCCESS!');
-            console.log(data.message);
-            console.log(data);
+            handleSuccess(data);
         });
 
         start.onclick = function () {
@@ -84,6 +112,7 @@
             var password = document.getElementById('input-password').value;
 
             socket.emit('createUser', {'username': username, 'password': password});
+            actualWaiting = WAITING_CREATE_USER;
         }
 
     </script>
