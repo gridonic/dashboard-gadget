@@ -64,10 +64,6 @@
             console.log(data);
 
             switch (actualWaiting) {
-                case WAITING_CREATE_USER:
-                    console.log('output: ' + data.message);
-                    actualWaiting = WAITING_DEFAULT;
-                    break;
                 default:
                     console.log('no output, not waiting for something.');
             }
@@ -101,12 +97,21 @@
             socket.emit('hello-world', {'message': 'full graphic'});
         });
 
-        socket.on('send-error', function (data) {
+        socket.on('sendError', function (data) {
             handleError(data);
         });
 
-        socket.on('send-success', function (data) {
+        socket.on('sendSuccess', function (data) {
             handleSuccess(data);
+        });
+
+        socket.on('userCreated', function (data) {
+            console.log('user created successfully');
+            console.log('output: ' + data.message);
+            console.log(data.user);
+
+            // reset waiting
+            actualWaiting = WAITING_DEFAULT;
         });
 
         start.onclick = function () {
@@ -120,6 +125,8 @@
             var password = document.getElementById('input-password').value;
 
             socket.emit('createUser', {'username': username, 'password': password});
+
+            // wait till user is created.
             actualWaiting = WAITING_CREATE_USER;
         }
 
