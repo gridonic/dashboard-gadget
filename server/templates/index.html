@@ -1,6 +1,7 @@
 <html>
 <head>
     <title>Dashboard Gadget: Interface</title>
+    <!-- TODO: Add Stylings via bootstrap v3. -->
 </head>
 <body>
     <h1>Interaktives Dashboard-Gadget: Test-Interface Browser</h1>
@@ -29,6 +30,9 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
+
+        // todo: auslagern in eigene(s) JAVASCRIPT-FILE(S)
+
         var socket = io();
         var start = document.getElementById('btn-start');
         var create = document.getElementById('btn-create');
@@ -53,6 +57,8 @@
             }
         };
 
+
+        // Todo Sollte nur im Notfall aufgerufen werden, alle default-success sollten direkt adressiert sein.
         var handleSuccess = function (data) {
             console.log('SUCCESS!');
             console.log(data);
@@ -66,6 +72,8 @@
                     console.log('no output, not waiting for something.');
             }
         };
+
+        // TODO: Adressen hier, die funktionen an sich in externes File auslagern.
 
         socket.on('show', function (data) {
             console.log(data);

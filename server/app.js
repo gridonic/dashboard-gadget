@@ -56,6 +56,8 @@ io.on('connection', function (socket) {
 
     Connection.add(socket.id);
 
+    // todo: alle event-namen (hello-world, login) hier, die funktionen aber auslagern in neues js-file.
+
     socket.on('hello-world', function (message) {
         console.log('socketHELLO');
         console.log(message);
