@@ -1,0 +1,29 @@
+<html>
+<head>
+    <title>Dashboard Gadget: Interface</title>
+    <!-- TODO: Add Stylings via bootstrap v3. -->
+</head>
+<body>
+    <h1>Interaktives Dashboard-Gadget: Test-Interface Browser</h1>
+
+    <section>
+        <p>Display: 160 x 160px</p>
+
+        <canvas id="display" width="160" height="160" style="width: 160px; height: 160px; border: 5px solid #dd9900;"></canvas>
+
+        <div style="margin-top: 20px;">
+            <button id="btn-left">LEFT</button>
+            <button id="btn-right">RIGHT</button>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <input id="input-id" placeholder="12">
+            <button id="btn-start">Arduino Login</button>
+        </div>
+    </section>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/assets/web.js"></script>
+
+</body>
+</html>

@@ -15,11 +15,19 @@ app.get('/', function (req, res) {
 
     console.log('connection on "/"');
 
-    if (req.query.html && req.query.html === '1') {
-        // for testing, use the index.html. Go to http://localhost:3000?html=1 for seeing this.
-        res.sendFile(__dirname + '/templates/index.html');
+    if (req.header('user-agent').indexOf(' Chrome/')) {
+
+        // If user-agent is chrome, load automatically the start.html template.
+        res.sendFile(__dirname + '/templates/start.html');
+
+    } else if (req.query.html && req.query.html === '1') {
+
+        // If you want to see the start-template without user-agent Chrome, go to: http://localhost:3000?html=1
+        res.sendFile(__dirname + '/templates/start.html');
+
     } else {
-        // else, send out json-files.
+
+        // Else, send out json-files.
         res.send({
             'app': '',
             'id': '21'
@@ -27,29 +35,33 @@ app.get('/', function (req, res) {
     }
 });
 
-app.get('/test', function (req, res) {
-
-    console.log('connection on "/test".');
-
-    res.send({
-        'abc': '123',
-        'def': '456'
-    });
-});
-
-app.get('/helper', function (req, res){
+app.get('/image-helper', function (req, res){
     res.sendFile(__dirname + '/templates/image-helper.html');
 });
 
-app.get('*', function (req, res) {
-    console.log('connection on "/*"');
-    res.send("a * request.");
+app.get('/simulator', function (req, res){
+    res.sendFile(__dirname + '/templates/simulator.html');
 });
 
-app.all('*', function (req, res) {
-    console.log('connection on ALL "/*".');
-    res.send("a */* request.");
+app.get('/dashboard', function (req, res){
+    res.sendFile(__dirname + '/templates/dashboard.html');
 });
+
+app.get('/assets/*', function (req, res){
+    var split = req.originalUrl.split("/assets/");
+    var file = split[1];
+    res.sendFile(__dirname + '/web/' + file);
+});
+
+// app.get('*', function (req, res) {
+//     console.log('connection on "/*"');
+//     res.send("a * request.");
+// });
+//
+// app.all('*', function (req, res) {
+//     console.log('connection on ALL "/*".');
+//     res.send("a */* request.");
+// });
 
 io.on('connection', function (socket) {
 
