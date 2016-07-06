@@ -1,0 +1,11 @@
+// General Style sheets for the HTML-Part of the Server.
+
+// Import Libraries
+@import '../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap';
+
+// Import Generics like Type / Link or Utilities
+@import 'generics/variables';
+@import 'generics/utility';
+
+// Import Modules
+@import 'modules/console-output';

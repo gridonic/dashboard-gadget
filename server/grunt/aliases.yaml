@@ -1,0 +1,35 @@
+# Default grunt task
+#
+# Runs the dev build and spawns all concurrent tasks as parallel processes.
+# This usually sets up watch tasks to watch for changes in source files
+# and/or starts the local development server
+default:
+    - 'dev'
+
+# Development build
+dev:
+    - 'clean'
+    - 'lint'
+    - 'browserify:build'
+    - 'sass:dev'
+    - 'postcss:dev'
+
+# Production build
+prod:
+    - 'clean'
+    - 'lint'
+    - 'browserify:build'
+    - 'uglify'
+    - 'sass:prod'
+    - 'postcss:prod'
+
+lint:
+    - 'sasslint'
+
+# Watch task
+#
+# We have to name this "watchify" since watch is already a task so we cannot
+# define an alias for it. Browserify needs to be started separately from watch
+# in order to work.
+watchify:
+    - 'concurrent:all'

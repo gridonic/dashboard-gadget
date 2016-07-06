@@ -5,6 +5,7 @@ var handleStart;
 var handleCreate;
 var handleSuccess;
 var handleError;
+var log;
 
 // Constants
 var WAITING_DEFAULT = 0;
@@ -15,12 +16,25 @@ var socket = io();
 var start = document.getElementById('btn-start');
 var create = document.getElementById('btn-create');
 var canvas = document.getElementById("display");
-var context = canvas.getContext("2d");
-
+var context;
 var actualWaiting = WAITING_DEFAULT;
 
+if (canvas !== null) {
+    context = canvas.getContext("2d");
+}
+
+log = function (message) {
+    console.log(message);
+    
+    var output = document.getElementById('console-output');
+    if (output) {
+        output.innerHTML = output.innerHTML + '<br>' + message;
+    }
+};
+
 /**
- * handle Start-Button.
+ * Handle the Start-Button.
+ * Simulates the login on the server via an arduino.
  */
 handleStart = function () {
 
@@ -30,14 +44,19 @@ handleStart = function () {
 
     start.onclick = function () {
         var id = document.getElementById('input-id').value;
-        console.log('simulate the "login" with id: ' + id);
+        log('simulate the "login" with id: ' + id);
         socket.emit('login', {'id': id});
     };
 };
 
+/**
+ * Handle the Create-Button.
+ * Creates a User on the server.
+ */
 handleCreate = function () {
 
     if (create === null) {
+        log('no create-button found.');
         return;
     }
 
@@ -53,35 +72,35 @@ handleCreate = function () {
 };
 
 handleError = function (data) {
-    console.log('FEHLER!');
-    console.log(data);
+    log('FEHLER!');
+    log(data);
 
     switch (actualWaiting) {
         case WAITING_CREATE_USER:
-            console.log('output: ' + data.message);
+            log('output: ' + data.message);
             actualWaiting = WAITING_DEFAULT;
             break;
         default:
-            console.log('no output, not waiting for something.');
+            log('no output, not waiting for something.');
     }
 };
 
 
 // Todo Sollte nur im Notfall aufgerufen werden, alle default-success sollten direkt adressiert sein.
 handleSuccess = function (data) {
-    console.log('SUCCESS!');
-    console.log(data);
+    log('SUCCESS!');
+    log(data);
 
     switch (actualWaiting) {
         default:
-            console.log('no output, not waiting for something.');
+            log('no output, not waiting for something.');
     }
 };
 
 // TODO: Adressen hier, die funktionen an sich in externes File auslagern.
 
 socket.on('show', function (data) {
-    console.log(data);
+    log(data);
 
     if (data.draw) {
         context.fillStyle = "#ffffff";
@@ -115,9 +134,9 @@ socket.on('sendSuccess', function (data) {
 });
 
 socket.on('userCreated', function (data) {
-    console.log('user created successfully');
-    console.log('output: ' + data.message);
-    console.log(data.user);
+    log('user created successfully');
+    log('output: ' + data.message);
+    log(data.user);
 
     // reset waiting
     actualWaiting = WAITING_DEFAULT;
