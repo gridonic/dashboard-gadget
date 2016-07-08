@@ -7,7 +7,7 @@ function user (DB) {
     var create;
     var getUser;
     var findUserByUsername;
-    var hashPassword;
+    var findUserForLogin;
     var bcrypt = require('bcrypt');
 
     // variables
@@ -21,6 +21,7 @@ function user (DB) {
 
     this.construct = function (mongoose) { return construct(mongoose); };
     this.findUserByUsername = function (username, password, callback) { return findUserByUsername(username, password, callback); };
+    this.findUserForLogin = function (username, password) {return findUserForLogin(username, password);};
     this.create = function (username, password, callback) { return create(username, password, callback); };
     this.getUser = function (username, password, callback) { return getUser(username, password, callback); };
 
@@ -110,6 +111,18 @@ function user (DB) {
     findUserByUsername = function (username, password, callback) {
         userModel.find({username: username}, function (err, result) {
             DB.createUserFinally(err, result, username, password, callback);
+        });
+    };
+
+    /**
+     * Compare the input data with the data in Database.
+     * @param username: we want to compare.
+     * @param password:  we want to compare.
+     */
+    findUserForLogin = function (username, password) {
+        var hashedPassword = bcrypt.hashSync(password, saltRounds);
+        userModel.find({username: username, password: hashedPassword}, function (err, result) {
+            console.log('-----------------user found in db: ' + result + '----------------');
         });
     };
     

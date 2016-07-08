@@ -82,6 +82,10 @@ io.on('connection', function (socket) {
         SocketHandler.onCreateUser(data);
     });
 
+    socket.on('loginUser', function (data) {
+        SocketHandler.onLoginUser(data);
+    });
+
     socket.on('disconnect', function() {
         SocketHandler.onDisconnect();
     });

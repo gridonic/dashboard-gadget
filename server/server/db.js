@@ -11,6 +11,7 @@ function db () {
     var setupSchema;
     var getUser
     var createUser;
+    var loginUser;
     var createUserFinally;
 
     // variables
@@ -24,6 +25,7 @@ function db () {
     
     this.getUser = function (username, password, callback) { return getUser(username, password, callback); };
     this.createUser = function (username, password, callback) { return createUser(username, password, callback); };
+    this.loginUser = function (username, password) {return loginUser(username, password); };
     this.createUserFinally = function (err, result, username, password, callback) { return createUserFinally(err, result, username, password, callback); };
 
     /* ======================================================================
@@ -75,6 +77,20 @@ function db () {
         User.getUser(username, password, callback);
     };
 
+    /**
+     * Login to an existing user.
+     *
+     * @param username
+     * @param password
+     */
+    loginUser = function (username, password) {
+
+        if (!connected) {
+            return false;
+        }
+        console.log('tatatatata');
+        User.findUserForLogin(username, password);
+    };
 
     /**
      * Create all Schemas, mostly by constructing its model.js-files

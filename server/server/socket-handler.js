@@ -8,6 +8,7 @@ function socketHandler (Db) {
     var onHelloWorld;
     var onLogin;
     var onCreateUser;
+    var onLoginUser;
     var onDisconnect;
     var onError;
     var onSuccess;
@@ -26,6 +27,7 @@ function socketHandler (Db) {
     this.onHelloWorld = function (data) { return onHelloWorld(data); };
     this.onLogin = function (data) { return onLogin(data); };
     this.onCreateUser = function (data) { return onCreateUser(data); };
+    this.onLoginUser = function (data) { return onLoginUser(data); };
     this.onDisconnect = function (data) { return onDisconnect(data); };
     this.onError = function (data) { return onError(data); };
     this.onSuccess = function (data) { return onSuccess(data); };
@@ -87,6 +89,11 @@ function socketHandler (Db) {
             }
         });
     };
+    
+    onLoginUser = function (data) {
+        console.log('hello User ' + data.username + ' how are you?');
+        Db.loginUser(data.username, data.password);
+    }
 
     onDisconnect = function (data) {
         console.log('socketDISCONNECT');
