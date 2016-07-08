@@ -15,6 +15,10 @@
 
     $ npm install -g avn avn-n
     $ avn setup
+    
+### bcrypt
+
+    $ npm install bcrypt
 
 `avn` will detect the `.node-version` file and automatically switch to the correct node version using either
 `n` or `nvm`, depending on which one you have installed.
