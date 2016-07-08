@@ -8,11 +8,16 @@ function user (DB) {
     var getUser;
     var findUserByUsername;
     var hashPassword;
+    var bcrypt = require('bcrypt');
 
     // variables
     var userModel;
     var userSchema;
     var userMongoose;
+
+    //constants
+    const saltRounds = 10;
+
 
     this.construct = function (mongoose) { return construct(mongoose); };
     this.findUserByUsername = function (username, password, callback) { return findUserByUsername(username, password, callback); };
@@ -60,7 +65,7 @@ function user (DB) {
      */
     create = function (username, password, callback) {
 
-        var hashedPassword = hashPassword(password);
+        var hashedPassword = bcrypt.hashSync(password, saltRounds);
 
         var createdUser = new userModel({
             username: username,
@@ -76,20 +81,17 @@ function user (DB) {
             }
 
             callback(true);
-
             createdUser.sayHello();
         });
     };
 
     getUser = function (username, password, callback) {
-
-        var hashedPassword = hashPassword(password);
-
         userModel.find({username: username}, function (err, result) {
             var user = result[result.length - 1];
             console.log(user);
+            var hashedPassword = bcrypt.hashSync(password, saltRounds);
 
-            if (user.password === hashedPassword) {
+            if (user.password != hashedPassword) {
                 user.password = null;
                 callback(user);
             } else {
@@ -110,11 +112,6 @@ function user (DB) {
             DB.createUserFinally(err, result, username, password, callback);
         });
     };
-
-    hashPassword = function (password) {
-        // todo: hash the password with bcrypt (https://github.com/ncb000gt/node.bcrypt.js)
-        return password;
-    }
     
 }
 
