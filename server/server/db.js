@@ -3,20 +3,24 @@
 var mongodb = require('mongodb');
 var mongoose = require('mongoose');
 var user = require('./model/user.js');
+var token = require('./model/token.js');
+
 
 function db () {
 
     // functions
     var initDB;
     var setupSchema;
-    var getUser
+    var getUser;
     var createUser;
     var loginUser;
     var createUserFinally;
+    var createTokenFinally;
 
     // variables
     var url = 'mongodb://localhost:9999/test';
     var User = new user(this);
+    var Token = new token(this);
     var connected = false;
 
     /* ======================================================================
@@ -27,7 +31,8 @@ function db () {
     this.createUser = function (username, password, callback) { return createUser(username, password, callback); };
     this.loginUser = function (username, password) {return loginUser(username, password); };
     this.createUserFinally = function (err, result, username, password, callback) { return createUserFinally(err, result, username, password, callback); };
-
+    this.createTokenFinally = function (id, result) {return createTokenFinally(id,result);};
+    
     /* ======================================================================
      * Private functions
      * ====================================================================== */
@@ -51,6 +56,16 @@ function db () {
             console.log('create user.');
             User.create(username, password, callback);
         }
+    };
+
+    /**
+     * @param id - ID of the user we want to create a token for.
+     * @param username - The User who should get logged in.
+     */
+    createTokenFinally = function (id, username) {
+        
+        console.log('New Token created for ID: ' + id + ' and User: ' + username);
+        Token.create(id);
     };
 
     /**
@@ -80,15 +95,15 @@ function db () {
     /**
      * Login to an existing user.
      *
-     * @param username
-     * @param password
+     * @param username - The username of the user who wants to log in.
+     * @param password - The password of the user who wants to log in.
      */
     loginUser = function (username, password) {
 
         if (!connected) {
+            console.log('no DB connected');
             return false;
         }
-        console.log('tatatatata');
         User.findUserForLogin(username, password);
     };
 
@@ -97,6 +112,7 @@ function db () {
      */
     setupSchema = function () {
         User.construct(mongoose);
+        Token.construct(mongoose);
     };
 
     /**

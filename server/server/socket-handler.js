@@ -91,7 +91,6 @@ function socketHandler (Db) {
     };
     
     onLoginUser = function (data) {
-        console.log('hello User ' + data.username + ' how are you?');
         Db.loginUser(data.username, data.password);
     }
 

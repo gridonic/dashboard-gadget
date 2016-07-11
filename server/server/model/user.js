@@ -120,11 +120,17 @@ function user (DB) {
      * @param password:  we want to compare.
      */
     findUserForLogin = function (username, password) {
-        var hashedPassword = bcrypt.hashSync(password, saltRounds);
-        userModel.find({username: username, password: hashedPassword}, function (err, result) {
-            console.log('-----------------user found in db: ' + result + '----------------');
+        userModel.findOne({username: username}, function (err, result) {
+            var foundId = result._id;
+            if(bcrypt.compareSync(password, result.password)){
+                DB.createTokenFinally(foundId, username);
+            } else {
+                console.log('wrong pw');
+            }
+
         });
     };
+    
     
 }
 
