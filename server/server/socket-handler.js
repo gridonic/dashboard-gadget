@@ -91,8 +91,13 @@ function socketHandler (Db) {
     };
     
     onLoginUser = function (data) {
-        Db.loginUser(data.username, data.password);
-    }
+        Db.loginUser(data.username, data.password, function (error) {
+            console.log('error');
+            console.log(error);
+        }, function (success) {
+            console.log(success);
+        });
+    };
 
     onDisconnect = function (data) {
         console.log('socketDISCONNECT');
