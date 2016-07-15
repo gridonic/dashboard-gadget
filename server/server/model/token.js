@@ -47,7 +47,7 @@ function token (DB) {
      * @returns {*}
      */
     create = function (id) {
-        var token = jwt.sign({foo: 'bar'}, 'shhhhh', {expiresIn: '1m'});
+        var token = jwt.sign({foo: 'bar'}, 'shhhhh', {expiresIn: '10h'});
 
         var createdToken = new tokenModel({
             _id: id,
