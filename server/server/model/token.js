@@ -53,17 +53,13 @@ function token (DB) {
 
         });
 
-        console.log("id " + id);
-        console.log("token " + token);
-        console.log("createdToken " + createdToken);
-
+        
         createdToken.save(function (err, result) {
             if (err) {
                 console.log('could not save createdToken.');
                 console.log(err);
                 return false;
             }
-            console.log(result + 'das isch de token');
         });
     };
 
@@ -72,7 +68,7 @@ function token (DB) {
      * @param id: id of the user.
      * @param username
      */
-    //TODO Error Handling einbauen falls catch block aufgerufen.
+    //TODO Wass passiert mit Token danach?
     checkIfTokenExists = function (id, username) {
         tokenModel.findOne({_id: id}, function (err, result) {
            if(result == null){
@@ -82,6 +78,7 @@ function token (DB) {
                    try {
                        var decoded = jwt.verify(foundToken, 'shhhhh');
                        console.log('------------------------ ' + decoded.foo);
+                       //Token zum zurücksenden
                    }
                    catch (e) {
                        console.log("Error: Token no longer valid!" );
