@@ -9,11 +9,14 @@ function user (DB) {
     var findUserByUsername;
     var findUserForLogin;
     var bcrypt = require('bcrypt');
+    var token = require('./token.js');
+
 
     // variables
     var userModel;
     var userSchema;
     var userMongoose;
+    var Token = new token(this);
 
     //constants
     const saltRounds = 10;
@@ -121,11 +124,15 @@ function user (DB) {
      */
     findUserForLogin = function (username, password) {
         userModel.findOne({username: username}, function (err, result) {
-            var foundId = result._id;
-            if(bcrypt.compareSync(password, result.password)){
-                DB.createTokenFinally(foundId, username);
-            } else {
-                console.log('wrong pw');
+            if(result === null){
+                console.log('User not found - create a new User before try to login!');
+            }else {
+                var foundId = result._id;
+                if (bcrypt.compareSync(password, result.password)) {
+                    DB.validateToken(foundId, username);
+                } else {
+                    console.log('wrong pw');
+                }
             }
 
         });

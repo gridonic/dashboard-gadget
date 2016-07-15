@@ -16,6 +16,7 @@ function db () {
     var loginUser;
     var createUserFinally;
     var createTokenFinally;
+    var validateToken;
 
     // variables
     var url = 'mongodb://localhost:9999/test';
@@ -32,6 +33,7 @@ function db () {
     this.loginUser = function (username, password) {return loginUser(username, password); };
     this.createUserFinally = function (err, result, username, password, callback) { return createUserFinally(err, result, username, password, callback); };
     this.createTokenFinally = function (id, result) {return createTokenFinally(id,result);};
+    this.validateToken = function (id, username) {return validateToken(id, username);};
     
     /* ======================================================================
      * Private functions
@@ -105,6 +107,16 @@ function db () {
             return false;
         }
         User.findUserForLogin(username, password);
+    };
+
+    /**
+     * Checks if there is already a valid Token related to this user id.
+     * @param id: user ID.
+     * @param username
+     */
+    validateToken = function (id, username) {
+        Token.checkIfTokenExists(id, username);
+        
     };
 
     /**

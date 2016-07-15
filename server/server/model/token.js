@@ -1,10 +1,11 @@
 'use strict';
 
-function token () {
+function token (DB) {
 
     // functions
     var construct;
     var create;
+    var checkIfTokenExists;
 
     // variables
     var tokenModel;
@@ -14,6 +15,7 @@ function token () {
 
     this.construct = function (mongoose) {return construct(mongoose);};
     this.create = function (id) {return create(id)};
+    this.checkIfTokenExists = function (id, username) {return checkIfTokenExists(id, username);};
 
     /**
      * Construct the TokenSchema and the TokenModel.
@@ -43,21 +45,50 @@ function token () {
      * @returns {*}
      */
     create = function (id) {
-        var token = jwt.sign({foo: 'bar'}, 'shhhhh');
+        var token = jwt.sign({foo: 'bar'}, 'shhhhh', {expiresIn: '10h'});
 
         var createdToken = new tokenModel({
             _id: id,
             token: token
+
         });
 
-        createdToken.save(function (err, createdToken) {
+        console.log("id " + id);
+        console.log("token " + token);
+        console.log("createdToken " + createdToken);
+
+        createdToken.save(function (err, result) {
             if (err) {
                 console.log('could not save createdToken.');
                 console.log(err);
                 return false;
             }
-            console.log(createdToken);
+            console.log(result + 'das isch de token');
         });
+    };
+
+    /**
+     * Compare the input data with the data in Database.
+     * @param id: id of the user.
+     * @param username
+     */
+    //TODO Error Handling einbauen falls catch block aufgerufen.
+    checkIfTokenExists = function (id, username) {
+        tokenModel.findOne({_id: id}, function (err, result) {
+           if(result == null){
+                DB.createTokenFinally(id, username);
+           } else {
+               var foundToken = result.token;
+                   try {
+                       var decoded = jwt.verify(foundToken, 'shhhhh');
+                       console.log('------------------------ ' + decoded.foo);
+                   }
+                   catch (e) {
+                       console.log("Error: Token no longer valid!" );
+                       
+                   }
+           }
+        })
     };
 
 }
