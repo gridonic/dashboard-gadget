@@ -5,6 +5,7 @@ function token (DB) {
     // functions
     var construct;
     var create;
+    var update;
     var checkIfTokenExists;
 
     // variables
@@ -16,6 +17,7 @@ function token (DB) {
     this.construct = function (mongoose) {return construct(mongoose);};
     this.create = function (id) {return create(id)};
     this.checkIfTokenExists = function (id, username) {return checkIfTokenExists(id, username);};
+    this.update = function (id) {return update(id);};
 
     /**
      * Construct the TokenSchema and the TokenModel.
@@ -39,13 +41,13 @@ function token (DB) {
     };
 
     /**
-     * Create a token by user id in DB.
+     * Creates a token by user id in DB.
      *
      * @param id - Indicates the ID of the user we want to create a Token for.
      * @returns {*}
      */
     create = function (id) {
-        var token = jwt.sign({foo: 'bar'}, 'shhhhh', {expiresIn: '10h'});
+        var token = jwt.sign({foo: 'bar'}, 'shhhhh', {expiresIn: '1m'});
 
         var createdToken = new tokenModel({
             _id: id,
@@ -59,9 +61,35 @@ function token (DB) {
                 console.log('could not save createdToken.');
                 console.log(err);
                 return false;
+            }else{
+                console.log('Token saved: ' + result);
             }
         });
     };
+
+    /**
+     * Creates a new token by user id in DB.
+     * @param id - Indicates the ID of the user we want to create a Token for.
+     * @returns {*}
+     */
+    update = function (id) {
+        var token = jwt.sign({foo: 'bar'}, 'shhhhh', {expiresIn: '10h'});
+
+        var createdToken = new tokenModel({
+            _id: id,
+            token: token
+
+        });
+
+        tokenModel.findOneAndUpdate({_id: id}, createdToken, function (err) {
+            if (err) {
+                console.log('Failed creating a new Token for User ID: ' + id);
+            } else {
+                console.log('New Token for User ID: ' + id + ' is token: ' + token);
+            }
+        });
+    };
+
 
     /**
      * Compare the input data with the data in Database.
@@ -82,6 +110,7 @@ function token (DB) {
                    }
                    catch (e) {
                        console.log("Error: Token no longer valid!" );
+                       DB.createNewToken(id);
                        
                    }
            }

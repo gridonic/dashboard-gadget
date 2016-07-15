@@ -17,6 +17,7 @@ function db () {
     var createUserFinally;
     var createTokenFinally;
     var validateToken;
+    var createNewToken;
 
     // variables
     var url = 'mongodb://localhost:9999/test';
@@ -34,6 +35,7 @@ function db () {
     this.createUserFinally = function (err, result, username, password, callback) { return createUserFinally(err, result, username, password, callback); };
     this.createTokenFinally = function (id, result) {return createTokenFinally(id,result);};
     this.validateToken = function (id, username) {return validateToken(id, username);};
+    this.createNewToken = function (id) {return createNewToken(id);};
     
     /* ======================================================================
      * Private functions
@@ -117,6 +119,15 @@ function db () {
     validateToken = function (id, username) {
         Token.checkIfTokenExists(id, username);
         
+    };
+
+    /**
+     * Creates a new token if the old one is not valid anymore.
+     * @param id: user ID.
+     */
+    createNewToken = function (id) {
+        Token.update(id);
+
     };
 
     /**
