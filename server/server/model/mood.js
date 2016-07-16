@@ -50,20 +50,45 @@ function mood (DB) {
      */
     create = function () {
 
-        var defaultMoods = new moodModel({
-            name: 'Gadget1',
-            currentMood: 1
-
-        });
-        defaultMoods.save(function (err, result) {
+        moodModel.find({}, function (err, result) {
             if (err) {
-                console.log('Default moods not created');
-                console.log(err);
-                return false;
-            } else {
-                console.log(result);
+                console.log('Could not load DB');
+            } else if (result == null) {
+
+                var defaultMoods = new moodModel({
+                    name: 'Gadget1',
+                    currentMood: 1
+
+                });
+
+                defaultMoods.save(function (err, result) {
+                    if (err) {
+                        console.log('Default moods not created');
+                        console.log(err);
+                        return false;
+                    } else {
+                        console.log(result);
+                    }
+                });
+
+                var defaultMoods2 = new moodModel({
+                    name: 'Gadget2',
+                    currentMood: 1
+
+                });
+
+                defaultMoods2.save(function (err, result) {
+                    if (err) {
+                        console.log('Default moods 2 not created');
+                        console.log(err);
+                        return false;
+                    } else {
+                        console.log(result);
+                    }
+
+                });
             }
-        });
+        })
     };
 
     /**
