@@ -4,6 +4,7 @@ var mongodb = require('mongodb');
 var mongoose = require('mongoose');
 var user = require('./model/user.js');
 var token = require('./model/token.js');
+var mood = require('./model/mood.js');
 
 
 function db () {
@@ -23,6 +24,7 @@ function db () {
     var url = 'mongodb://localhost:9999/test';
     var User = new user(this);
     var Token = new token(this);
+    var Mood = new mood(this);
     var connected = false;
 
     /* ======================================================================
@@ -136,6 +138,8 @@ function db () {
     setupSchema = function () {
         User.construct(mongoose);
         Token.construct(mongoose);
+        Mood.construct(mongoose);
+        Mood.create();
     };
 
     /**
