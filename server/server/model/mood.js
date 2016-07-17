@@ -15,8 +15,8 @@ function mood (DB) {
     this.construct = function (mongoose) {
         return construct(mongoose);
     };
-    this.create = function () {
-        return create();
+    this.create = function (gadgetName) {
+        return create(gadgetName);
     };
     this.update = function (name, currentMood) {
         return update(name, currentMood);
@@ -48,47 +48,28 @@ function mood (DB) {
      *
      * @returns {*}
      */
-    create = function () {
+    create = function (gadgetName) {
 
-        moodModel.find({}, function (err, result) {
-            if (err) {
-                console.log('Could not load DB');
-            } else if (result == null) {
+        var defaultMood = new moodModel({
+            name: gadgetName,
+            currentMood: 1
+        });
 
-                var defaultMoods = new moodModel({
-                    name: 'Gadget1',
-                    currentMood: 1
+        moodModel.findOne({name: gadgetName}, function(err, result) {
 
-                });
-
-                defaultMoods.save(function (err, result) {
+            if (result == null) {
+                defaultMood.save(function (err, result) {
                     if (err) {
-                        console.log('Default moods not created');
-                        console.log(err);
-                        return false;
+                        console.log('Default mood not created');
                     } else {
                         console.log(result);
                     }
                 });
-
-                var defaultMoods2 = new moodModel({
-                    name: 'Gadget2',
-                    currentMood: 1
-
-                });
-
-                defaultMoods2.save(function (err, result) {
-                    if (err) {
-                        console.log('Default moods 2 not created');
-                        console.log(err);
-                        return false;
-                    } else {
-                        console.log(result);
-                    }
-
-                });
+            } else {
+                console.log('Gadget already created in DB');
             }
-        })
+        });
+
     };
 
     /**

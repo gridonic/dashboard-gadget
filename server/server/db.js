@@ -27,6 +27,10 @@ function db () {
     var Mood = new mood(this);
     var connected = false;
 
+    // gadgets
+    var nameGadget1 = 'Gadget1';
+    var nameGadget2 = 'Gadget2';
+
     /* ======================================================================
      * Public functions
      * ====================================================================== */
@@ -139,7 +143,8 @@ function db () {
         User.construct(mongoose);
         Token.construct(mongoose);
         Mood.construct(mongoose);
-        Mood.create();
+        Mood.create(nameGadget1);
+        Mood.create(nameGadget2);
     };
 
     /**
