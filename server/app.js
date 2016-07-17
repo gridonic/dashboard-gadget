@@ -85,6 +85,10 @@ io.on('connection', function (socket) {
     socket.on('loginUser', function (data) {
         SocketHandler.onLoginUser(data);
     });
+    
+    socket.on('updateMood', function (data){
+        SocketHandler.onUpdateMood(data);
+    });
 
     socket.on('disconnect', function() {
         SocketHandler.onDisconnect();

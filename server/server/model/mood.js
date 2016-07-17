@@ -80,18 +80,12 @@ function mood (DB) {
      * @returns {*}
      */
     update = function (name, currentMood) {
-
-        var changedMood = new moodModel({
-            name: name,
-            currentMood: currentMood
-
-        });
-
-        moodModel._findOneAndUpdate({name: name}, changedMood, function (err) {
+        
+        moodModel.findOneAndUpdate({name: name}, {$set:{currentMood:currentMood}}, function (err) {
             if (err) {
                 console.log('Failed changing the mood of ' + name);
             } else {
-                console.log(name + ' is changed to mood ' + currentMood);
+                console.log('Gadget ' + name + ' is changed to mood ' + currentMood);
             }
         });
 

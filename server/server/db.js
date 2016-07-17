@@ -19,6 +19,7 @@ function db () {
     var createTokenFinally;
     var validateToken;
     var createNewToken;
+    var changeMood;
 
     // variables
     var url = 'mongodb://localhost:9999/test';
@@ -42,6 +43,7 @@ function db () {
     this.createTokenFinally = function (id, result) {return createTokenFinally(id,result);};
     this.validateToken = function (id, username) {return validateToken(id, username);};
     this.createNewToken = function (id) {return createNewToken(id);};
+    this.changeMood = function (name, currentMood) {return changeMood(name,currentMood);};
     
     /* ======================================================================
      * Private functions
@@ -134,6 +136,15 @@ function db () {
     createNewToken = function (id) {
         Token.update(id);
 
+    };
+
+    /**
+     * Creates a new token if the old one is not valid anymore.
+     * @param name: name of the gadget the request comes from.
+     * @param currentMood: New mood status the user wants to set.
+     */
+    changeMood = function (name, currentMood) {
+        Mood.update(name, currentMood);
     };
 
     /**

@@ -9,6 +9,7 @@ function socketHandler (Db) {
     var onLogin;
     var onCreateUser;
     var onLoginUser;
+    var onUpdateMood;
     var onDisconnect;
     var onError;
     var onSuccess;
@@ -28,6 +29,7 @@ function socketHandler (Db) {
     this.onLogin = function (data) { return onLogin(data); };
     this.onCreateUser = function (data) { return onCreateUser(data); };
     this.onLoginUser = function (data) { return onLoginUser(data); };
+    this.onUpdateMood = function (data) { return onUpdateMood(data);};
     this.onDisconnect = function (data) { return onDisconnect(data); };
     this.onError = function (data) { return onError(data); };
     this.onSuccess = function (data) { return onSuccess(data); };
@@ -97,6 +99,12 @@ function socketHandler (Db) {
         }, function (success) {
             console.log(success);
         });
+    };
+
+    onUpdateMood = function (data) {
+        Db.changeMood(data.name, data.currentMood);
+        console.log(data.name + '   ' + data.currentMood);
+        console.log('mood changed');
     };
 
     onDisconnect = function (data) {
