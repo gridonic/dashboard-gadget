@@ -57,7 +57,7 @@ function mood (DB) {
 
         moodModel.findOne({name: gadgetName}, function(err, result) {
 
-            if (result == null) {
+            if (result === null) {
                 defaultMood.save(function (err, result) {
                     if (err) {
                         console.log('Default mood not created');
@@ -75,7 +75,7 @@ function mood (DB) {
     /**
      * Changes the mood of a user.
      *
-     * @param name - Static Name of the gadget e.g. 'Gadget2'.
+     * @param name - Static Name of the gadget e.g. '2'.
      * @param currentMood - Integer value which is linked to a specific mood status.
      * @returns {*}
      */

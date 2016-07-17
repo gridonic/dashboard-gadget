@@ -96,7 +96,7 @@ function token (DB) {
      * @param id: id of the user.
      * @param username
      */
-    //TODO Wass passiert mit Token danach?
+    //TODO Was passiert mit Token danach?
     checkIfTokenExists = function (id, username) {
         tokenModel.findOne({_id: id}, function (err, result) {
            if(result == null){

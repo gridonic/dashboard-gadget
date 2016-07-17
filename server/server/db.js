@@ -27,9 +27,9 @@ function db () {
     var Mood = new mood(this);
     var connected = false;
 
-    // gadgets
-    var nameGadget1 = 'Gadget1';
-    var nameGadget2 = 'Gadget2';
+    // gadget constants
+    const nameGadget1 = '1';
+    const nameGadget2 = '2';
 
     /* ======================================================================
      * Public functions
