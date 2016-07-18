@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var user = require('./model/user.js');
 var token = require('./model/token.js');
 var mood = require('./model/mood.js');
+var gadget = require('./model/gadget.js');
 
 
 function db () {
@@ -21,6 +22,7 @@ function db () {
     var createNewToken;
     var changeMood;
     var connectGadgetToUserModel;
+    var activateGadget;
 
     // variables
     var url = 'mongodb://localhost:9999/test';
@@ -28,6 +30,7 @@ function db () {
     var Token = new token(this);
     var Mood = new mood(this);
     var connected = false;
+    var Gadget = new gadget(this);
 
     // gadget constants
     const nameGadget1 = '1';
@@ -46,6 +49,7 @@ function db () {
     this.createNewToken = function (id) {return createNewToken(id);};
     this.changeMood = function (name, currentMood) {return changeMood(name,currentMood);};
     this.connectGadgetToUserModel = function (username, gadget) {return connectGadgetToUserModel(username, gadget);};
+    this.activateGadget = function (id) {return activateGadget(id);};
     
     /* ======================================================================
      * Private functions
@@ -162,14 +166,25 @@ function db () {
     };
 
     /**
+     * Changes the status of a Gadget to active.
+     * @param id: name of the gadget the request comes from.
+     */
+    activateGadget = function (id) {
+        Gadget.activateGadget(id);
+    };
+
+    /**
      * Create all Schemas, mostly by constructing its model.js-files
      */
     setupSchema = function () {
         User.construct(mongoose);
         Token.construct(mongoose);
         Mood.construct(mongoose);
+        Gadget.construct(mongoose);
         Mood.create(nameGadget1);
         Mood.create(nameGadget2);
+        Gadget.create(nameGadget1);
+        Gadget.create(nameGadget2);
     };
 
     /**

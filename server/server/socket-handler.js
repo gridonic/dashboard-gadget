@@ -70,6 +70,8 @@ function socketHandler (Db) {
 
         if (data.id !== '') {
             socket.emit('access', null);
+            Db.activateGadget(data.id);
+            
         } else {
             socket.emit('sendError', {
                 'message': 'You have to send your "id".'
