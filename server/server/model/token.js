@@ -16,7 +16,7 @@ function token (DB) {
 
     this.construct = function (mongoose) {return construct(mongoose);};
     this.create = function (id) {return create(id)};
-    this.checkIfTokenExists = function (id, username) {return checkIfTokenExists(id, username);};
+    this.checkIfTokenExists = function (id, username, gadget) {return checkIfTokenExists(id, username, gadget);};
     this.update = function (id) {return update(id);};
 
     /**
@@ -94,24 +94,29 @@ function token (DB) {
     /**
      * Compare the input data with the data in Database.
      * @param id: id of the user.
-     * @param username
+     * @param username: Username.
+     * @param gadget: The user's gadget.
      */
     //TODO Was passiert mit Token danach?
-    checkIfTokenExists = function (id, username) {
+    checkIfTokenExists = function (id, username, gadget) {
         tokenModel.findOne({_id: id}, function (err, result) {
            if(result == null){
                 DB.createTokenFinally(id, username);
+                DB.connectGadgetToUserModel(username, gadget);
            } else {
                var foundToken = result.token;
                    try {
                        var decoded = jwt.verify(foundToken, 'shhhhh');
                        console.log('------------------------ ' + decoded.foo);
+                       DB.connectGadgetToUserModel(username, gadget);
+
                        //Token zum zurücksenden
                    }
                    catch (e) {
                        console.log("Error: Token no longer valid!" );
                        DB.createNewToken(id);
-                       
+                       DB.connectGadgetToUserModel(username, gadget);
+
                    }
            }
         })

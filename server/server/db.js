@@ -20,6 +20,7 @@ function db () {
     var validateToken;
     var createNewToken;
     var changeMood;
+    var connectGadgetToUserModel;
 
     // variables
     var url = 'mongodb://localhost:9999/test';
@@ -38,12 +39,13 @@ function db () {
     
     this.getUser = function (username, password, callback) { return getUser(username, password, callback); };
     this.createUser = function (username, password, callback) { return createUser(username, password, callback); };
-    this.loginUser = function (username, password) {return loginUser(username, password); };
+    this.loginUser = function (username, password, gadget) {return loginUser(username, password, gadget); };
     this.createUserFinally = function (err, result, username, password, callback) { return createUserFinally(err, result, username, password, callback); };
     this.createTokenFinally = function (id, result) {return createTokenFinally(id,result);};
-    this.validateToken = function (id, username) {return validateToken(id, username);};
+    this.validateToken = function (id, username, gadget) {return validateToken(id, username, gadget);};
     this.createNewToken = function (id) {return createNewToken(id);};
     this.changeMood = function (name, currentMood) {return changeMood(name,currentMood);};
+    this.connectGadgetToUserModel = function (username, gadget) {return connectGadgetToUserModel(username, gadget);};
     
     /* ======================================================================
      * Private functions
@@ -81,6 +83,16 @@ function db () {
     };
 
     /**
+     * Calls the addGadgetToUser Methode in class User, to add the gadget
+     * @param username - The User.
+     * @param gadget: The user's gadget.
+     */
+    connectGadgetToUserModel = function (username, gadget) {
+        User.addGadgetToUser(username, gadget);
+    };
+
+
+    /**
      * Create a user if its username does not exist yet.
      *
      * @param username
@@ -109,23 +121,25 @@ function db () {
      *
      * @param username - The username of the user who wants to log in.
      * @param password - The password of the user who wants to log in.
+     * @param gadget - The user's gadget.
      */
-    loginUser = function (username, password) {
+    loginUser = function (username, password, gadget) {
 
         if (!connected) {
             console.log('no DB connected');
             return false;
         }
-        User.findUserForLogin(username, password);
+        User.findUserForLogin(username, password, gadget);
     };
 
     /**
      * Checks if there is already a valid Token related to this user id.
      * @param id: user ID.
-     * @param username
+     * @param username: Username.
+     * @param gadget: The user's gadget.
      */
-    validateToken = function (id, username) {
-        Token.checkIfTokenExists(id, username);
+    validateToken = function (id, username, gadget) {
+        Token.checkIfTokenExists(id, username, gadget);
         
     };
 

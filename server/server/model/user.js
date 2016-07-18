@@ -8,6 +8,7 @@ function user (DB) {
     var getUser;
     var findUserByUsername;
     var findUserForLogin;
+    var addGadgetToUser;
     var bcrypt = require('bcrypt');
     var token = require('./token.js');
 
@@ -24,7 +25,8 @@ function user (DB) {
 
     this.construct = function (mongoose) { return construct(mongoose); };
     this.findUserByUsername = function (username, password, callback) { return findUserByUsername(username, password, callback); };
-    this.findUserForLogin = function (username, password) {return findUserForLogin(username, password);};
+    this.findUserForLogin = function (username, password, gadget) {return findUserForLogin(username, password, gadget);};
+    this.addGadgetToUser = function(username, gadget) {return addGadgetToUser(username,gadget);};
     this.create = function (username, password, callback) { return create(username, password, callback); };
     this.getUser = function (username, password, callback) { return getUser(username, password, callback); };
 
@@ -121,21 +123,39 @@ function user (DB) {
      * Compare the input data with the data in Database.
      * @param username: we want to compare.
      * @param password:  we want to compare.
+     * @param gadget: The user's gadget.
      */
-    findUserForLogin = function (username, password) {
+    findUserForLogin = function (username, password, gadget) {
         userModel.findOne({username: username}, function (err, result) {
             if(result === null){
                 console.log('User not found - create a new User before try to login!');
             }else {
                 var foundId = result._id;
                 if (bcrypt.compareSync(password, result.password)) {
-                    DB.validateToken(foundId, username);
+                    DB.validateToken(foundId, username, gadget);
                 } else {
                     console.log('wrong pw');
                 }
             }
 
         });
+    };
+
+    /**
+     * Adds the gadget the user has choosen to his user account.
+     * @param username: we want to add a gadget for.
+     * @param gadget: the user's gadget.
+     */
+    addGadgetToUser = function (username, gadget) {
+
+        userModel.findOneAndUpdate({username: username}, {$set:{gadgetId:gadget}}, function (err) {
+            if (err) {
+                console.log('Failed adding gadget ' + gadget + ' to user ' + username);
+            } else {
+                console.log('User ' + username + ' uses now gadget ' + gadget);
+            }
+        });
+
     };
     
     

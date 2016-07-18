@@ -93,7 +93,7 @@ function socketHandler (Db) {
     };
     
     onLoginUser = function (data) {
-        Db.loginUser(data.username, data.password, function (error) {
+        Db.loginUser(data.username, data.password, data.gadget, function (error) {
             console.log('error');
             console.log(error);
         }, function (success) {
