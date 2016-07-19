@@ -109,6 +109,7 @@ function token (DB) {
                        var decoded = jwt.verify(foundToken, 'shhhhh');
                        console.log('------------------------ ' + decoded.foo);
                        DB.connectGadgetToUserModel(username, gadget);
+                       DB.getIdToUsername(username, gadget);
 
                        //Token zum zurücksenden
                    }
@@ -116,6 +117,8 @@ function token (DB) {
                        console.log("Error: Token no longer valid!" );
                        DB.createNewToken(id);
                        DB.connectGadgetToUserModel(username, gadget);
+                       DB.getIdToUsername(username, gadget);
+
 
                    }
            }

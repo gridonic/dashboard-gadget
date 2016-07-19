@@ -23,6 +23,8 @@ function db () {
     var changeMood;
     var connectGadgetToUserModel;
     var activateGadget;
+    var getIdToUsername;
+    var addUserToGadgetModel;
 
     // variables
     var url = 'mongodb://localhost:9999/test';
@@ -50,6 +52,8 @@ function db () {
     this.changeMood = function (name, currentMood) {return changeMood(name,currentMood);};
     this.connectGadgetToUserModel = function (username, gadget) {return connectGadgetToUserModel(username, gadget);};
     this.activateGadget = function (id) {return activateGadget(id);};
+    this.getIdToUsername = function (username, gadgetId) {return getIdToUsername(username, gadgetId);};
+    this.addUserToGadgetModel = function (userId, gadgetId, username) {return addUserToGadgetModel(userId, gadgetId, username);};
     
     /* ======================================================================
      * Private functions
@@ -87,14 +91,32 @@ function db () {
     };
 
     /**
-     * Calls the addGadgetToUser Methode in class User, to add the gadget
+     * Calls the addGadgetToUser methode in class User, to add the gadget
      * @param username - The User.
-     * @param gadget: The user's gadget.
+     * @param gadgetId: The user's gadget.
      */
-    connectGadgetToUserModel = function (username, gadget) {
-        User.addGadgetToUser(username, gadget);
+    connectGadgetToUserModel = function (username, gadgetId) {
+        User.addGadgetToUser(username, gadgetId);
     };
 
+    /**
+     * Calls the addGadgetToUser methode in class User, to add the gadget
+     * @param userId: The user's ID in DB.
+     * @param gadgetId:
+     * @param username:
+     */
+    addUserToGadgetModel = function(userId, gadgetId, username){
+        Gadget.update(gadgetId, userId, username);
+    };
+
+    /**
+     * Calls the addGadgetToUser methode in class User, to add the gadget
+     * @param username:
+     * @param gadgetId:
+     */
+    getIdToUsername = function(username, gadgetId){
+        User.getUserIdByUsername(username, gadgetId);
+    };
 
     /**
      * Create a user if its username does not exist yet.

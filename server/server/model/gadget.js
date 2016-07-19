@@ -19,8 +19,8 @@ function gadget (DB) {
     this.create = function (gadgetName) {
         return create(gadgetName);
     };
-    this.update = function (name, currentMood) {
-        return update(name, currentMood);
+    this.update = function (gadgetName, userId, userName) {
+        return update(gadgetName, userId, userName);
     };
     this.activateGadget = function (gadgetName) {
         return activateGadget(gadgetName);
@@ -41,7 +41,8 @@ function gadget (DB) {
         gadgetSchema = new Schema({
             gadgetId: Number,
             gadgetIsRunning: Number,
-            lastUser: Number
+            lastUser: String,
+            lastUserName: String
         });
 
         gadgetModel = gadgetMongoose.model('gadgetModel', gadgetSchema);
@@ -50,8 +51,8 @@ function gadget (DB) {
 
     /**
      * Creates the default mood Model.
-     *@param gadgetName: An integer value, also called gadget ID.
-     *@param userName: The user to which the gadget should be linked.
+     *@param gadgetName: Integer value, also called gadget ID.
+     *@param userName: User to which the gadget should be linked.
      * 
      * @returns {*}
      */
@@ -81,15 +82,16 @@ function gadget (DB) {
     };
 
     /**
-     * Changes the mood of a user.
+     * Changes the gadget of a user.
      *
-     * @param gadgetName - Integer value with the gadget number.
-     * @param userName - Name of the user the gadget should be linked with after the change.
+     *@param gadgetName: Integer value, also called gadget ID.
+     *@param userId: ID of the user which should be linked to the gadget.
+     *@param userName: Name of the user which should be linked to the gadget.
      * @returns {*}
      */
-    update = function (gadgetName, userName) {
+    update = function (gadgetName, userId, userName) {
 
-        gadgetModel.findOneAndUpdate({gadgetId: gadgetName}, {$set:{lastUser:userName}}, function (err) {
+        gadgetModel.findOneAndUpdate({gadgetId: gadgetName}, {$set:{lastUser:userId, lastUserName:userName}}, function (err) {
             if (err) {
                 console.log(gadgetName + ' does not yet exist in the DB!');
             } else {

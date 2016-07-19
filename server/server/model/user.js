@@ -9,6 +9,7 @@ function user (DB) {
     var findUserByUsername;
     var findUserForLogin;
     var addGadgetToUser;
+    var getUserIdByUsername;
     var bcrypt = require('bcrypt');
     var token = require('./token.js');
 
@@ -29,6 +30,7 @@ function user (DB) {
     this.addGadgetToUser = function(username, gadget) {return addGadgetToUser(username,gadget);};
     this.create = function (username, password, callback) { return create(username, password, callback); };
     this.getUser = function (username, password, callback) { return getUser(username, password, callback); };
+    this.getUserIdByUsername = function (username, gadgetId) {return getUserIdByUsername(username, gadgetId);};
 
     /**
      * Construct the UserSchema and the UserModel.
@@ -118,6 +120,17 @@ function user (DB) {
             DB.createUserFinally(err, result, username, password, callback);
         });
     };
+
+    /**
+     * Sends back the user id which is related to the username in the database.
+     * @param username: we want to find
+     * @param gadgetId:
+     */
+    getUserIdByUsername = function (username, gadgetId) {
+        userModel.findOne({username: username}, function (err, result) {
+            DB.addUserToGadgetModel(result._id, gadgetId, username);
+        });
+    }; 
 
     /**
      * Compare the input data with the data in Database.
