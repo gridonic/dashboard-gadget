@@ -7,6 +7,7 @@ function gadget (DB) {
     var create;
     var update;
     var activateGadget;
+    var deactivateGadget;
 
     // variables
     var gadgetModel;
@@ -22,9 +23,10 @@ function gadget (DB) {
     this.update = function (gadgetName, userId, userName) {
         return update(gadgetName, userId, userName);
     };
-    this.activateGadget = function (gadgetName) {
-        return activateGadget(gadgetName);
+    this.activateGadget = function (id) {
+        return activateGadget(id);
     };
+    this.deactivateGadget = function (id) {return deactivateGadget(id);};
 
     /**
      * Construct the MoodSchema and the MoodModel.
@@ -104,16 +106,33 @@ function gadget (DB) {
     /**
      * Changes the gadget status to active.
      *
-     * @param gadgetName - Integer value with the gadget number.
+     * @param id - Integer value with the gadget number.
      * @returns {*}
      */
-    activateGadget = function (gadgetName) {
-
-        gadgetModel.findOneAndUpdate({gadgetId: gadgetName}, {$set:{gadgetIsRunning:1}}, function (err) {
+    activateGadget = function (id) {
+        gadgetModel.findOneAndUpdate({gadgetId: id}, {$set:{gadgetIsRunning:1}}, function (err) {
             if (err) {
-                console.log(gadgetName + ' does not yet exist in the DB!');
+                console.log(id + ' does not yet exist in the DB!');
             } else {
-                console.log('Gadget ' + gadgetName + ' is now active!');
+                console.log('Gadget ' + id + ' is now active!');
+            }
+        });
+
+    };
+
+    /**
+     * Changes the gadget status to inactive.
+     *
+     * @param id - Integer value with the gadget number.
+     * @returns {*}
+     */
+    deactivateGadget = function (id) {
+        console.log('-----------------hier gadget--------------');
+        gadgetModel.findOneAndUpdate({gadgetId: id}, {$set:{gadgetIsRunning:0}}, function (err) {
+            if (err) {
+                console.log(id + ' does not yet exist in the DB!');
+            } else {
+                console.log('Gadget ' + id + ' is now inactive again!');
             }
         });
 

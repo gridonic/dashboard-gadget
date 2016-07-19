@@ -7,6 +7,7 @@ function socketHandler (Db) {
     var loadUser;
     var onHelloWorld;
     var onLogin;
+    var onArduinoLogout;
     var onCreateUser;
     var onLoginUser;
     var onUpdateMood;
@@ -27,6 +28,7 @@ function socketHandler (Db) {
     };
     this.onHelloWorld = function (data) { return onHelloWorld(data); };
     this.onLogin = function (data) { return onLogin(data); };
+    this.onArduinoLogout = function (data) {return onArduinoLogout(data);};
     this.onCreateUser = function (data) { return onCreateUser(data); };
     this.onLoginUser = function (data) { return onLoginUser(data); };
     this.onUpdateMood = function (data) { return onUpdateMood(data);};
@@ -77,6 +79,23 @@ function socketHandler (Db) {
                 'message': 'You have to send your "id".'
             });
         }
+    };
+    
+    onArduinoLogout = function (data) {
+        console.log('socketLOGOUT');
+        console.log(data);
+        
+        if(data.id !== '') {
+            socket.emit('arduinoLogout', null);
+            Db.deactivateGadget(data.id);
+            
+        } else {
+            socket.emit('sendError', {
+                'message': 'You have to send your "id".'
+            });
+
+        }   
+        
     };
 
     onCreateUser = function (data) {

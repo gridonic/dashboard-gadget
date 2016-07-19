@@ -23,6 +23,7 @@ function db () {
     var changeMood;
     var connectGadgetToUserModel;
     var activateGadget;
+    var deactivateGadget;
     var getIdToUsername;
     var addUserToGadgetModel;
 
@@ -52,6 +53,7 @@ function db () {
     this.changeMood = function (name, currentMood) {return changeMood(name,currentMood);};
     this.connectGadgetToUserModel = function (username, gadget) {return connectGadgetToUserModel(username, gadget);};
     this.activateGadget = function (id) {return activateGadget(id);};
+    this.deactivateGadget = function (id) {return deactivateGadget(id);};
     this.getIdToUsername = function (username, gadgetId) {return getIdToUsername(username, gadgetId);};
     this.addUserToGadgetModel = function (userId, gadgetId, username) {return addUserToGadgetModel(userId, gadgetId, username);};
     
@@ -193,6 +195,14 @@ function db () {
      */
     activateGadget = function (id) {
         Gadget.activateGadget(id);
+    };
+
+    /**
+     * Changes the status of a Gadget to inactive.
+     * @param id: name of the gadget the request comes from.
+     */
+    deactivateGadget = function (id) {
+        Gadget.deactivateGadget(id);
     };
 
     /**

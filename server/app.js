@@ -78,6 +78,10 @@ io.on('connection', function (socket) {
         SocketHandler.onLogin(data);
     });
 
+    socket.on('logout', function (data) {
+        SocketHandler.onArduinoLogout(data);
+    });
+
     socket.on('createUser', function (data) {
         SocketHandler.onCreateUser(data);
     });
