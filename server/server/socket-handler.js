@@ -97,6 +97,7 @@ function socketHandler (Db) {
         if (data.id !== '') {
             socket.emit('access', null);
             Db.activateGadget(data.id);
+            Db.linkGadgetToSocket(socket.id, data.id);
             
         } else {
             socket.emit('sendError', {
@@ -109,14 +110,11 @@ function socketHandler (Db) {
         console.log('socketLOGOUT');
         console.log(data);
         
-        if(data.name !== '') {
-            socket.emit('arduinoLogout', null);
-            console.log('--------dataname  ' + data.name);
-            Db.deactivateGadget(data.name);
-            
+        if(socket.id !== '') {
+            Db.getGadgetIdToConnection(socket.id);
         } else {
             socket.emit('sendError', {
-                'message': 'You have to send your "id".'
+                'message': 'No open socket found.'
             });
 
         }   
