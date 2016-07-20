@@ -85,9 +85,10 @@ function socketHandler (Db) {
         console.log('socketLOGOUT');
         console.log(data);
         
-        if(data.id !== '') {
+        if(data.name !== '') {
             socket.emit('arduinoLogout', null);
-            Db.deactivateGadget(data.id);
+            console.log('--------dataname  ' + data.name);
+            Db.deactivateGadget(data.name);
             
         } else {
             socket.emit('sendError', {
@@ -123,6 +124,7 @@ function socketHandler (Db) {
     };
 
     onUpdateMood = function (data) {
+        console.log('--------dataname mood  ' + data.name);
         Db.changeMood(data.name, data.currentMood);
         console.log(data.name + '   ' + data.currentMood);
         console.log('mood changed');

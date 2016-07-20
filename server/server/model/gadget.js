@@ -127,7 +127,6 @@ function gadget (DB) {
      * @returns {*}
      */
     deactivateGadget = function (id) {
-        console.log('-----------------hier gadget--------------');
         gadgetModel.findOneAndUpdate({gadgetId: id}, {$set:{gadgetIsRunning:0}}, function (err) {
             if (err) {
                 console.log(id + ' does not yet exist in the DB!');

@@ -49,7 +49,7 @@ handleStart = function () {
     }
 
     start.onclick = function () {
-        var id = document.getElementById('input-id').value;
+        var id = document.getElementById('arduino-select').value;
         log('simulate the "login" with id: ' + id);
         socket.emit('login', {'id': id});
     };
@@ -88,7 +88,7 @@ handleArduinoLogout = function () {
     }
 
     arduinoLogout.onclick = function () {
-        var id = parseInt(document.getElementById('arduinoSelect').value);
+        var id = parseInt(document.getElementById('arduino-select').value);
         log('simulate the "logout" of gadget with id: ' + id);
         socket.emit('logout', {'id': id});
     };
@@ -127,7 +127,7 @@ handleUpdateMood = function () {
     }
 
     updateMood.onclick = function () {
-        var mood = parseInt(document.getElementById('moodSelect').value);
+        var mood = parseInt(document.getElementById('mood-select').value);
         //TODO gadget 2 is hardcoded for testing, add option to choose gadget
         var gadget = '2';
         console.log(mood);
