@@ -2,7 +2,10 @@ console.log('web.js found.');
 
 // Functions
 var handleStart;
+var handleArduinoLogout;
 var handleCreate;
+var handleLogin;
+var handleUpdateMood;
 var handleSuccess;
 var handleError;
 var log;
@@ -14,8 +17,11 @@ var WAITING_CREATE_USER = 1;
 // Variables
 var socket = io();
 var start = document.getElementById('btn-start');
+var arduinoLogout = document.getElementById('btn-arduinoLogout');
 var create = document.getElementById('btn-create');
+var login = document.getElementById('btn-login');
 var canvas = document.getElementById("display");
+var updateMood = document.getElementById('btn-update');
 var context;
 var actualWaiting = WAITING_DEFAULT;
 
@@ -68,6 +74,65 @@ handleCreate = function () {
 
         // wait till user is created.
         actualWaiting = WAITING_CREATE_USER;
+    };
+};
+
+/**
+ * Handle the Logout-Button.
+ * Simulates the logout from the server via an arduino.
+ */
+handleArduinoLogout = function () {
+
+    if (arduinoLogout === null) {
+        return;
+    }
+
+    arduinoLogout.onclick = function () {
+        var id = parseInt(document.getElementById('arduinoSelect').value);
+        log('simulate the "logout" of gadget with id: ' + id);
+        socket.emit('logout', {'id': id});
+    };
+};
+
+/**
+ * Handle the Login-Button.
+ * Login to an existing user.
+ */
+handleLogin = function () {
+
+    if (login === null) {
+        log('no login-button found.');
+        return;
+    }
+
+    login.onclick = function () {
+        var username = document.getElementById('login-username').value;
+        var password = document.getElementById('login-password').value;
+        var gadgetID = parseInt(document.getElementById('selectGadget').value);
+
+        socket.emit('loginUser', {'username': username, 'password': password, 'gadget': gadgetID});
+
+    };
+};
+
+/**
+ * Handle the UpdateMoood-Button.
+ * Login to an existing user.
+ */
+handleUpdateMood = function () {
+
+    if (updateMood === null) {
+        log('no update Mood Button found.');
+        return;
+    }
+
+    updateMood.onclick = function () {
+        var mood = parseInt(document.getElementById('moodSelect').value);
+        //TODO gadget 2 is hardcoded for testing, add option to choose gadget
+        var gadget = '2';
+        console.log(mood);
+        socket.emit('updateMood', {'name': gadget, 'currentMood': mood});
+
     };
 };
 
@@ -145,5 +210,8 @@ socket.on('userCreated', function (data) {
 
 // Start own functions.
 handleStart();
+handleArduinoLogout();
 handleCreate();
+handleLogin();
+handleUpdateMood();
 
