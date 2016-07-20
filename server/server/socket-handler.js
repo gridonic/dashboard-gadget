@@ -8,13 +8,11 @@ function socketHandler (Db) {
 
     // On-functions
     var onArduinoLogout;
-    var onButtonLeftPushed;
-    var onButtonRightPushed;
     var onButtonsPushed;
     var onCreateUser;
     var onDisconnect;
     var onError;
-    var onHelloWorld;
+    var onHello;
     var onLogin;
     var onLoginUser;
     var onSuccess;
@@ -33,13 +31,11 @@ function socketHandler (Db) {
     };
 
     this.onArduinoLogout = function (data) { return onArduinoLogout(data); };
-    this.onButtonLeftPushed = function (data) { return onButtonLeftPushed(data); };
-    this.onButtonRightPushed = function (data) { return onButtonRightPushed(data); };
     this.onButtonsPushed = function (data) { return onButtonsPushed(data); };
     this.onCreateUser = function (data) { return onCreateUser(data); };
     this.onDisconnect = function (data) { return onDisconnect(data); };
     this.onError = function (data) { return onError(data); };
-    this.onHelloWorld = function (data) { return onHelloWorld(data); };
+    this.onHello = function (data) { return onHello(data); };
     this.onLogin = function (data) { return onLogin(data); };
     this.onLoginUser = function (data) { return onLoginUser(data); };
     this.onSuccess = function (data) { return onSuccess(data); };
@@ -64,22 +60,19 @@ function socketHandler (Db) {
         });
     };
 
-    onButtonLeftPushed = function (data) {
-        console.log('left pushed');
-        console.log(data);
-    };
-
-    onButtonRightPushed = function (data) {
-        console.log('right pushed');
-        console.log(data);
-    };
-
     onButtonsPushed = function (data) {
-        console.log('both pushed');
+        console.log('buttons pushed');
+        if (data.left && data.right) {
+            console.log('both');
+        } else if (data.left) {
+            console.log('left');
+        } else if (data.right) {
+            console.log('right');
+        }
         console.log(data);
     };
 
-    onHelloWorld = function (data) {
+    onHello = function (data) {
         console.log('socketHELLO');
         console.log(data);
 
@@ -88,6 +81,19 @@ function socketHandler (Db) {
         } else {
             socket.emit('show', {draw: '111111110000000011111111'});
         }
+
+        setTimeout(function () {
+            var interval = setInterval(function(){ showTime() }, 100);
+            var i = 0;
+
+            function showTime() {
+                if (i > 120) {
+                    clearInterval(interval);
+                }
+                socket.emit('show', { draw: Graphic.getDefaultDisplay(null, i, null)});
+                i++;
+            }
+        }, 3000);
     };
 
     onLogin = function (data) {
