@@ -10,16 +10,21 @@ function graphic () {
     var generateLines;
     var generateHorizontalLine;
     var generateWorkTime;
+    var replacePart;
 
     // Variables
     var displayWidth = 320;
     var displayHeight = 240;
     var displayPadding = 10;
     var workTimeHeight = 12;
+    var workIconSize = 12;
 
     // Constants
     var WHITE = '0';
     var BLACK = '1';
+
+    // JSON-Files
+    var workIconRaw = require('./png-json/work-icon.json');
 
 
     /* ======================================================================
@@ -56,17 +61,18 @@ function graphic () {
      */
     generateWorkTime = function (percent) {
         var lineString = "";
-        var workingWidth = Math.round((displayWidth - 2 * displayPadding) / 100 * percent);
-
-        lineString += generateHorizontalLine();
+        var start = displayPadding + workIconSize + 4;
+        var stop = displayWidth - displayPadding;
+        var workingWidth = Math.round((stop - start) / 100 * percent);
 
         if (percent <= 100) {
-            lineString += generateHorizontalLine();
-            for (var j = 0; j < workTimeHeight - 4; j++) {
+            for (var j = 0; j < workTimeHeight; j++) {
                 for (var i = 0; i < displayWidth; i++) {
-                    if (i == displayPadding || i == displayPadding + 1
-                        || i == (displayWidth - displayPadding - 1) || i == (displayWidth - displayPadding - 2)
-                        || (i > displayPadding && i < (displayPadding + workingWidth))
+                    if (
+                        ((j == 0 || j == 1 || j == workTimeHeight - 1 || j == workTimeHeight - 2) && (i > start && i <= stop))
+                        || i == start + 1 || i == start + 2
+                        || i == stop || i == stop - 1
+                        || (i > start && i < (start + workingWidth))
                     ) {
                         lineString += BLACK;
                     } else {
@@ -74,16 +80,15 @@ function graphic () {
                     }
                 }
             }
-            lineString += generateHorizontalLine();
         } else {
             workingWidth = Math.round((displayWidth - 2 * displayPadding) / percent * 100);
 
-            for (var j = 0; j < workTimeHeight - 2; j++) {
+            for (var j = 0; j < workTimeHeight; j++) {
                 for (var i = 0; i < displayWidth; i++) {
-                    if (i < displayPadding
-                        || i >= displayWidth - displayPadding
-                        || i == displayPadding + workingWidth - 1
-                        || i == displayPadding + workingWidth - 2
+                    if (i <= start
+                        || i > stop
+                        || i == start + workingWidth - 1
+                        || i == start + workingWidth - 2
                     ) {
                         lineString += WHITE;
                     } else {
@@ -93,9 +98,7 @@ function graphic () {
             }
         }
 
-        lineString += generateHorizontalLine();
-
-        return lineString;
+        return replacePart(lineString, displayPadding, 0, 12, 12, workIconRaw);
     };
 
     /**
@@ -152,6 +155,27 @@ function graphic () {
         return lineString;
     };
 
+    /**
+     * Replace a part of a display-string with an icon.
+     *
+     * @param   string  The finished string for the display.
+     * @param   startY  On which line of the string do we start?
+     * @param   startX  On which position?
+     * @param   width   Width of the icon we will insert.
+     * @param   height  Height of the icon we will insert.
+     * @param   icon    Raw Json-data to insert.
+     * @returns {*}
+     */
+    replacePart = function (string, startX, startY, width, height, icon) {
+        var i = 0;
+
+        for (var j = startY; j < height; j++) {
+            string = string.substring(0, startX + displayWidth * j) + icon[i] + string.substring(startX + width + displayWidth * j, string.length);
+            i++;
+        }
+
+        return string;
+    };
 
 
     /* ======================================================================
