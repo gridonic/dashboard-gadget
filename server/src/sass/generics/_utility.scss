@@ -1,4 +1,10 @@
 
 
 // Margins
-._margined-top      { margin-top: $base-unit-horizontal; }
+._margined-top      { margin-top: $base-unit-horizontal * 2; }
+
+// Text-Aligns
+
+._text-left         { text-align: left; }
+._text-right        { text-align: right; }
+._text-center       { text-align: center; }

@@ -7,36 +7,57 @@
 
 </head>
 <body>
-    <h1>Interaktives Dashboard-Gadget: Test-Interface Browser</h1>
 
-    <section>
-        <p>Display: 160 x 160px</p>
+    <div class="container">
+        <h1>Interaktives Dashboard-Gadget: Test-Interface Browser</h1>
+    </div>
 
-        <canvas id="display" width="160" height="160" style="width: 160px; height: 160px; border: 5px solid #dd9900;"></canvas>
-
-        <div style="margin-top: 20px;">
-            <button id="btn-left">LEFT</button>
-            <button id="btn-right">RIGHT</button>
-            <button id="btn-both">BOTH</button>
+    <section class="container">
+        <div class="row">
+            <div class="col-xs-12 col-lg-4 col-lg-offset-4">
+                <p>Display: 160 x 160px</p>
+                <canvas id="display" width="160" height="160" class="display"></canvas>
+            </div>
         </div>
 
-        <div style="margin-top: 20px;">
-            <select id="arduinoSelect">
-                <option value="1">1</option>
-                <option value="2">2</option>
-            </select>
-            <button id="btn-start">Arduino Login</button>
-            <button id="btn-arduinoLogout">Arduino Logout</button>
+        <div class="row _margined-top">
+            <div class="col-xs-12 col-lg-4 col-lg-offset-4">
+                <button class="btn btn-primary" id="btn-left">LEFT</button>
+                <button class="btn btn-primary" id="btn-both">BOTH</button>
+                <button class="btn btn-primary" id="btn-right">RIGHT</button>
+            </div>
         </div>
 
-        <div style="...">
-            <select id="moodSelect">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-            </select>
-            <button id="btn-update">Update Mood</button>
+        <div class="_margined-top row">
+            <div class="col-xs-6">
+                <label class="hidden" for="arduinoSelect">Change Gadget</label>
+                <select class="form-control" id="arduinoSelect">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                </select>
+            </div>
+            <div class="col-xs-6">
+                <button class="btn btn-success" id="btn-start">Arduino Login</button>
+            </div>
+        </div>
+
+        <div class="_margined-top row">
+            <div class="col-xs-6">
+                <label for="moodSelect" class="hidden">Wechsle den Mood aus</label>
+                <select class="form-control" id="moodSelect">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+            <div class="col-xs-6">
+                <button class="btn btn-primary" id="btn-update">Update Mood</button>
+            </div>
+        </div>
+
+        <div class="_margined-top">
+            <button class="btn btn-danger" id="btn-arduinoLogout">Arduino Logout</button>
         </div>
 
     </section>
