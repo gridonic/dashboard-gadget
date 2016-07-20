@@ -3,19 +3,24 @@ var graphic = require('./graphic.js');
 
 function socketHandler (Db) {
 
-    // functions
+    // Functions
     var loadUser;
-    var onHelloWorld;
-    var onLogin;
+
+    // On-functions
     var onArduinoLogout;
+    var onButtonLeftPushed;
+    var onButtonRightPushed;
+    var onButtonsPushed;
     var onCreateUser;
-    var onLoginUser;
-    var onUpdateMood;
     var onDisconnect;
     var onError;
+    var onHelloWorld;
+    var onLogin;
+    var onLoginUser;
     var onSuccess;
-    
-    // variables
+    var onUpdateMood;
+
+    // Variables
     var Graphic = new graphic();
     var socket = null;
 
@@ -26,15 +31,19 @@ function socketHandler (Db) {
     this.setSocket = function (s) {
         socket = s;
     };
-    this.onHelloWorld = function (data) { return onHelloWorld(data); };
-    this.onLogin = function (data) { return onLogin(data); };
-    this.onArduinoLogout = function (data) {return onArduinoLogout(data);};
+
+    this.onArduinoLogout = function (data) { return onArduinoLogout(data); };
+    this.onButtonLeftPushed = function (data) { return onButtonLeftPushed(data); };
+    this.onButtonRightPushed = function (data) { return onButtonRightPushed(data); };
+    this.onButtonsPushed = function (data) { return onButtonsPushed(data); };
     this.onCreateUser = function (data) { return onCreateUser(data); };
-    this.onLoginUser = function (data) { return onLoginUser(data); };
-    this.onUpdateMood = function (data) { return onUpdateMood(data);};
     this.onDisconnect = function (data) { return onDisconnect(data); };
     this.onError = function (data) { return onError(data); };
+    this.onHelloWorld = function (data) { return onHelloWorld(data); };
+    this.onLogin = function (data) { return onLogin(data); };
+    this.onLoginUser = function (data) { return onLoginUser(data); };
     this.onSuccess = function (data) { return onSuccess(data); };
+    this.onUpdateMood = function (data) { return onUpdateMood(data);};
 
     /* ======================================================================
      * Private functions
@@ -53,6 +62,21 @@ function socketHandler (Db) {
                 });
             }
         });
+    };
+
+    onButtonLeftPushed = function (data) {
+        console.log('left pushed');
+        console.log(data);
+    };
+
+    onButtonRightPushed = function (data) {
+        console.log('right pushed');
+        console.log(data);
+    };
+
+    onButtonsPushed = function (data) {
+        console.log('both pushed');
+        console.log(data);
     };
 
     onHelloWorld = function (data) {
