@@ -5,21 +5,36 @@
     <link rel="stylesheet" type="text/css" href="/assets/css/styles.css">
 </head>
 <body>
-    <h1>Interaktives Dashboard-Gadget: Image-Helper</h1>
+    <div class="container">
+        <h1>Interaktives Dashboard-Gadget: Image-Helper</h1>
+    </div>
 
-    <section>
-        <canvas id="display" width="160" height="160" class="display"></canvas>
-
-        <canvas id="display-output" width="160" height="160" class="display -second"></canvas>
-
-        <div style="margin-top: 20px;">
-            Upload image
-            <input type="file" id="btn-image-upload">
-            <button id="btn-convert">Start / Convert</button>
+    <section class="container">
+        <div class="row">
+            <div class="col-md-12 col-lg-4">
+                <canvas id="display" width="320" height="240" class="display"></canvas>
+            </div>
+            <div class="col-md-12 col-lg-4">
+                <canvas id="display-output" width="320" height="240" class="display -second"></canvas>
+            </div>
         </div>
 
-        <div style="margin-top: 20px;">
-            <div id="output" style="width: 500px; font-family: monospace;">Output...</div>
+        <div class="row _margined-top">
+            <div class="col-xs-6 col-lg-4">
+                <div class="form-group">
+                    <label for="btn-image-upload" class="hidden">Png hochladen</label>
+                    <input type="file" id="btn-image-upload">
+                </div>
+            </div>
+            <div class="col-xs-6 col-lg-4">
+                <button id="btn-convert" class="btn btn-success">Start / Convert</button>
+            </div>
+        </div>
+
+        <div class="row _margined-top">
+            <div class="col-xs-12">
+                <div id="output" class="output-result">Output...</div>
+            </div>
         </div>
     </section>
 
@@ -43,9 +58,11 @@
             var oneLine = "";
             var char = 0;
             var data;
+            var imageWidth = 320;
+            var imageHeight = 240;
 
-            for (var i = 0; i < 160; i++) {
-                for (var j = 0; j < 160; j++) {
+            for (var i = 0; i < imageHeight; i++) {
+                for (var j = 0; j < imageWidth; j++) {
                     char = '0';
                     data = context.getImageData(j,i,1,1).data;
                     if (data[0] === 0 && data[1] === 0 && data[2] === 0 && data[3] === 255) {
@@ -64,18 +81,18 @@
             }
 
             outputString += '"";';
-            output.style.fontSize = 5;
+            output.className += ' -filled';
             output.innerHTML = outputString;
 
             // now draw to the output-canvas
             contextOutput.fillStyle = "#ffffff";
-            contextOutput.fillRect(0, 0, 160, 160);
+            contextOutput.fillRect(0, 0, imageWidth, imageHeight);
 
             contextOutput.fillStyle = "#000000";
             var draw = outputStringCanvas.split("");
             var x = 0;
-            for (var i = 0; i < 160; i++) {
-                for (var j = 0; j < 160; j++) {
+            for (var i = 0; i < imageHeight; i++) {
+                for (var j = 0; j < imageWidth; j++) {
                     if (draw[x] === '1') {
                         contextOutput.fillRect(j, i, 1, 1);
                     }

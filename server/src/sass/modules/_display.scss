@@ -1,12 +1,11 @@
 // All the simulated displays
 
 .display {
-  width: 160px;
-  height: 160px;
+  width: 320px;
+  height: 240px;
   border: 4px solid #dd9900;
 
   &.-second {
-    margin-left: 100px;
     border-color: #8BA870;
   }
 }

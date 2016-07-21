@@ -3,6 +3,7 @@ console.log('web.js found.');
 // Functions
 var handleStart;
 var handleArduinoLogout;
+var handleButtons;
 var handleCreate;
 var handleLogin;
 var handleUpdateMood;
@@ -19,8 +20,8 @@ var socket = io();
 var start = document.getElementById('btn-start');
 var arduinoLogout = document.getElementById('btn-arduinoLogout');
 var arduinoLeftButton = document.getElementById('btn-arduino-left');
-var arduinoRightButton = document.getElementById('btn-arduino-left');
-var arduinoBothButton = document.getElementById('btn-arduino-left');
+var arduinoRightButton = document.getElementById('btn-arduino-right');
+var arduinoBothButton = document.getElementById('btn-arduino-both');
 var create = document.getElementById('btn-create');
 var login = document.getElementById('btn-login');
 var canvas = document.getElementById("display");
@@ -39,6 +40,42 @@ log = function (message) {
     if (output) {
         output.innerHTML = output.innerHTML + '<br>' + message;
     }
+};
+
+/**
+ * Handle the 3 possible interactions with the two buttons.
+ * - Left Button
+ *   x Go to the left
+ *   x Say No
+ *
+ * - Right Button
+ *   x Go to the right
+ *   x Say yes
+ *
+ * - Both of them
+ *   x Go in or out of the menu
+ *   x Start settings
+ *
+ * All of the actions are handled by the server, we are
+ * just sending the inputs to the server.
+ */
+handleButtons = function () {
+
+    if (arduinoRightButton.length < 1 || arduinoLeftButton.length < 1 || arduinoBothButton.length < 1) {
+        return;
+    }
+
+    arduinoBothButton.onclick = function () {
+        socket.emit('buttonsPushed', {left: true, right: true});
+    };
+
+    arduinoLeftButton.onclick = function () {
+        socket.emit('buttonsPushed', {left: true, right: false});
+    };
+
+    arduinoRightButton.onclick = function () {
+        socket.emit('buttonsPushed', {left: false, right: true});
+    };
 };
 
 /**
@@ -167,17 +204,21 @@ handleSuccess = function (data) {
 // TODO: Adressen hier, die funktionen an sich in externes File auslagern.
 
 socket.on('show', function (data) {
+    log('socketShow');
     log(data);
+
+    var displayWidth = 320;
+    var displayHeight = 240;
 
     if (data.draw) {
         context.fillStyle = "#ffffff";
-        context.fillRect(0, 0, 160, 160);
+        context.fillRect(0, 0, displayWidth, displayHeight);
 
         context.fillStyle = "#000000";
         var draw = data.draw.split("");
         var x = 0;
-        for (var i = 0; i < 160; i++) {
-            for (var j = 0; j < 160; j++) {
+        for (var i = 0; i < displayHeight; i++) {
+            for (var j = 0; j < displayWidth; j++) {
                 if (draw[x] === '1') {
                     context.fillRect(j, i, 1, 1);
                 }
@@ -189,7 +230,8 @@ socket.on('show', function (data) {
 });
 
 socket.on('access', function (data) {
-    socket.emit('hello-world', {'message': 'full graphic'});
+    log('socketAccess');
+    socket.emit('hello', {'message': 'full graphic'});
 });
 
 socket.on('sendError', function (data) {
@@ -216,4 +258,5 @@ handleArduinoLogout();
 handleCreate();
 handleLogin();
 handleUpdateMood();
+handleButtons();
 

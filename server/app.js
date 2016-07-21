@@ -70,23 +70,12 @@ io.on('connection', function (socket) {
     console.log('connection has started. ' + 'id: ' + socket.id);
     Connection.add(socket.id);
 
-    /**
-     * Todo: rename to helloWorld. Or delete it, because we do not need it anymore.
-     */
-    socket.on('hello-world', function (message) {
-        SocketHandler.onHelloWorld(message);
+    socket.on('hello', function (message) {
+        SocketHandler.onHello(message);
     });
 
     socket.on('buttonsPushed', function (data) {
         SocketHandler.onButtonsPushed(data);
-    });
-
-    socket.on('buttonRightPushed', function (data) {
-        SocketHandler.onButtonRightPushed(data);
-    });
-
-    socket.on('buttonLeftPushed', function (data) {
-        SocketHandler.onButtonLeftPushed(data);
     });
 
     socket.on('login', function (data) {
