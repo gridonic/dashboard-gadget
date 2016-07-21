@@ -91,8 +91,7 @@ handleArduinoLogout = function () {
     }
 
     arduinoLogout.onclick = function () {
-        //var id = parseInt(document.getElementById('arduino-select').value);
-        //log('simulate the "logout" of gadget with id: ' + id);
+        log('simulate the "logout" of gadget');
         socket.emit('logout', null);
     };
 };

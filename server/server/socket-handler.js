@@ -32,6 +32,8 @@ function socketHandler (Db) {
         socket = s;
     };
 
+
+
     this.onArduinoLogout = function (data) { return onArduinoLogout(data); };
     this.onButtonLeftPushed = function (data) { return onButtonLeftPushed(data); };
     this.onButtonRightPushed = function (data) { return onButtonRightPushed(data); };
@@ -108,9 +110,9 @@ function socketHandler (Db) {
     
     onArduinoLogout = function (data) {
         console.log('socketLOGOUT');
-        console.log(data);
-        
+
         if(socket.id !== '') {
+            console.log('socket-handler socket id:   ' + socket.id);
             Db.getGadgetIdToConnection(socket.id);
         } else {
             socket.emit('sendError', {
