@@ -91,7 +91,7 @@ handleStart = function () {
     start.onclick = function () {
         var id = document.getElementById('arduino-select').value;
         log('simulate the "login" with id: ' + id);
-        socket.emit('login', {'id': id});
+        socket.emit('loginGadget', {'id': id});
     };
 };
 

@@ -110,7 +110,7 @@ function gadget (DB) {
      * @returns {*}
      */
     activateGadget = function (id) {
-        gadgetModel.findOneAndUpdate({gadgetId: id}, {$set:{gadgetIsRunning:1}}, function (err) {
+        gadgetModel.findOneAndUpdate({gadgetId: id}, {$set: {gadgetIsRunning: 1}}, function (err) {
             if (err) {
                 console.log(id + ' does not yet exist in the DB!');
             } else {
@@ -127,7 +127,7 @@ function gadget (DB) {
      * @returns {*}
      */
     deactivateGadget = function (id) {
-        gadgetModel.findOneAndUpdate({gadgetId: id}, {$set:{gadgetIsRunning:0}}, function (err) {
+        gadgetModel.findOneAndUpdate({gadgetId: id}, {$set: {gadgetIsRunning: 0}}, function (err) {
             if (err) {
                 console.log(id + ' does not yet exist in the DB!');
             } else {

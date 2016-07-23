@@ -7,13 +7,13 @@ function socketHandler (Db) {
     var loadUser;
 
     // On-functions
-    var onArduinoLogout;
+    var onLogoutGadget;
     var onButtonsPushed;
     var onCreateUser;
     var onDisconnect;
     var onError;
     var onHello;
-    var onLogin;
+    var onLoginGadget;
     var onLoginUser;
     var onSuccess;
     var onUpdateMood;
@@ -27,18 +27,17 @@ function socketHandler (Db) {
      * ====================================================================== */
 
     this.setSocket = function (s) {
+        Db.addSocketConnection(s.id);
         socket = s;
     };
 
-
-
-    this.onArduinoLogout = function (data) { return onArduinoLogout(data); };
+    this.onArduinoLogout = function (data) { return onLogoutGadget(data); };
     this.onButtonsPushed = function (data) { return onButtonsPushed(data); };
     this.onCreateUser = function (data) { return onCreateUser(data); };
     this.onDisconnect = function (data) { return onDisconnect(data); };
     this.onError = function (data) { return onError(data); };
     this.onHello = function (data) { return onHello(data); };
-    this.onLogin = function (data) { return onLogin(data); };
+    this.onLoginGadget = function (data) { return onLoginGadget(data); };
     this.onLoginUser = function (data) { return onLoginUser(data); };
     this.onSuccess = function (data) { return onSuccess(data); };
     this.onUpdateMood = function (data) { return onUpdateMood(data);};
@@ -50,6 +49,7 @@ function socketHandler (Db) {
     loadUser = function (data) {
         Db.getUser(data.username, data.password, function (user) {
             if (user) {
+                Db.addUserConnection(socket.id, user.id);
                 socket.emit('userCreated', {
                     'message': 'The user "' + data.username + '" was successfully created!',
                     'user': user
@@ -98,15 +98,14 @@ function socketHandler (Db) {
         }, 3000);
     };
 
-    onLogin = function (data) {
+    onLoginGadget = function (data) {
         console.log('socketLOGIN');
         console.log(data);
 
         if (data.id !== '') {
-            socket.emit('access', null);
             Db.activateGadget(data.id);
             Db.linkGadgetToSocket(socket.id, data.id);
-            
+            socket.emit('access', null);
         } else {
             socket.emit('sendError', {
                 'message': 'You have to send your "id".'
@@ -114,26 +113,26 @@ function socketHandler (Db) {
         }
     };
     
-    onArduinoLogout = function (data) {
+    onLogoutGadget = function (data) {
         console.log('socketLOGOUT');
 
-        if(socket.id !== '') {
+        if (socket.id !== '') {
             console.log('socket-handler socket id:   ' + socket.id);
-            Db.getGadgetIdToConnection(socket.id);
+            Db.removeConnection(socket.id);
         } else {
+            console.log('socket id not found.')
+            console.log(socket);
             socket.emit('sendError', {
                 'message': 'No open socket found.'
             });
-
-        }   
-        
+        }
     };
 
     onCreateUser = function (data) {
         console.log('socketCreateUser');
         console.log(data);
 
-        Db.createUser(data.username, data.password, function (created) {
+        Db.createUser(data.username, data.password, socket.id, function (created) {
             if (created) {
                 console.log('user created');
                 loadUser(data);
@@ -162,7 +161,10 @@ function socketHandler (Db) {
 
     onDisconnect = function (data) {
         console.log('socketDISCONNECT');
-        console.log('disconnect user');
+        console.log('disconnect client');
+
+        Db.removeConnection(socket.id);
+        console.log(socket.id);
     };
 
     onError = function (data) {

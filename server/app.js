@@ -2,11 +2,9 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var fs = require('fs');
-var connection = require('./server/connection.js');
 var db = require('./server/db.js');
 var socketHandler = require('./server/socket-handler.js');
 
-var Connection = new connection();
 var Db = new db();
 var SocketHandler = new socketHandler(Db);
 
@@ -68,7 +66,6 @@ io.on('connection', function (socket) {
     SocketHandler.setSocket(socket);
 
     console.log('connection has started. ' + 'id: ' + socket.id);
-    Connection.add(socket.id);
 
     socket.on('hello', function (message) {
         SocketHandler.onHello(message);
@@ -78,8 +75,8 @@ io.on('connection', function (socket) {
         SocketHandler.onButtonsPushed(data);
     });
 
-    socket.on('login', function (data) {
-        SocketHandler.onLogin(data);
+    socket.on('loginGadget', function (data) {
+        SocketHandler.onLoginGadget(data);
     });
 
     socket.on('logout', function (data) {

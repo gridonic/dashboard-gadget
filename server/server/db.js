@@ -6,12 +6,17 @@ var user = require('./model/user.js');
 var token = require('./model/token.js');
 var mood = require('./model/mood.js');
 var gadget = require('./model/gadget.js');
-var connections = require('./model/connections.js');
+var connection = require('./model/connection.js');
 
 
 function db () {
 
     // functions
+    var activateGadget;
+    var addSocketConnection;
+    var addUserConnection;
+    var addUserToGadgetModel;
+    var removeConnection;
     var initDB;
     var setupSchema;
     var getUser;
@@ -23,11 +28,9 @@ function db () {
     var createNewToken;
     var changeMood;
     var connectGadgetToUserModel;
-    var activateGadget;
     var getGadgetIdToConnection;
     var deactivateGadget;
     var getIdToUsername;
-    var addUserToGadgetModel;
     var linkGadgetToSocket;
 
     // variables
@@ -37,18 +40,24 @@ function db () {
     var Mood = new mood(this);
     var connected = false;
     var Gadget = new gadget(this);
-    var Connections = new connections(this);
+    var Connection = new connection(this);
 
     // gadget constants
     const nameGadget1 = '1';
     const nameGadget2 = '2';
 
-    /* ======================================================================
+    /* ===================================================================
      * Public functions
      * ====================================================================== */
-    
+
+    this.activateGadget             = function (id) { return activateGadget(id); };
+    this.addSocketConnection        = function (id) { return addSocketConnection(id); };
+    this.addUserConnection          = function (connectionId, userId) { return addUserConnection(connectionId, userId); };
+    this.addUserToGadgetModel       = function (userId, gadgetId, username) {return addUserToGadgetModel(userId, gadgetId, username);};
+    this.createUser                 = function (username, password, callback) { return createUser(username, password, callback); };
+    this.removeConnection           = function (connectionId) { return removeConnection(connectionId); };
+
     this.getUser = function (username, password, callback) { return getUser(username, password, callback); };
-    this.createUser = function (username, password, callback) { return createUser(username, password, callback); };
     this.loginUser = function (username, password, gadget) {return loginUser(username, password, gadget); };
     this.createUserFinally = function (err, result, username, password, callback) { return createUserFinally(err, result, username, password, callback); };
     this.createTokenFinally = function (id, result) {return createTokenFinally(id,result);};
@@ -56,17 +65,23 @@ function db () {
     this.createNewToken = function (id) {return createNewToken(id);};
     this.changeMood = function (name, currentMood) {return changeMood(name,currentMood);};
     this.connectGadgetToUserModel = function (username, gadget) {return connectGadgetToUserModel(username, gadget);};
-    this.activateGadget = function (id) {return activateGadget(id);};
     this.getGadgetIdToConnection = function (connectionId) {return getGadgetIdToConnection(connectionId);};
     this.deactivateGadget = function (connectionId, gadgetId) {return deactivateGadget(connectionId, gadgetId);};
     this.getIdToUsername = function (username, gadgetId) {return getIdToUsername(username, gadgetId);};
-    this.addUserToGadgetModel = function (userId, gadgetId, username) {return addUserToGadgetModel(userId, gadgetId, username);};
     this.linkGadgetToSocket = function (connectionId, gadgetId) {return linkGadgetToSocket(connectionId, gadgetId);};
 
     /* ======================================================================
      * Private functions
      * ====================================================================== */
-    
+
+    addSocketConnection = function (id) {
+        Connection.create(id, Connection.TYPE_UNDEFINED, null);
+    };
+
+    addUserConnection = function (connectionId, userId) {
+        Connection.update(connectionId, Connection.TYPE_USER, userId);
+    };
+
     /**
      * This will be the callback for the find(username) function in user.js
      * @param err
@@ -209,16 +224,17 @@ function db () {
      * @param gadgetId: ID of the gadget which should be linked to the connection.
      */
     linkGadgetToSocket = function (connectionId, gadgetId) {
-        Connections.create(connectionId, gadgetId);
+        Connection.update(connectionId, Connection.TYPE_GADGET, gadgetId);
         console.log('Connection: ' + connectionId + ' is now linked to gadget ' + gadgetId);
     };
 
     /**
+     * TODO: (beni) rename...
      * Searches for the gadgetId which is related to a certain socket connection.
      * @param connectionId: Id of the connection we look for.
      */
     getGadgetIdToConnection = function (connectionId) {
-        Connections.findConnectionToDelete(connectionId);
+        Connection.findConnectionToDelete(connectionId);
     };
 
     /**
@@ -228,7 +244,32 @@ function db () {
      */
     deactivateGadget = function (connectionId, gadgetId) {
         Gadget.deactivateGadget(gadgetId);
-        Connections.deleteConnection(connectionId);
+        Connection.deleteConnection(connectionId);
+    };
+
+    /**
+     * remove the connection
+     *
+     * @param connectionId
+     */
+    removeConnection = function (connectionId) {
+        Connection.findConnectionToDelete(connectionId, function (err, result) {
+            if (err === null) {
+
+                console.log('remove conection');
+
+                console.log(result);
+
+                if (result !== null && result.gadgetId) {
+                    console.log('deactivate gadget with id ' + result.gadgetId);
+                    Gadget.deactivateGadget(result.gadgetId);
+                }
+                if (result !== null && result.userId) {
+                    // todo: do we need to remove an active user?
+                }
+                Connection.deleteConnection(connectionId);
+            }
+        });
     };
 
     /**
@@ -239,7 +280,7 @@ function db () {
         Token.construct(mongoose);
         Mood.construct(mongoose);
         Gadget.construct(mongoose);
-        Connections.construct(mongoose);
+        Connection.construct(mongoose);
         Mood.create(nameGadget1);
         Mood.create(nameGadget2);
         Gadget.create(nameGadget1);
