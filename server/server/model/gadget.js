@@ -95,6 +95,7 @@ function gadget (DB) {
 
         gadgetModel.findOneAndUpdate({gadgetId: gadgetName}, {$set:{lastUser:userId, lastUserName:userName}}, function (err) {
             if (err) {
+                // an error occured
                 console.log(gadgetName + ' does not yet exist in the DB!');
             } else {
                 console.log('Gadget ' + gadgetName + ' is now linked to ' + userName);

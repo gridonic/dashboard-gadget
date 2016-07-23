@@ -6,8 +6,6 @@ var db = require('./server/db.js');
 var socketHandler = require('./server/socket-handler.js');
 
 var Db = new db();
-var SocketHandler = new socketHandler(Db);
-
 
 app.get('/', function (req, res) {
 
@@ -63,6 +61,7 @@ app.get('/assets/*', function (req, res){
 
 io.on('connection', function (socket) {
 
+    var SocketHandler = new socketHandler(Db);
     SocketHandler.setSocket(socket);
 
     console.log('connection has started. ' + 'id: ' + socket.id);
