@@ -79,23 +79,27 @@ function socketHandler (Db) {
         console.log(data);
 
         if (data == 'full graphic' || data.message == 'full graphic') {
-            socket.emit('show', { draw: Graphic.getLogo() });
+            socket.emit('show', { draw: Graphic.getStartDisplay() });
         } else {
             socket.emit('show', {draw: '111111110000000011111111'});
         }
 
         setTimeout(function () {
-            var interval = setInterval(function(){ showTime() }, 100);
-            var i = 0;
-
-            function showTime() {
-                if (i > 120) {
-                    clearInterval(interval);
-                }
-                socket.emit('show', { draw: Graphic.getDefaultDisplay(null, i, null)});
-                i++;
-            }
+            socket.emit('show', { draw: Graphic.getDefaultDisplay(null, 40, null)});
         }, 3000);
+        //
+        // setTimeout(function () {
+        //     var interval = setInterval(function(){ showTime() }, 100);
+        //     var i = 0;
+        //
+        //     function showTime() {
+        //         if (i > 120) {
+        //             clearInterval(interval);
+        //         }
+        //         socket.emit('show', { draw: Graphic.getDefaultDisplay(null, i, null)});
+        //         i++;
+        //     }
+        // }, 3000);
     };
 
     onLoginGadget = function (data) {
