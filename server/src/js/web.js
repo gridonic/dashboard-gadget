@@ -61,7 +61,7 @@ log = function (message) {
  */
 handleButtons = function () {
 
-    if (arduinoRightButton.length < 1 || arduinoLeftButton.length < 1 || arduinoBothButton.length < 1) {
+    if (!arduinoRightButton || !arduinoLeftButton || !arduinoBothButton) {
         return;
     }
 
