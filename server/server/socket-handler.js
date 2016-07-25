@@ -132,7 +132,7 @@ function socketHandler (Db) {
         console.log('socketCreateUser');
         console.log(data);
 
-        Db.createUser(data.username, data.password, socket.id, function (created) {
+        Db.createUser(data.username, data.password, function (created) {
             if (created) {
                 console.log('user created');
                 loadUser(data);
@@ -144,7 +144,7 @@ function socketHandler (Db) {
     };
     
     onLoginUser = function (data) {
-        Db.loginUser(data.username, data.password, data.gadget, function (error) {
+        Db.loginUser(data.username, data.password, data.gadget, socket.id, function (error) {
             console.log('error');
             console.log(error);
         }, function (success) {
@@ -153,10 +153,8 @@ function socketHandler (Db) {
     };
 
     onUpdateMood = function (data) {
-        console.log('--------dataname mood  ' + data.name);
-        Db.changeMood(data.name, data.currentMood);
-        console.log(data.name + '   ' + data.currentMood);
-        console.log('mood changed');
+        Db.changeMood(socket.id, data.currentMood);
+        console.log('--------testabfrage:  ' + socket.id + '  und  ' + data.currentMood);
     };
 
     onDisconnect = function (data) {

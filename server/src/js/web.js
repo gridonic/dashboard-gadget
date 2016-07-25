@@ -170,7 +170,7 @@ handleUpdateMood = function () {
         //TODO gadget 2 is hardcoded for testing, add option to choose gadget
         var gadget = '2';
         console.log(mood);
-        socket.emit('updateMood', {'name': gadget, 'currentMood': mood});
+        socket.emit('updateMood', {'currentMood': mood});
 
     };
 };

@@ -1,12 +1,13 @@
 'use strict';
 
-function connection () {
+function connection (DB) {
 
     // functions
     var construct;
     var create;
     var deleteConnection;
     var findConnectionToDelete;
+    var findConnectionToChangeMood;
 
     // variables
     var connectionModel;
@@ -22,8 +23,8 @@ function connection () {
         return construct(mongoose);
     };
 
-    this.create = function (connectionId, type, id) {
-        return create(connectionId, type, id, false);
+    this.create = function (connectionId, id, type) {
+        return create(connectionId, id, type, false);
     };
 
     this.deleteConnection = function (connectionId) {
@@ -36,6 +37,10 @@ function connection () {
 
     this.update = function (connectionId, type, id) {
         return create(connectionId, type, id, true);
+    };
+    
+    this.findConnectionToChangeMood = function (connectionId, currentMood) {
+        return findConnectionToChangeMood(connectionId, currentMood);
     };
 
 
@@ -53,7 +58,7 @@ function connection () {
 
             connectionSchema = new Schema({
                 connectionId: String,
-                userId: Number,
+                userId: String,
                 gadgetId: Number
             });
 
@@ -68,8 +73,8 @@ function connection () {
          *
          * @returns {*}
          */
-        create = function (connectionId, type, id, update) {
-
+        create = function (connectionId, id, type, update) {
+            
             var model;
             var saveModel = function (connModel, err, result) {
                 console.log('create connectionModel');
@@ -101,12 +106,11 @@ function connection () {
                     //         }
                     //     });
                     // } else {
-
                         connectionModel.findOneAndUpdate(
                             {connectionId: connectionId},
                             {$set: {
                                 gadgetId: connModel.gadgetId,
-                                userId: connModel.userId
+                                userId: id
                             }}, function (err) {
                                 if (err) {
                                     console.log(connectionId + ' does not yet exist in the DB!');
@@ -168,6 +172,23 @@ function connection () {
         findConnectionToDelete = function (connectionId, callback) {
             connectionModel.findOne({connectionId: connectionId}, function (err, result) {
                 callback(err, result);
+            });
+        };
+
+        /**
+         * Searches the gadgetId for a certain connection to change mood of the person using it.
+         *
+         * @param connectionId: ID of connection.
+         * @param currentMood: The mood the user wants to set.
+         * @returns {*}
+         */
+        findConnectionToChangeMood = function (connectionId, currentMood) {
+            connectionModel.findOne({connectionId: connectionId}, function (err, result) {
+                if (err){
+                    console.log('connection not found - unable to change mood of ' + connectionId);
+                }else {
+                    DB.changeMoodFinally(result.gadgetId, currentMood);
+                }
             });
         };
 

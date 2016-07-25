@@ -26,11 +26,11 @@ function user (DB) {
 
     this.construct = function (mongoose) { return construct(mongoose); };
     this.findUserByUsername = function (username, password, callback) { return findUserByUsername(username, password, callback); };
-    this.findUserForLogin = function (username, password, gadget) {return findUserForLogin(username, password, gadget);};
+    this.findUserForLogin = function (username, password, gadget, socketId) {return findUserForLogin(username, password, gadget, socketId);};
     this.addGadgetToUser = function(username, gadget) {return addGadgetToUser(username,gadget);};
     this.create = function (username, password, callback) { return create(username, password, callback); };
     this.getUser = function (username, password, callback) { return getUser(username, password, callback); };
-    this.getUserIdByUsername = function (username, gadgetId) {return getUserIdByUsername(username, gadgetId);};
+    this.getUserIdByUsername = function (username, gadgetId, socketId) {return getUserIdByUsername(username, gadgetId, socketId);};
 
     /**
      * Construct the UserSchema and the UserModel.
@@ -125,10 +125,12 @@ function user (DB) {
      * Sends back the user id which is related to the username in the database.
      * @param username: we want to find
      * @param gadgetId:
+     * @param socketId: The connection the user is using.
      */
-    getUserIdByUsername = function (username, gadgetId) {
+    getUserIdByUsername = function (username, gadgetId, socketId) {
         userModel.findOne({username: username}, function (err, result) {
             DB.addUserToGadgetModel(result._id, gadgetId, username);
+            DB.addUserConnection(socketId, result._id);
         });
     }; 
 
@@ -137,15 +139,16 @@ function user (DB) {
      * @param username: we want to compare.
      * @param password:  we want to compare.
      * @param gadget: The user's gadget.
+     * @param socketId: The socket which the user uses.
      */
-    findUserForLogin = function (username, password, gadget) {
+    findUserForLogin = function (username, password, gadget, socketId) {
         userModel.findOne({username: username}, function (err, result) {
             if(result === null){
                 console.log('User not found - create a new User before try to login!');
             }else {
                 var foundId = result._id;
                 if (bcrypt.compareSync(password, result.password)) {
-                    DB.validateToken(foundId, username, gadget);
+                    DB.validateToken(foundId, username, gadget, socketId);
                 } else {
                     console.log('wrong pw');
                 }

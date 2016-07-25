@@ -27,6 +27,7 @@ function db () {
     var validateToken;
     var createNewToken;
     var changeMood;
+    var changeMoodFinally;
     var connectGadgetToUserModel;
     var getGadgetIdToConnection;
     var deactivateGadget;
@@ -58,16 +59,17 @@ function db () {
     this.removeConnection           = function (connectionId) { return removeConnection(connectionId); };
 
     this.getUser = function (username, password, callback) { return getUser(username, password, callback); };
-    this.loginUser = function (username, password, gadget) {return loginUser(username, password, gadget); };
+    this.loginUser = function (username, password, gadget, socketId) {return loginUser(username, password, gadget, socketId); };
     this.createUserFinally = function (err, result, username, password, callback) { return createUserFinally(err, result, username, password, callback); };
     this.createTokenFinally = function (id, result) {return createTokenFinally(id,result);};
-    this.validateToken = function (id, username, gadget) {return validateToken(id, username, gadget);};
+    this.validateToken = function (id, username, gadget, socketId) {return validateToken(id, username, gadget, socketId);};
     this.createNewToken = function (id) {return createNewToken(id);};
-    this.changeMood = function (name, currentMood) {return changeMood(name,currentMood);};
+    this.changeMood = function (connectionId, currentMood) {return changeMood(connectionId,currentMood);};
+    this.changeMoodFinally = function (gadgetId, currentMood) {return changeMoodFinally(gadgetId, currentMood);};
     this.connectGadgetToUserModel = function (username, gadget) {return connectGadgetToUserModel(username, gadget);};
     this.getGadgetIdToConnection = function (connectionId) {return getGadgetIdToConnection(connectionId);};
     this.deactivateGadget = function (connectionId, gadgetId) {return deactivateGadget(connectionId, gadgetId);};
-    this.getIdToUsername = function (username, gadgetId) {return getIdToUsername(username, gadgetId);};
+    this.getIdToUsername = function (username, gadgetId, socketId) {return getIdToUsername(username, gadgetId, socketId);};
     this.linkGadgetToSocket = function (connectionId, gadgetId) {return linkGadgetToSocket(connectionId, gadgetId);};
 
     /* ======================================================================
@@ -75,11 +77,11 @@ function db () {
      * ====================================================================== */
 
     addSocketConnection = function (id) {
-        Connection.create(id, Connection.TYPE_UNDEFINED, null);
+        Connection.create(id, null, Connection.TYPE_UNDEFINED);
     };
 
     addUserConnection = function (connectionId, userId) {
-        Connection.update(connectionId, Connection.TYPE_USER, userId);
+        Connection.update(connectionId, userId, Connection.TYPE_USER);
     };
 
     /**
@@ -136,9 +138,10 @@ function db () {
      * Calls the addGadgetToUser methode in class User, to add the gadget
      * @param username:
      * @param gadgetId:
+     * @param socketId: The connection the user is using.
      */
-    getIdToUsername = function(username, gadgetId){
-        User.getUserIdByUsername(username, gadgetId);
+    getIdToUsername = function(username, gadgetId, socketId){
+        User.getUserIdByUsername(username, gadgetId, socketId);
     };
 
     /**
@@ -171,14 +174,14 @@ function db () {
      * @param username - The username of the user who wants to log in.
      * @param password - The password of the user who wants to log in.
      * @param gadget - The user's gadget.
+     * @param socketId - The socket which is used by user.
      */
-    loginUser = function (username, password, gadget) {
-
+    loginUser = function (username, password, gadget, socketId) {
         if (!connected) {
             console.log('no DB connected');
             return false;
         }
-        User.findUserForLogin(username, password, gadget);
+        User.findUserForLogin(username, password, gadget, socketId);
     };
 
     /**
@@ -186,9 +189,10 @@ function db () {
      * @param id: user ID.
      * @param username: Username.
      * @param gadget: The user's gadget.
+     * @param socketId: Socket which the user uses.
      */
-    validateToken = function (id, username, gadget) {
-        Token.checkIfTokenExists(id, username, gadget);
+    validateToken = function (id, username, gadget, socketId) {
+        Token.checkIfTokenExists(id, username, gadget, socketId);
         
     };
 
@@ -202,12 +206,21 @@ function db () {
     };
 
     /**
-     * Creates a new token if the old one is not valid anymore.
-     * @param name: name of the gadget the request comes from.
-     * @param currentMood: New mood status the user wants to set.
+     * Finds the gadgetId which is related to the connection the mood change request comes from.
+     * @param connectionId: Id of the connection which the requesting gadget is using.
+     * @param currentMood: New mood status the user wants to set via his gadget.
      */
-    changeMood = function (name, currentMood) {
-        Mood.update(name, currentMood);
+    changeMood = function (connectionId, currentMood) {
+        Connection.findConnectionToChangeMood(name, currentMood);
+    };
+
+    /**
+     * Request the final mood change in moodmodel.
+     * @param gadgetId: Id of the gadget which requests the mood change.
+     * @param currentMood: New mood status the user wants to set via his gadget.
+     */
+    changeMoodFinally = function (gadgetId, currentMood) {
+        Mood.update(gadgetId, currentMood);
     };
 
     /**
