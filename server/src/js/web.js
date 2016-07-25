@@ -9,6 +9,7 @@ var handleLogin;
 var handleUpdateMood;
 var handleSuccess;
 var handleError;
+var bitToImage;
 var log;
 
 // Constants
@@ -40,6 +41,55 @@ log = function (message) {
     if (output) {
         output.innerHTML = output.innerHTML + '<br>' + message;
     }
+};
+
+bitToImage = function (bitString) {
+    var imageString = "";
+    var bitStringArray = bitString.split('');
+    var current;
+    var numberString;
+    var i = 0;
+    var j;
+    var hexChar = {
+        A: '0000',
+        B: '0001',
+        C: '0010',
+        D: '0011',
+        E: '0100',
+        F: '0101',
+        G: '0110',
+        H: '0111',
+        I: '1000',
+        J: '1001',
+        K: '1010',
+        L: '1011',
+        M: '1100',
+        N: '1101',
+        O: '1110',
+        P: '1111',
+    };
+
+    for (i; i < bitString.length; i++) {
+        current = bitStringArray[i];
+
+        if (current == '-' || current == 'x') {
+            numberString = "";
+            i++;
+            while (bitStringArray[i] != 'x' && bitStringArray[i] != '-' && !hexChar[bitStringArray[i]] && i < bitString.length) {
+                numberString += bitStringArray[i];
+                i++;
+            }
+            i--;
+
+            for (j = 0; j < parseInt(numberString); j++) {
+                imageString += current == "x" ? '1111' : '0000';
+            }
+        } else if (hexChar[current]) {
+            imageString += hexChar[current];
+        }
+    }
+
+    return imageString;
 };
 
 /**
@@ -205,17 +255,19 @@ handleSuccess = function (data) {
 
 socket.on('show', function (data) {
     log('socketShow');
-    log(data);
 
     var displayWidth = 320;
     var displayHeight = 240;
 
+
     if (data.draw) {
+
+        var draw = bitToImage(data.draw).split("");
+
         context.fillStyle = "#ffffff";
         context.fillRect(0, 0, displayWidth, displayHeight);
 
         context.fillStyle = "#000000";
-        var draw = data.draw.split("");
         var x = 0;
         for (var i = 0; i < displayHeight; i++) {
             for (var j = 0; j < displayWidth; j++) {

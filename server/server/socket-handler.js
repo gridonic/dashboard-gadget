@@ -78,24 +78,32 @@ function socketHandler (Db) {
         console.log('socketHELLO');
         console.log(data);
 
-        if (data == 'full graphic' || data.message == 'full graphic') {
-            socket.emit('show', { draw: Graphic.getLogo() });
-        } else {
-            socket.emit('show', {draw: '111111110000000011111111'});
-        }
+        // if (data == 'full graphic' || data.message == 'full graphic') {
+        //     socket.emit('show', { draw: Graphic.getStartDisplay() });
+        // } else {
+        //     socket.emit('show', {draw: '111111110000000011111111'});
+        // }
 
-        setTimeout(function () {
-            var interval = setInterval(function(){ showTime() }, 100);
-            var i = 0;
+        // setTimeout(function () {
+            console.log('socket.emit("show")');
+        var graphic = Graphic.getDefaultDisplay(null, 40, null);
+        console.log(graphic);
+        socket.emit('show', { draw: graphic });
+        // }, 0);
 
-            function showTime() {
-                if (i > 120) {
-                    clearInterval(interval);
-                }
-                socket.emit('show', { draw: Graphic.getDefaultDisplay(null, i, null)});
-                i++;
-            }
-        }, 3000);
+        // setTimeout(function () {
+        //     var interval = setInterval(function(){ showTime() }, 2000);
+        //     var i = 0;
+        //
+        //     function showTime() {
+        //         if (i > 120) {
+        //             clearInterval(interval);
+        //         }
+        //         console.log('socket.emit("show")');
+        //         socket.emit('show', { draw: Graphic.getDefaultDisplay(null, i, null)});
+        //         i = i+10;
+        //     }
+        // }, 3000);
     };
 
     onLoginGadget = function (data) {
