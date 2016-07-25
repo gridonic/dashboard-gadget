@@ -50,9 +50,9 @@ void setup() {
   tft.begin();
 
   if (debug) {
-    logger("=====================================");
-    logger(" Start the arduino with the setup.");
-    logger("=====================================");
+    logger("=======================================================");
+    logger("  Dashboard-Gadget: Start the arduino with the setup.  ");
+    logger("=======================================================");
   }
 
   loggedIn = false;
@@ -67,7 +67,6 @@ void setup() {
  */
 void initDisplay()
 {
-
   logger("initDisplay");
   
   tft.setRotation(3);
@@ -88,13 +87,13 @@ void initDisplay()
  */
 void initEthernet()
 {
+  logger("initEthernet");
+  
   tft.fillScreen(ILI9340_WHITE);
   tft.setTextColor(ILI9340_BLACK);
   tft.setTextSize(2);
   tft.println("connecting...");
   
-  logger("initEthernet");
-
   // try connection till it is connected
   while(!tryConnection()) {
     logger("connection not possible");
@@ -109,8 +108,10 @@ void initEthernet()
 /**
  * Try to make a connection to the server.
  */
-bool tryConnection() {
-
+bool tryConnection()
+{
+  logger("tryConnection()");
+  
   Ethernet.begin(mac);
   logger("Ethernet.begin(mac)");
 
@@ -139,12 +140,16 @@ void connectClient()
   tft.setCursor(0,0);
   tft.setTextSize(2);
   tft.println("connecting...");
+  logger("connecting...");
   
   loggedIn = false;
   helloed = false;
   while(!tryConnection()) {
+    tft.println("connecting not possible.");
     logger("connection not possible");
     delay(defaultDelay);
+    tft.println("try again.");
+    logger("try again");
   }
 }
 
