@@ -211,7 +211,7 @@ function db () {
      * @param currentMood: New mood status the user wants to set via his gadget.
      */
     changeMood = function (connectionId, currentMood) {
-        Connection.findConnectionToChangeMood(name, currentMood);
+        Connection.findConnectionAndChangeMood(connectionId, currentMood);
     };
 
     /**
@@ -220,6 +220,7 @@ function db () {
      * @param currentMood: New mood status the user wants to set via his gadget.
      */
     changeMoodFinally = function (gadgetId, currentMood) {
+        console.log(gadgetId + '------' + currentMood);
         Mood.update(gadgetId, currentMood);
     };
 
@@ -237,7 +238,7 @@ function db () {
      * @param gadgetId: ID of the gadget which should be linked to the connection.
      */
     linkGadgetToSocket = function (connectionId, gadgetId) {
-        Connection.update(connectionId, Connection.TYPE_GADGET, gadgetId);
+        Connection.create(connectionId, gadgetId, Connection.TYPE_GADGET, true);
         console.log('Connection: ' + connectionId + ' is now linked to gadget ' + gadgetId);
     };
 

@@ -126,7 +126,7 @@ function socketHandler (Db) {
         }
     };
     
-    onLogoutGadget = function (data) {
+    onLogoutGadget = function () {
         console.log('socketLOGOUT');
 
         if (socket.id !== '') {
@@ -171,7 +171,6 @@ function socketHandler (Db) {
 
     onUpdateMood = function (data) {
         Db.changeMood(socket.id, data.currentMood);
-        console.log('--------testabfrage:  ' + socket.id + '  und  ' + data.currentMood);
     };
 
     onDisconnect = function (data) {

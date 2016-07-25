@@ -7,7 +7,7 @@ function connection (DB) {
     var create;
     var deleteConnection;
     var findConnectionToDelete;
-    var findConnectionToChangeMood;
+    var findConnectionAndChangeMood;
 
     // variables
     var connectionModel;
@@ -39,8 +39,8 @@ function connection (DB) {
         return create(connectionId, type, id, true);
     };
     
-    this.findConnectionToChangeMood = function (connectionId, currentMood) {
-        return findConnectionToChangeMood(connectionId, currentMood);
+    this.findConnectionAndChangeMood = function (connectionId, currentMood) {
+        return findConnectionAndChangeMood(connectionId, currentMood);
     };
 
 
@@ -182,10 +182,10 @@ function connection (DB) {
          * @param currentMood: The mood the user wants to set.
          * @returns {*}
          */
-        findConnectionToChangeMood = function (connectionId, currentMood) {
+        findConnectionAndChangeMood = function (connectionId, currentMood) {
             connectionModel.findOne({connectionId: connectionId}, function (err, result) {
                 if (err){
-                    console.log('connection not found - unable to change mood of ' + connectionId);
+                    console.log('no gadget connection found - unable to change mood!');
                 }else {
                     DB.changeMoodFinally(result.gadgetId, currentMood);
                 }
