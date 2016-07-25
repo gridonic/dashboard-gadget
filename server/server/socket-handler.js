@@ -81,20 +81,20 @@ function socketHandler (Db) {
         console.log(data);
 
         // if (data == 'full graphic' || data.message == 'full graphic') {
-        socket.emit('show', { draw: Graphic.getWhiteDisplay() });
+        socket.emit('show', { draw: Graphic.getBlackDisplay() });
         // } else {
         //     socket.emit('show', {draw: '111111110000000011111111'});
         // }
 
         setTimeout(function () {
-            // var graphic = Graphic.getDefaultDisplay(null, 40, null);
-            var graphic = Graphic.getBlackDisplay();
+        //     // var graphic = Graphic.getDefaultDisplay(null, 40, null);
+            var graphic = Graphic.getWhiteDisplay();
 
             console.log('socket.emit("show")');
             console.log(graphic);
 
             socket.emit('show', { draw: graphic });
-        }, 1000);
+        }, 10000);
 
         // setTimeout(function () {
         //     var interval = setInterval(function(){ showTime() }, 2000);
