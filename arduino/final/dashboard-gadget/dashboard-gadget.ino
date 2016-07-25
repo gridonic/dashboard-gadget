@@ -16,22 +16,26 @@ Adafruit_ILI9340 tft    = Adafruit_ILI9340(_cs, _dc, _rst);
 
 // Variables for the ethernet-module
 SocketIOClient client;
-byte mac[]              = { 0xAA, 0x00, 0xBE, 0xEF, 0xFE, 0xEE };
-char hostname[]         = "192.168.2.98";
-int port                = 3000;
-bool loggedIn           = false;
-bool saidHello          = false;
+byte mac[]                  = { 0xAA, 0x01, 0xBE, 0xEF, 0xFE, 0xEE };
+char hostname[]             = "192.168.2.98";
+int port                    = 3000;
+bool loggedIn               = false;
+bool helloed                = false;
 extern String RID;
 extern String Rname;
 extern String Rcontent;
 
 // Variables for global setting
-unsigned long loopIndex = 0;
-unsigned long msPrev    = 0;
-unsigned long msCurrent = 0;
-long          interval  = 5000;
-const int     debug     = true;
-int           gadgetID  = 6;
+unsigned long loopIndex     = 0;
+unsigned long msPrev        = 0;
+unsigned long msCurrent     = 0;
+long          interval      = 1000;
+const int     debug         = true;
+int           gadgetID      = 6;
+int           miniDelay     = 200;
+int           defaultDelay  = 400;
+int           longDelay     = 800;
+
 
 // Functions
 void logger(String message);
@@ -52,7 +56,7 @@ void setup() {
   }
 
   loggedIn = false;
-  saidHello = false;
+  helloed = false;
 
   initDisplay();
   initEthernet();
@@ -63,17 +67,20 @@ void setup() {
  */
 void initDisplay()
 {
+
+  logger("initDisplay");
+  
   tft.setRotation(3);
   tft.setCursor(0, 0);
   tft.fillScreen(ILI9340_WHITE);
-  delay(500);
+  delay(defaultDelay);
   tft.fillScreen(ILI9340_BLACK);
-  delay(500);
+  delay(defaultDelay);
   tft.fillScreen(ILI9340_WHITE);
   tft.setTextColor(ILI9340_BLACK);
   tft.setTextSize(2);
   tft.println("Screen started");
-  delay(1000);
+  delay(miniDelay);
 }
 
 /**
@@ -91,11 +98,11 @@ void initEthernet()
   // try connection till it is connected
   while(!tryConnection()) {
     logger("connection not possible");
-    delay(500);
+    delay(miniDelay);
   }
   
   logger("connection started.");
-  delay(500);
+  delay(defaultDelay);
 }
 
 
@@ -134,10 +141,10 @@ void connectClient()
   tft.println("connecting...");
   
   loggedIn = false;
-  saidHello = false;
+  helloed = false;
   while(!tryConnection()) {
     logger("connection not possible");
-    delay(500);
+    delay(defaultDelay);
   }
 }
 
@@ -181,6 +188,9 @@ void showOnScreen(String m)
   logger("showOnScreen");
   char message[m.length()];
   m.toCharArray(message, m.length());
+  logger("length of message: ");
+  logger((String) m.length());
+  logger(m);
   int x = 0;
   char current;
   char next;
@@ -265,7 +275,6 @@ void showOnScreen(String m)
 void handleResponse()
 {
   logger("handleResponse: " + RID);
-  logger(Rcontent);
   if (RID == "access")
   {
     loggedIn = true;
@@ -273,7 +282,7 @@ void handleResponse()
   
   else if (RID == "show")
   {
-    saidHello = false;
+    helloed = false;
     showOnScreen(Rcontent);
   }
   
@@ -323,12 +332,9 @@ void loop() {
         tft.println("client connected. login.");
         logger("loginGadget()");
         loginGadget();
-      } else if (!saidHello) {
-        tft.fillScreen(ILI9340_WHITE);
-        tft.setCursor(0,0);
-        tft.setTextColor(ILI9340_BLACK);
-        tft.setTextSize(2);
-        tft.println("client connected. hello.");
+      }
+      
+      if (loggedIn && !helloed) {
         logger("sayHello()");
         sayHello();
       }

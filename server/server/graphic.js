@@ -8,8 +8,10 @@ function graphic () {
     var generateLines;
     var generateHorizontalLine;
     var generateWorkTime;
+    var getBlackDisplay;
     var getDefaultDisplay;
     var getStartDisplay;
+    var getWhiteDisplay;
     var readImage;
     var replacePart;
     var stringToBits;
@@ -34,8 +36,10 @@ function graphic () {
      * Public functions
      * ====================================================================== */
 
+    this.getBlackDisplay = function () { return getBlackDisplay(); };
     this.getDefaultDisplay = function (time, workingPercent, icon) { return getDefaultDisplay(time, workingPercent, icon); };
     this.getStartDisplay = function () { return getStartDisplay(); };
+    this.getWhiteDisplay = function () { return getWhiteDisplay(); };
 
     /* ======================================================================
      * Private functions
@@ -150,6 +154,10 @@ function graphic () {
         return replacePart(lineString, displayPadding, 0, 12, 12, workIconRaw);
     };
 
+    getBlackDisplay = function () {
+        return stringToBits(generateFullLines(displayHeight));
+    };
+
     /**
      * Get the default Display with the workingtime-state, an icon and the time.
      * @param time
@@ -173,6 +181,10 @@ function graphic () {
                 startImageRaw
             )
         );
+    };
+
+    getWhiteDisplay = function () {
+        return stringToBits(generateEmptyLines(displayHeight));
     };
 
     /**
