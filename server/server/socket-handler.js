@@ -15,6 +15,7 @@ function socketHandler (Db) {
     var onHello;
     var onLoginGadget;
     var onLoginUser;
+    var onLogoutUser;
     var onSuccess;
     var onUpdateMood;
 
@@ -39,6 +40,7 @@ function socketHandler (Db) {
     this.onHello = function (data) { return onHello(data); };
     this.onLoginGadget = function (data) { return onLoginGadget(data); };
     this.onLoginUser = function (data) { return onLoginUser(data); };
+    this.onLogoutUser = function() { return onLogoutUser();};
     this.onSuccess = function (data) { return onSuccess(data); };
     this.onUpdateMood = function (data) { return onUpdateMood(data);};
 
@@ -158,6 +160,10 @@ function socketHandler (Db) {
         }, function (success) {
             console.log(success);
         });
+    };
+
+    onLogoutUser = function () {
+        Db.removeConnection(socket.id);
     };
 
     onUpdateMood = function (data) {

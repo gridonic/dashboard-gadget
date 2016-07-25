@@ -6,6 +6,7 @@ var handleArduinoLogout;
 var handleButtons;
 var handleCreate;
 var handleLogin;
+var handleLogout;
 var handleUpdateMood;
 var handleSuccess;
 var handleError;
@@ -25,6 +26,7 @@ var arduinoRightButton = document.getElementById('btn-arduino-right');
 var arduinoBothButton = document.getElementById('btn-arduino-both');
 var create = document.getElementById('btn-create');
 var login = document.getElementById('btn-login');
+var logout = document.getElementById('btn-logout');
 var canvas = document.getElementById("display");
 var updateMood = document.getElementById('btn-update');
 var context;
@@ -205,6 +207,21 @@ handleLogin = function () {
 };
 
 /**
+ * Handle the Logout-Button.
+ * Logout a user.
+ */
+handleLogout = function () {
+    if (logout === null) {
+        log('no logout-button found.');
+        return;
+    }
+    
+    logout.onclick = function() {
+        socket.emit('logoutUser');
+    };
+};
+
+/**
  * Handle the UpdateMoood-Button.
  * Login to an existing user.
  */
@@ -309,6 +326,7 @@ handleStart();
 handleArduinoLogout();
 handleCreate();
 handleLogin();
+handleLogout();
 handleUpdateMood();
 handleButtons();
 
