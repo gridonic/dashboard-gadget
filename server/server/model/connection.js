@@ -35,8 +35,8 @@ function connection (DB) {
         return findConnectionToDelete(connectionId, callback);
     };
 
-    this.update = function (connectionId, type, id) {
-        return create(connectionId, type, id, true);
+    this.update = function (connectionId, id, type) {
+        return create(connectionId, id, type, true);
     };
     
     this.findConnectionAndChangeMood = function (connectionId, currentMood) {
@@ -110,7 +110,7 @@ function connection (DB) {
                             {connectionId: connectionId},
                             {$set: {
                                 gadgetId: connModel.gadgetId,
-                                userId: id
+                                userId: connModel.userId
                             }}, function (err) {
                                 if (err) {
                                     console.log(connectionId + ' does not yet exist in the DB!');

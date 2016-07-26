@@ -238,7 +238,7 @@ function db () {
      * @param gadgetId: ID of the gadget which should be linked to the connection.
      */
     linkGadgetToSocket = function (connectionId, gadgetId) {
-        Connection.create(connectionId, gadgetId, Connection.TYPE_GADGET, true);
+        Connection.update(connectionId, gadgetId, Connection.TYPE_GADGET);
         console.log('Connection: ' + connectionId + ' is now linked to gadget ' + gadgetId);
     };
 
@@ -277,6 +277,7 @@ function db () {
                 if (result !== null && result.gadgetId) {
                     console.log('deactivate gadget with id ' + result.gadgetId);
                     Gadget.deactivateGadget(result.gadgetId);
+                    Mood.update(result.gadgetId, 1);
                 }
                 if (result !== null && result.userId) {
                     // todo: do we need to remove an active user?

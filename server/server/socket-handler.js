@@ -133,7 +133,7 @@ function socketHandler (Db) {
             console.log('socket-handler socket id:   ' + socket.id);
             Db.removeConnection(socket.id);
         } else {
-            console.log('socket id not found.')
+            console.log('socket id not found.');
             console.log(socket);
             socket.emit('sendError', {
                 'message': 'No open socket found.'
