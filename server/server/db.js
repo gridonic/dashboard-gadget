@@ -29,7 +29,6 @@ function db () {
     var changeMood;
     var changeMoodFinally;
     var connectGadgetToUserModel;
-    var getGadgetIdToConnection;
     var deactivateGadget;
     var getIdToUsername;
     var linkGadgetToSocket;
@@ -67,7 +66,6 @@ function db () {
     this.changeMood = function (connectionId, currentMood) {return changeMood(connectionId,currentMood);};
     this.changeMoodFinally = function (gadgetId, currentMood) {return changeMoodFinally(gadgetId, currentMood);};
     this.connectGadgetToUserModel = function (username, gadget) {return connectGadgetToUserModel(username, gadget);};
-    this.getGadgetIdToConnection = function (connectionId) {return getGadgetIdToConnection(connectionId);};
     this.deactivateGadget = function (connectionId, gadgetId) {return deactivateGadget(connectionId, gadgetId);};
     this.getIdToUsername = function (username, gadgetId, socketId) {return getIdToUsername(username, gadgetId, socketId);};
     this.linkGadgetToSocket = function (connectionId, gadgetId) {return linkGadgetToSocket(connectionId, gadgetId);};
@@ -241,15 +239,7 @@ function db () {
         Connection.update(connectionId, gadgetId, Connection.TYPE_GADGET);
         console.log('Connection: ' + connectionId + ' is now linked to gadget ' + gadgetId);
     };
-
-    /**
-     * TODO: (beni) rename...
-     * Searches for the gadgetId which is related to a certain socket connection.
-     * @param connectionId: Id of the connection we look for.
-     */
-    getGadgetIdToConnection = function (connectionId) {
-        Connection.findConnectionToDelete(connectionId);
-    };
+    
 
     /**
      * Changes the status of a Gadget to inactive.
@@ -278,9 +268,6 @@ function db () {
                     console.log('deactivate gadget with id ' + result.gadgetId);
                     Gadget.deactivateGadget(result.gadgetId);
                     Mood.update(result.gadgetId, 1);
-                }
-                if (result !== null && result.userId) {
-                    // todo: do we need to remove an active user?
                 }
                 Connection.deleteConnection(connectionId);
             }
