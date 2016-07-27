@@ -8,6 +8,7 @@ function connection (DB) {
     var deleteConnection;
     var findConnectionToDelete;
     var findConnectionAndChangeMood;
+    var getGadgetArray;
 
     // variables
     var connectionModel;
@@ -41,6 +42,10 @@ function connection (DB) {
     
     this.findConnectionAndChangeMood = function (connectionId, currentMood) {
         return findConnectionAndChangeMood(connectionId, currentMood);
+    };
+
+    this.getGadgetArray = function (connectionId, type) {
+        return getGadgetArray(connectionId, type);
     };
 
 
@@ -188,6 +193,28 @@ function connection (DB) {
                     console.log('no gadget connection found - unable to change mood!');
                 }else {
                     DB.changeMoodFinally(result.gadgetId, currentMood);
+                }
+            });
+        };
+
+        /**
+         * Sends back an Array with all the gadget connections to start a poll.
+         *
+         * @param connectionId: Socket ID of the gadget who started the poll.
+         * @param type: Specific type of the poll.
+         * @returns {*}
+         */
+        getGadgetArray = function (connectionId, type) {
+            var query = connectionModel.find({$and: [ {connectionId: {'$ne':connectionId}}, {gadgetId: {'$ne': null}}]}).select('connectionId -_id');
+            query.exec(function (err, result) {
+                if (err){
+                    console.log('no gadget other gadget connected at the moment, no poll possible.');
+                }else {
+                    var gadgets = [];
+                    for(var i=0; i< result.length; i++) {
+                        gadgets.push(result[i].connectionId);
+                    }
+                    DB.startPollFinally(gadgets, type);
                 }
             });
         };

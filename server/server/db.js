@@ -7,6 +7,7 @@ var token = require('./model/token.js');
 var mood = require('./model/mood.js');
 var gadget = require('./model/gadget.js');
 var connection = require('./model/connection.js');
+var poll = require('./model/poll.js');
 
 
 function db () {
@@ -32,6 +33,9 @@ function db () {
     var deactivateGadget;
     var getIdToUsername;
     var linkGadgetToSocket;
+    var getGadgetArray;
+    var startPoll;
+    var startPollFinally;
 
     // variables
     var url = 'mongodb://localhost:9999/test';
@@ -41,10 +45,11 @@ function db () {
     var connected = false;
     var Gadget = new gadget(this);
     var Connection = new connection(this);
+    var Poll = new poll(this);
 
-    // gadget constants
-    const nameGadget1 = '1';
-    const nameGadget2 = '2';
+    // constants
+    const NAME_GADGET1 = '1';
+    const NAME_GADGET2 = '2';
 
     /* ===================================================================
      * Public functions
@@ -69,6 +74,9 @@ function db () {
     this.deactivateGadget = function (connectionId, gadgetId) {return deactivateGadget(connectionId, gadgetId);};
     this.getIdToUsername = function (username, gadgetId, socketId) {return getIdToUsername(username, gadgetId, socketId);};
     this.linkGadgetToSocket = function (connectionId, gadgetId) {return linkGadgetToSocket(connectionId, gadgetId);};
+    this.getGadgetArray = function (connectionId, type) {return getGadgetArray(connectionId, type);};
+    this.startPoll = function (connectionId, type) {return startPoll(connectionId, type);};
+    this.startPollFinally = function (connectionId, type) {return startPollFinally(connectionId, type);};
 
     /* ======================================================================
      * Private functions
@@ -275,6 +283,35 @@ function db () {
     };
 
     /**
+     * Asks for an all the gadget connections.
+     * @param connectionId: Id of the connection who started the poll process.
+     * @param type: Type of the poll to be started.
+     */
+    getGadgetArray = function (connectionId, type) {
+        Connection.getGadgetArray(connectionId, type);
+    };
+
+    /**
+     * Asks for an all the gadget connections.
+     * @param connectionId: Array of all gadget connections except the starting one.
+     * @param type: Type of the poll to be started.
+     */
+    startPoll = function (connectionId, type) {
+        //TODO (beni) refactoring, mit tests, methode soll direkt auf connections zugreifen.
+        Connection.getGadgetArray(connectionId, type);
+        Poll.update(type, connectionId, true);
+    };
+
+    /**
+     * Asks for an all the gadget connections.
+     * @param connectionId: Array of all gadget connections except the starting one.
+     * @param type: Type of the poll to be started.
+     */
+    startPollFinally = function (connectionId, type) {
+        Poll.startPoll(connectionId, type);
+    };
+
+    /**
      * Create all Schemas, mostly by constructing its model.js-files
      */
     setupSchema = function () {
@@ -283,10 +320,11 @@ function db () {
         Mood.construct(mongoose);
         Gadget.construct(mongoose);
         Connection.construct(mongoose);
-        Mood.create(nameGadget1);
-        Mood.create(nameGadget2);
-        Gadget.create(nameGadget1);
-        Gadget.create(nameGadget2);
+        Poll.construct(mongoose);
+        Mood.create(NAME_GADGET1);
+        Mood.create(NAME_GADGET2);
+        Gadget.create(NAME_GADGET1);
+        Gadget.create(NAME_GADGET2);
     };
 
     /**

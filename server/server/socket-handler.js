@@ -68,6 +68,7 @@ function socketHandler (Db) {
         console.log('buttons pushed');
         if (data.left && data.right) {
             console.log('both');
+            Db.startPoll(socket.id, 3);
         } else if (data.left) {
             console.log('left');
         } else if (data.right) {
