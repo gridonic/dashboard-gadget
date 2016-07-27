@@ -89,10 +89,10 @@ function socketHandler (Db) {
 
             setTimeout(function () {
                 socket.emit('showTime', { draw: Graphic.getActualTimeDisplay()});
-            }, 200);
+            }, 100);
 
             i++;
-        }, 2000);
+        }, 60000);
 
         // setTimeout(function () {
         //     socket.emit('showWhite', {data: null});
