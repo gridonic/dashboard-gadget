@@ -76,7 +76,7 @@ function db () {
     this.linkGadgetToSocket = function (connectionId, gadgetId) {return linkGadgetToSocket(connectionId, gadgetId);};
     this.getGadgetArray = function (connectionId, type) {return getGadgetArray(connectionId, type);};
     this.startPoll = function (connectionId, type) {return startPoll(connectionId, type);};
-    this.startPollFinally = function (connectionId, type) {return startPollFinally(connectionId, type);};
+    this.startPollFinally = function (sockets, type, connectionId) {return startPollFinally(sockets, type, connectionId);};
 
     /* ======================================================================
      * Private functions
@@ -297,18 +297,18 @@ function db () {
      * @param type: Type of the poll to be started.
      */
     startPoll = function (connectionId, type) {
-        //TODO (beni) refactoring, mit tests, methode soll direkt auf connections zugreifen.
         Connection.getGadgetArray(connectionId, type);
         Poll.update(type, connectionId, true);
     };
 
     /**
      * Asks for an all the gadget connections.
-     * @param connectionId: Array of all gadget connections except the starting one.
+     * @param sockets: Array of all gadget connections except the starting one.
      * @param type: Type of the poll to be started.
+     * @param connectionId: Connection ID of the gadget who started the poll.
      */
-    startPollFinally = function (connectionId, type) {
-        Poll.startPoll(connectionId, type);
+    startPollFinally = function (sockets, type, connectionId) {
+        Poll.startPoll(sockets, type, connectionId);
     };
 
     /**

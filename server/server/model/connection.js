@@ -225,7 +225,7 @@ function connection (ModelHandler) {
                 for(var i=0; i< result.length; i++) {
                     gadgets.push(result[i].connectionId);
                 }
-                ModelHandler.startPollFinally(gadgets, type);
+                ModelHandler.startPollFinally(gadgets, type, connectionId);
             }
         });
     };

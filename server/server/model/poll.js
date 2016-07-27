@@ -23,16 +23,16 @@ function poll (DB) {
         return construct(mongoose);
     };
 
-    this.create = function (type) {
-        return create(type);
+    this.create = function (type, sockets, connectionId) {
+        return create(type, sockets, connectionId);
     };
 
     this.update = function (name, currentMood) {
         return update(name, currentMood);
     };
 
-    this.startPoll = function (socketArray, type) {
-        return startPoll(socketArray, type);
+    this.startPoll = function (socketArray, type, connectionId) {
+        return startPoll(socketArray, type, connectionId);
     };
     this.calculateResult = function (socketId, answer) {
         return calculateResult(socketId, answer);
@@ -53,7 +53,7 @@ function poll (DB) {
 
         pollSchema = new Schema({
             type: String,
-            answers: []
+            answers: {}
         });
 
         pollModel = pollMongoose.model('pollModel', pollSchema);
@@ -65,11 +65,19 @@ function poll (DB) {
      *
      * @returns {*}
      */
-    create = function (type) {
+    create = function (type, sockets, connectionId) {
+
+        var participants = {};
+
+        participants[connectionId] = true;
+
+        for (var i=0; i<sockets.length; i++){
+            participants[sockets[i]] = null;
+        }
 
         var newPoll = new pollModel({
             type: type,
-            answers: []
+            answers: participants
         });
 
         pollModel.findOne({name: type}, function(err, result) {
@@ -99,7 +107,7 @@ function poll (DB) {
      */
     update = function (type, connectionId, answer) {
 
-        var answerToAdd = JSON.parse({connectionId: answer});
+        var answerToAdd = JSON.stringify({connectionId: answer});
         console.log('this answer:   ' + answerToAdd);
 
         pollModel.findOne({type: type}, function (err, result) {
@@ -126,12 +134,13 @@ function poll (DB) {
      * Starts the poll process due to gadget request.
      * @param socketArray: Contains the ID's of all other gadgets to get contacted with the poll.
      * @param type: Type of the poll the user wants to start via gadget.
+     * @param connectionId: Connection ID of the gadget who started the poll.
      */
-    startPoll = function (socketArray, type) {
+    startPoll = function (socketArray, type, connectionId) {
         for (var i = 0; i<socketArray.length; i++){
             console.log(socketArray[i]);
         }
-        create(type);
+        create(type, socketArray, connectionId);
 
     };
 
