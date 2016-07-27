@@ -8,10 +8,12 @@ function graphic () {
     var generateLines;
     var generateHorizontalLine;
     var generateWorkTime;
+    var getActualTimeDisplay;
     var getBlackDisplay;
     var getDefaultDisplay;
     var getStartDisplay;
     var getWhiteDisplay;
+    var getWorktimeDisplay;
     var readImage;
     var replacePart;
     var stringToBits;
@@ -36,10 +38,12 @@ function graphic () {
      * Public functions
      * ====================================================================== */
 
+    this.getActualTimeDisplay = function () { return getActualTimeDisplay(); };
     this.getBlackDisplay = function () { return getBlackDisplay(); };
     this.getDefaultDisplay = function (time, workingPercent, icon) { return getDefaultDisplay(time, workingPercent, icon); };
     this.getStartDisplay = function () { return getStartDisplay(); };
     this.getWhiteDisplay = function () { return getWhiteDisplay(); };
+    this.getWorktimeDisplay = function (workingPercent) { return getWorktimeDisplay(workingPercent); };
 
     /* ======================================================================
      * Private functions
@@ -154,6 +158,17 @@ function graphic () {
         return replacePart(lineString, displayPadding, 0, 12, 12, workIconRaw);
     };
 
+    getActualTimeDisplay = function () {
+        var date = new Date();
+        var timeString = date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes();
+
+        return displayPadding + "|" + timeString;
+    };
+
+    /**
+     * Get a full black display.
+     * @returns {*}
+     */
     getBlackDisplay = function () {
         return stringToBits(generateFullLines(displayHeight));
     };
@@ -175,6 +190,10 @@ function graphic () {
 
     };
 
+    /**
+     * Get the startdisplay with the logo of gridonic (atm)
+     * @returns {*}
+     */
     getStartDisplay = function () {
         return stringToBits(
             readImage(
@@ -183,8 +202,16 @@ function graphic () {
         );
     };
 
+    /**
+     * Get a full white display.
+     * @returns {*}
+     */
     getWhiteDisplay = function () {
         return stringToBits(generateEmptyLines(displayHeight));
+    };
+
+    getWorktimeDisplay = function (workingPercent) {
+        return "0|" + displayPadding + "|" + workTimeHeight + "|" +  workingPercent;
     };
 
     /**
