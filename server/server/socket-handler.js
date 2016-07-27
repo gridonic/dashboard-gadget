@@ -81,21 +81,52 @@ function socketHandler (Db) {
         console.log('socketHELLO');
         console.log(data);
 
-        // if (data == 'full graphic' || data.message == 'full graphic') {
-        socket.emit('show', { draw: Graphic.getBlackDisplay() });
-        // } else {
-        //     socket.emit('show', {draw: '111111110000000011111111'});
-        // }
+        socket.emit('showBlack', {data: null});
+        var i = 0;
 
-        setTimeout(function () {
-        //     // var graphic = Graphic.getDefaultDisplay(null, 40, null);
-            var graphic = Graphic.getWhiteDisplay();
+        setInterval(function () {
+            socket.emit('showWorkTime', { draw: Graphic.getWorktimeDisplay(i)});
 
-            console.log('socket.emit("show")');
-            console.log(graphic);
+            setTimeout(function () {
+                socket.emit('showTime', { draw: Graphic.getActualTimeDisplay()});
+            }, 200);
 
-            socket.emit('show', { draw: graphic });
-        }, 10000);
+            i++;
+        }, 2000);
+
+        // setTimeout(function () {
+        //     socket.emit('showWhite', {data: null});
+        // }, 1000);
+        //
+        // setTimeout(function () {
+        //     //     // var graphic = Graphic.getDefaultDisplay(null, 40, null);
+        //     var graphic = Graphic.getWorktimeDisplay(0);
+        //
+        //     console.log('socket.emit("showTime")');
+        //     console.log(graphic);
+        //
+        //     socket.emit('showWorkTime', { draw: graphic });
+        // }, 5000);
+        //
+        // setTimeout(function () {
+        //     //     // var graphic = Graphic.getDefaultDisplay(null, 40, null);
+        //     var graphic = Graphic.getWorktimeDisplay(50);
+        //
+        //     console.log('socket.emit("showTime")');
+        //     console.log(graphic);
+        //
+        //     socket.emit('showWorkTime', { draw: graphic });
+        // }, 10000);
+        //
+        // setTimeout(function () {
+        //     //     // var graphic = Graphic.getDefaultDisplay(null, 40, null);
+        //     var graphic = Graphic.getWorktimeDisplay(120);
+        //
+        //     console.log('socket.emit("showTime")');
+        //     console.log(graphic);
+        //
+        //     socket.emit('showWorkTime', { draw: graphic });
+        // }, 15000);
 
         // setTimeout(function () {
         //     var interval = setInterval(function(){ showTime() }, 2000);

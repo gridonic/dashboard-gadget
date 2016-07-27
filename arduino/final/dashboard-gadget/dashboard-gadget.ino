@@ -12,12 +12,14 @@
 #define _dc             8
 
 // Variables for display
-Adafruit_ILI9340 tft    = Adafruit_ILI9340(_cs, _dc, _rst);
+Adafruit_ILI9340 tft        = Adafruit_ILI9340(_cs, _dc, _rst);
+unsigned int displayWidth   = 320;
+unsigned int displayHeight  = 240;
 
 // Variables for the ethernet-module
 SocketIOClient client;
 byte mac[]                  = { 0x20, 0x67, 0x89, 0x4F, 0x60, 0x75 };
-char hostname[]             = "192.168.2.98";
+char hostname[]             = "10.7.0.177";
 int port                    = 3000;
 bool loggedIn               = false;
 bool helloed                = false;
@@ -41,12 +43,12 @@ int           longDelay     = 1000;
 void logger(String message);
 
 /* =========================================================================
- * Setup the system
- * ========================================================================= */
+   Setup the system
+   ========================================================================= */
 void setup() {
   // put your setup code here, to run once:
 
-  Serial.begin(115200);
+  Serial.begin(9600);
   tft.begin();
 
   if (debug) {
@@ -63,12 +65,12 @@ void setup() {
 }
 
 /**
- * Initiate the display, write a test-message to it.
- */
+   Initiate the display, write a test-message to it.
+*/
 void initDisplay()
 {
   logger("initDisplay");
-  
+
   tft.setRotation(3);
   tft.setCursor(0, 0);
   tft.fillScreen(ILI9340_WHITE);
@@ -78,40 +80,37 @@ void initDisplay()
   tft.fillScreen(ILI9340_WHITE);
   tft.setTextColor(ILI9340_BLACK);
   tft.setTextSize(2);
-  tft.println("Screen started");
+  tft.println("screen initialized.");
+  tft.println("");
+  tft.println("loading...");
   delay(miniDelay);
 }
 
 /**
- * Initiate the ethernet module.
- */
+   Initiate the ethernet module.
+*/
 void initEthernet()
 {
   logger("initEthernet");
-  
-//  tft.fillScreen(ILI9340_WHITE);
-//  tft.setTextColor(ILI9340_BLACK);
-//  tft.setTextSize(2);
-//  tft.println("connecting...");
-  
+
   // try connection till it is connected
-  while(!tryConnection()) {
+  while (!tryConnection()) {
     logger("connection not possible");
     delay(miniDelay);
   }
-  
+
   logger("connection started.");
   delay(defaultDelay);
 }
 
 
 /**
- * Try to make a connection to the server.
- */
+   Try to make a connection to the server.
+*/
 bool tryConnection()
 {
   logger("tryConnection()");
-  
+
   Ethernet.begin(mac);
   logger("Ethernet.begin(mac)");
 
@@ -130,32 +129,25 @@ bool tryConnection()
 }
 
 /**
- * Connect the client basically with the server.
- * Does the first step for connection, all on the socket-side.
- */
+   Connect the client basically with the server.
+   Does the first step for connection, all on the socket-side.
+*/
 void connectClient()
 {
-//  tft.fillScreen(ILI9340_WHITE);
-//  tft.setTextColor(ILI9340_BLACK);
-//  tft.setCursor(0,0);
-//  tft.setTextSize(2);
-//  tft.println("connecting...");
   logger("connecting...");
-  
+
   loggedIn = false;
   helloed = false;
-  while(!tryConnection()) {
-//    tft.println("connecting not possible.");
+  while (!tryConnection()) {
     logger("connection not possible");
     delay(defaultDelay);
-//    tft.println("try again.");
     logger("try again");
   }
 }
 
 /**
- * Log in the gadget to the server
- */
+   Log in the gadget to the server
+*/
 void loginGadget()
 {
   logger("log in the gadget on our server");
@@ -163,8 +155,8 @@ void loginGadget()
 }
 
 /**
- * Say hello on the server.
- */
+   Say hello on the server.
+*/
 void sayHello()
 {
   logger("say hello on our server");
@@ -172,8 +164,8 @@ void sayHello()
 }
 
 /**
- * Draw 4 bits on the screen.
- */
+   Draw 4 bits on the screen.
+*/
 void draw4bit(long i, uint16_t a, uint16_t b, uint16_t c, uint16_t d)
 {
   long x = i % 320;
@@ -185,10 +177,27 @@ void draw4bit(long i, uint16_t a, uint16_t b, uint16_t c, uint16_t d)
   tft.drawPixel(x + 3, y, d);
 }
 
+String splitString(String data, char separator, int index)
+{
+  int found = 0;
+  int strIndex[] = {0, -1};
+  int maxIndex = data.length() - 1;
+
+  for (int i = 0; i <= maxIndex && found <= index; i++) {
+    if (data.charAt(i) == separator || i == maxIndex) {
+      found++;
+      strIndex[0] = strIndex[1] + 1;
+      strIndex[1] = (i == maxIndex) ? i + 1 : i;
+    }
+  }
+
+  return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
+}
+
 /**
- * Show the string on the screen.
- * 
- */
+   Show the string on the screen.
+
+*/
 void showOnScreen(String m)
 {
   logger("showOnScreen");
@@ -206,7 +215,7 @@ void showOnScreen(String m)
 
   for (x; x < m.length(); x++) {
     current = message[x];
-    
+
     if (current == 'x' || current == '-') {
       number = "";
       x++;
@@ -219,7 +228,6 @@ void showOnScreen(String m)
       x--;
       number += message[x];
 
-      Serial.println("print " + number + " times.");
       for (k = 0; k < number.toInt(); k++) {
         if (current == 'x') {
           draw4bit(i, ILI9340_BLACK, ILI9340_BLACK, ILI9340_BLACK, ILI9340_BLACK);
@@ -280,6 +288,66 @@ void showOnScreen(String m)
   }
 }
 
+void showFullScreen(uint16_t color)
+{
+  tft.fillRect(0, 0, displayWidth, displayHeight, color);
+}
+
+void drawWorkingIcon(unsigned int x, unsigned int y)
+{
+  tft.drawLine(x + 2, y, x + 9, y, ILI9340_BLACK);
+  tft.drawPixel(x + 2, y + 1, ILI9340_BLACK);  tft.drawPixel(x + 9, y + 1, ILI9340_BLACK);
+  tft.drawPixel(x + 2, y + 2, ILI9340_BLACK);  tft.drawPixel(x + 9, y + 2, ILI9340_BLACK);
+  tft.drawPixel(x + 3, y + 3, ILI9340_BLACK);  tft.drawPixel(x + 8, y + 3, ILI9340_BLACK);
+  tft.drawPixel(x + 4, y + 4, ILI9340_BLACK);  tft.drawPixel(x + 7, y + 4, ILI9340_BLACK);
+  tft.drawRect(x + 5, y + 5, 2, 2, ILI9340_BLACK);
+  tft.drawPixel(x + 4, y + 7, ILI9340_BLACK);  tft.drawPixel(x + 7, y + 7, ILI9340_BLACK);
+  tft.drawPixel(x + 3, y + 8, ILI9340_BLACK);  tft.drawPixel(x + 8, y + 8, ILI9340_BLACK);
+  tft.drawPixel(x + 2, y + 9, ILI9340_BLACK);  tft.drawPixel(x + 9, y + 9, ILI9340_BLACK);
+  tft.drawPixel(x + 2, y + 10, ILI9340_BLACK);  tft.drawPixel(x + 9, y + 10, ILI9340_BLACK);
+  tft.drawLine(x + 2, y + 11, x + 9, y + 11, ILI9340_BLACK);
+}
+
+void showWorktimeOnScreen(String m)
+{
+  int iconSize = 12;
+  unsigned int start    = splitString(m, '|', 0).toInt();
+  unsigned int padding  = splitString(m, '|', 1).toInt();
+  unsigned int height   = splitString(m, '|', 2).toInt();
+  unsigned int percent  = splitString(m, '|', 3).toInt();
+  unsigned int rectWidth = displayWidth - (padding * 2) - iconSize;
+  float workingWidthFloat = (float) rectWidth * (float) percent / 100;
+  unsigned int workingWidth = (int) workingWidthFloat;
+
+  tft.fillRect(0, start, displayWidth, (start + padding * 2 + height), ILI9340_WHITE);
+  tft.drawRect((padding + iconSize), start + padding, rectWidth, height, ILI9340_BLACK);
+  drawWorkingIcon(padding, start + padding);
+
+  if (percent <= 100) {
+    tft.fillRect(padding + iconSize, start + padding, workingWidth, height, ILI9340_BLACK);
+  } else {
+    workingWidth = (float) rectWidth * 100 / (float) percent;
+    tft.fillRect(padding + iconSize, start + padding, workingWidth - 1, height, ILI9340_BLACK);
+    tft.fillRect(workingWidth + 1 + padding + iconSize, start + padding, rectWidth - workingWidth - 1, height, ILI9340_BLACK);
+  }
+}
+
+void showTimeOnScreen(String m)
+{
+  unsigned int textSize = 15;
+  unsigned int padding = splitString(m, '|', 0).toInt();
+  String timeString = splitString(m, '|', 1);
+
+  tft.fillRect(0, displayHeight - padding * 2 - textSize, displayWidth, padding * 2 + textSize, ILI9340_WHITE);
+  tft.setCursor(padding, displayHeight - padding - textSize);
+  tft.setTextColor(ILI9340_BLACK);
+  tft.setTextSize(2);
+  tft.println(timeString);
+}
+
+/**
+   Handle input from server
+*/
 void handleResponse()
 {
   logger("handleResponse: " + RID);
@@ -287,13 +355,35 @@ void handleResponse()
   {
     loggedIn = true;
   }
-  
+
   else if (RID == "show")
   {
     helloed = true;
     showOnScreen(Rcontent);
   }
-  
+
+  else if (RID == "showBlack")
+  {
+    helloed = true;
+    showFullScreen(ILI9340_BLACK);
+  }
+
+  else if (RID == "showWhite")
+  {
+    helloed = true;
+    showFullScreen(ILI9340_WHITE);
+  }
+
+  else if (RID == "showWorkTime")
+  {
+    showWorktimeOnScreen(Rcontent);
+  }
+
+  else if (RID == "showTime")
+  {
+    showTimeOnScreen(Rcontent);
+  }
+
   else
   {
     logger("monitor");
@@ -307,8 +397,8 @@ void handleResponse()
 }
 
 /**
- * Logger for everything.
- */
+   Logger for everything.
+*/
 void logger(String message) {
   if (debug) {
     Serial.println(message);
@@ -317,14 +407,14 @@ void logger(String message) {
 
 
 /**
- * Do the loop
- */
+   Do the loop
+*/
 void loop() {
 
   msCurrent = millis();
 
   // check if client is connected
-  if(msCurrent - msPrev > interval) {
+  if (msCurrent - msPrev > interval) {
     logger("looooop the shit (" + String(loopIndex) + ")");
     msPrev = msCurrent;
 
@@ -333,18 +423,22 @@ void loop() {
       connectClient();
     } else {
       if (!loggedIn) {
-//        tft.fillScreen(ILI9340_WHITE);
-//        tft.setCursor(0,0);
-//        tft.setTextColor(ILI9340_BLACK);
-//        tft.setTextSize(2);
-//        tft.println("client connected. login.");
+        //        tft.fillScreen(ILI9340_WHITE);
+        //        tft.setCursor(0,0);
+        //        tft.setTextColor(ILI9340_BLACK);
+        //        tft.setTextSize(2);
+        //        tft.println("client connected. login.");
         logger("loginGadget()");
         loginGadget();
       }
-      
+
       if (loggedIn && !helloed) {
         logger("sayHello()");
         sayHello();
+      }
+
+      if (loggedIn && helloed) {
+        client.heartbeat(0);
       }
     }
   }
@@ -352,6 +446,6 @@ void loop() {
   if (client.monitor()) {
     handleResponse();
   }
-  
+
   loopIndex++;
 }
