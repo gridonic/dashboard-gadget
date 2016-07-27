@@ -2,10 +2,10 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var fs = require('fs');
-var db = require('./server/db.js');
+var modelHandler = require('./server/model-handler.js');
 var socketHandler = require('./server/socket-handler.js');
 
-var Db = new db();
+var Handler = new modelHandler();
 
 app.get('/', function (req, res) {
 
@@ -61,7 +61,7 @@ app.get('/assets/*', function (req, res){
 
 io.on('connection', function (socket) {
 
-    var SocketHandler = new socketHandler(Db);
+    var SocketHandler = new socketHandler(Handler);
     SocketHandler.setSocket(socket);
 
     console.log('connection has started. ' + 'id: ' + socket.id);

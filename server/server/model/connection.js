@@ -1,6 +1,6 @@
 'use strict';
 
-function connection (DB) {
+function connection (ModelHandler) {
 
     // functions
     var construct;
@@ -74,7 +74,7 @@ function connection (DB) {
             if (result === null) {
                 connModel.save(function (err, result) {
                     if (err) {
-                        console.log('Connection could not be created in DB!');
+                        console.log('Connection could not be created in database!');
                     } else {
                         console.log(result);
                     }
@@ -92,7 +92,7 @@ function connection (DB) {
                 // if (!result) {
                 //     connModel.save(function (err, result) {
                 //         if (err) {
-                //             console.log('Connection could not be created in DB!');
+                //             console.log('Connection could not be created in database!');
                 //         } else {
                 //             console.log(result);
                 //         }
@@ -105,7 +105,7 @@ function connection (DB) {
                             userId: connModel.userId
                         }}, function (err) {
                             if (err) {
-                                console.log(connectionId + ' does not yet exist in the DB!');
+                                console.log(connectionId + ' does not yet exist in the database!');
                             } else {
                                 console.log('Connection ' + connectionId + ' is updated!');
                             }
@@ -169,7 +169,7 @@ function connection (DB) {
                 if (model) {
                     model.remove(function (err) {
                         if (err) {
-                            console.log('Model could not be deleted from DB.');
+                            console.log('Model could not be deleted from database.');
                         } else {
                             console.log('Connection successfully deleted!');
                         }
@@ -191,7 +191,7 @@ function connection (DB) {
             if (err){
                 console.log('no gadget connection found - unable to change mood!');
             }else {
-                DB.changeMoodFinally(result.gadgetId, currentMood);
+                ModelHandler.changeMoodFinally(result.gadgetId, currentMood);
             }
         });
     };
@@ -225,12 +225,10 @@ function connection (DB) {
                 for(var i=0; i< result.length; i++) {
                     gadgets.push(result[i].connectionId);
                 }
-                DB.startPollFinally(gadgets, type);
+                ModelHandler.startPollFinally(gadgets, type);
             }
         });
     };
-
-
 }
 
 module.exports = connection;

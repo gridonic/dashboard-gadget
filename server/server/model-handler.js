@@ -352,7 +352,7 @@ function db () {
         });
     };
 
-    // run on first call of the db.
+    // run on first call of the modelHandler.
     initDB();
 }
 

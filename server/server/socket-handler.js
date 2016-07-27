@@ -1,7 +1,7 @@
 'use strict';
 var graphic = require('./graphic.js');
 
-function socketHandler (Db) {
+function socketHandler (Handler) {
 
     // Functions
     var loadUser;
@@ -28,7 +28,7 @@ function socketHandler (Db) {
      * ====================================================================== */
 
     this.setSocket = function (s) {
-        Db.addSocketConnection(s.id);
+        Handler.addSocketConnection(s.id);
         socket = s;
     };
 
@@ -49,9 +49,9 @@ function socketHandler (Db) {
      * ====================================================================== */
     
     loadUser = function (data) {
-        Db.getUser(data.username, data.password, function (user) {
+        Handler.getUser(data.username, data.password, function (user) {
             if (user) {
-                Db.addUserConnection(socket.id, user.id);
+                Handler.addUserConnection(socket.id, user.id);
                 socket.emit('userCreated', {
                     'message': 'The user "' + data.username + '" was successfully created!',
                     'user': user
@@ -68,7 +68,7 @@ function socketHandler (Db) {
         console.log('buttons pushed');
         if (data.left && data.right) {
             console.log('both');
-            Db.startPoll(socket.id, 3);
+            Handler.startPoll(socket.id, 3);
         } else if (data.left) {
             console.log('left');
         } else if (data.right) {
@@ -148,8 +148,8 @@ function socketHandler (Db) {
         console.log(data);
 
         if (data.id !== '') {
-            Db.activateGadget(data.id);
-            Db.linkGadgetToSocket(socket.id, data.id);
+            Handler.activateGadget(data.id);
+            Handler.linkGadgetToSocket(socket.id, data.id);
             socket.emit('access', null);
         } else {
             socket.emit('sendError', {
@@ -163,7 +163,7 @@ function socketHandler (Db) {
 
         if (socket.id !== '') {
             console.log('socket-handler socket id:   ' + socket.id);
-            Db.removeConnection(socket.id);
+            Handler.removeConnection(socket.id);
         } else {
             console.log('socket id not found.');
             console.log(socket);
@@ -177,7 +177,7 @@ function socketHandler (Db) {
         console.log('socketCreateUser');
         console.log(data);
 
-        Db.createUser(data.username, data.password, function (created) {
+        Handler.createUser(data.username, data.password, function (created) {
             if (created) {
                 console.log('user created');
                 loadUser(data);
@@ -189,7 +189,7 @@ function socketHandler (Db) {
     };
     
     onLoginUser = function (data) {
-        Db.loginUser(data.username, data.password, data.gadget, socket.id, function (error) {
+        Handler.loginUser(data.username, data.password, data.gadget, socket.id, function (error) {
             console.log('error');
             console.log(error);
         }, function (success) {
@@ -198,18 +198,18 @@ function socketHandler (Db) {
     };
 
     onLogoutUser = function () {
-        Db.removeConnection(socket.id);
+        Handler.removeConnection(socket.id);
     };
 
     onUpdateMood = function (data) {
-        Db.changeMood(socket.id, data.currentMood);
+        Handler.changeMood(socket.id, data.currentMood);
     };
 
     onDisconnect = function (data) {
         console.log('socketDISCONNECT');
         console.log('disconnect client');
 
-        Db.removeConnection(socket.id);
+        Handler.removeConnection(socket.id);
         console.log(socket.id);
     };
 
