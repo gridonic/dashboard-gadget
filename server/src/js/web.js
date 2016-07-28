@@ -10,6 +10,9 @@ var handleLogout;
 var handleUpdateMood;
 var handleStartPoll;
 var handleSuccess;
+var handleShow;
+var handleShowTime;
+var handleShowWorkTime;
 var handleError;
 var bitToImage;
 var log;
@@ -17,6 +20,8 @@ var log;
 // Constants
 var WAITING_DEFAULT = 0;
 var WAITING_CREATE_USER = 1;
+var DISPLAY_WIDTH = 320;
+var DISPLAY_HEIGHT = 240;
 
 // Variables
 var socket = io();
@@ -71,6 +76,72 @@ bitToImage = function (bitString) {
         N: '1101',
         O: '1110',
         P: '1111',
+    };
+    var hexCharSix = {
+        A: '000000',
+        B: '000001',
+        C: '000010',
+        D: '000011',
+        E: '000100',
+        F: '000101',
+        G: '000110',
+        H: '000111',
+        I: '001000',
+        J: '001001',
+        K: '001010',
+        L: '001011',
+        M: '001100',
+        N: '001101',
+        O: '001110',
+        P: '001111',
+        Q: '010000',
+        R: '010001',
+        S: '010010',
+        T: '010011',
+        U: '010100',
+        V: '010101',
+        W: '010110',
+        X: '010111',
+        Y: '011000',
+        Z: '011001',
+        a: '011010',
+        b: '011011',
+        c: '011100',
+        d: '011101',
+        e: '011110',
+        f: '011111',
+        g: '100000',
+        h: '100001',
+        i: '100010',
+        j: '100011',
+        k: '100100',
+        l: '100101',
+        m: '100110',
+        n: '100111',
+        o: '101000',
+        p: '101001',
+        q: '101010',
+        r: '101011',
+        s: '101100',
+        t: '101101',
+        u: '101110',
+        v: '101111',
+        w: '110000',
+        x: '110001',
+        y: '110010',
+        z: '110011',
+        '0': '110100',
+        '1': '110101',
+        '2': '110110',
+        '3': '110111',
+        '4': '111000',
+        '5': '111001',
+        '6': '111010',
+        '7': '111011',
+        '8': '111100',
+        '9': '111101',
+        'ä': '111110',
+        'ö': '111111',
     };
 
     for (i; i < bitString.length; i++) {
@@ -289,34 +360,33 @@ handleSuccess = function (data) {
     }
 };
 
-// TODO: Adressen hier, die funktionen an sich in externes File auslagern.
-
-socket.on('show', function (data) {
+handleShow = function (data) {
     log('socketShow');
-
-    var displayWidth = 320;
-    var displayHeight = 240;
-
 
     if (data.draw) {
 
         var draw = bitToImage(data.draw).split("");
 
         context.fillStyle = "#ffffff";
-        context.fillRect(0, 0, displayWidth, displayHeight);
+        context.fillRect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
         context.fillStyle = "#000000";
         var x = 0;
-        for (var i = 0; i < displayHeight; i++) {
-            for (var j = 0; j < displayWidth; j++) {
+        for (var i = 0; i < DISPLAY_HEIGHT; i++) {
+            for (var j = 0; j < DISPLAY_WIDTH; j++) {
                 if (draw[x] === '1') {
                     context.fillRect(j, i, 1, 1);
                 }
                 x++;
             }
         }
-
     }
+};
+
+// TODO: Adressen hier, die funktionen an sich in externes File auslagern.
+
+socket.on('show', function (data) {
+    handleShow(data)
 });
 
 socket.on('access', function (data) {
