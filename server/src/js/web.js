@@ -1,6 +1,7 @@
 console.log('web.js found.');
 
 // Functions
+var drawWorkingIcon;
 var handleStart;
 var handleArduinoLogout;
 var handleButtons;
@@ -50,6 +51,39 @@ log = function (message) {
     if (output) {
         output.innerHTML = output.innerHTML + '<br>' + message;
     }
+};
+
+drawWorkingIcon = function (x, y) {
+
+    context.fillStyle = "#000000";
+
+    context.fillRect(x + 2, y, 1, 1);
+    context.fillRect(x + 3, y, 1, 1);
+    context.fillRect(x + 4, y, 1, 1);
+    context.fillRect(x + 5, y, 1, 1);
+    context.fillRect(x + 6, y, 1, 1);
+    context.fillRect(x + 7, y, 1, 1);
+    context.fillRect(x + 8, y, 1, 1);
+    context.fillRect(x + 9, y, 1, 1);
+
+    context.fillRect(x + 2, y + 1, 1, 1);  context.fillRect(x + 9, y + 1, 1, 1);
+    context.fillRect(x + 2, y + 2, 1, 1);  context.fillRect(x + 9, y + 2, 1, 1);
+    context.fillRect(x + 3, y + 3, 1, 1);  context.fillRect(x + 8, y + 3, 1, 1);
+    context.fillRect(x + 4, y + 4, 1, 1);  context.fillRect(x + 7, y + 4, 1, 1);
+    context.fillRect(x + 5, y + 5, 2, 2);
+    context.fillRect(x + 4, y + 7, 1, 1);  context.fillRect(x + 7, y + 7, 1, 1);
+    context.fillRect(x + 3, y + 8, 1, 1);  context.fillRect(x + 8, y + 8, 1, 1);
+    context.fillRect(x + 2, y + 9, 1, 1);  context.fillRect(x + 9, y + 9, 1, 1);
+    context.fillRect(x + 2, y + 10, 1, 1);  context.fillRect(x + 9, y + 10, 1, 1);
+
+    context.fillRect(x + 2, y + 11, 1, 1);
+    context.fillRect(x + 3, y + 11, 1, 1);
+    context.fillRect(x + 4, y + 11, 1, 1);
+    context.fillRect(x + 5, y + 11, 1, 1);
+    context.fillRect(x + 6, y + 11, 1, 1);
+    context.fillRect(x + 7, y + 11, 1, 1);
+    context.fillRect(x + 8, y + 11, 1, 1);
+    context.fillRect(x + 9, y + 11, 1, 1);
 };
 
 bitToImage = function (bitString) {
@@ -383,10 +417,73 @@ handleShow = function (data) {
     }
 };
 
+handleShowWorkTime = function (data) {
+    log("handleShowWorkTime");
+    log(data);
+
+    var splitData = data.draw.split('|');
+    var iconSize = 12;
+    var start = parseInt(splitData[0]);
+    var padding = parseInt(splitData[1]);
+    var height = parseInt(splitData[2]);
+    var percent = parseInt(splitData[3]);
+    var rectWidth = DISPLAY_WIDTH - (padding * 2) - iconSize;
+    var workingWidth = rectWidth * percent / 100;
+
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, start, DISPLAY_WIDTH, (start + padding * 2 + height));
+
+    context.fillStyle = "#000000";
+    context.fillRect((padding + iconSize), start + padding, rectWidth, height);
+    context.fillStyle = "#ffffff";
+    context.fillRect((padding + iconSize) + 1, start + padding + 1, rectWidth - 2, height - 2);
+
+    drawWorkingIcon(padding, start + padding);
+
+    context.fillStyle = "#000000";
+    if (percent <= 100) {
+        context.fillRect(padding + iconSize, start + padding, workingWidth, height);
+    } else {
+        workingWidth = rectWidth * 100 / percent;
+        context.fillRect(padding + iconSize, start + padding, workingWidth - 1, height);
+        context.fillRect(workingWidth + 1 + padding + iconSize, start + padding, rectWidth - workingWidth - 1, height);
+    }
+};
+
+handleShowTime = function (data) {
+    log("showTime");
+    log(data);
+
+    var splitData = data.draw.split('|');
+    var textSize = 15;
+    var padding = parseInt(splitData[0]);
+    var timeString = splitData[1];
+
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, DISPLAY_HEIGHT - padding * 2 - textSize, DISPLAY_WIDTH, padding * 2 + textSize);
+
+    context.fillStyle = "#000000";
+    context.font = textSize + "px Courier New";
+    context.fillText(timeString, padding, DISPLAY_HEIGHT - padding);
+    // tft.setCursor(padding, displayHeight - padding - textSize);
+    // tft.setTextColor(ILI9340_BLACK);
+    // tft.setTextSize(2);
+    // tft.println(timeString);
+
+};
+
 // TODO: Adressen hier, die funktionen an sich in externes File auslagern.
 
 socket.on('show', function (data) {
     handleShow(data)
+});
+
+socket.on('showWorkTime', function (data) {
+    handleShowWorkTime(data);
+});
+
+socket.on('showTime', function (data) {
+    handleShowTime(data);
 });
 
 socket.on('access', function (data) {

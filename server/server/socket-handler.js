@@ -85,6 +85,12 @@ function socketHandler (Handler) {
         socket.emit('showBlack', {data: null});
         var i = 0;
 
+        socket.emit('showWorkTime', { draw: Graphic.getWorktimeDisplay(i)});
+        setTimeout(function () {
+            socket.emit('showTime', { draw: Graphic.getActualTimeDisplay()});
+        }, 100);
+        i++;
+
         setInterval(function () {
             socket.emit('showWorkTime', { draw: Graphic.getWorktimeDisplay(i)});
 

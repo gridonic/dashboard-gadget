@@ -210,6 +210,18 @@ function graphic () {
         return stringToBits(generateEmptyLines(displayHeight));
     };
 
+    /**
+     * returns an array, converted to a string
+     *
+     * content:
+     *  0: start
+     *  1: padding
+     *  2: height of worktime
+     *  3: percent of worktime (how long user is working)
+     *
+     * @param workingPercent
+     * @returns {string}
+     */
     getWorktimeDisplay = function (workingPercent) {
         return "0|" + displayPadding + "|" + workTimeHeight + "|" +  workingPercent;
     };
