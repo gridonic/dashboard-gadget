@@ -18,7 +18,7 @@ unsigned int displayHeight  = 240;
 
 // Variables for the ethernet-module
 SocketIOClient client;
-byte mac[]                  = { 0x20, 0x67, 0x89, 0x4F, 0x60, 0x75 };
+byte mac[]                  = { 0x20, 0x67, 0x89, 0x4F, 0x60, 0x75 }; // generated here: http://www.miniwebtool.com/mac-address-generator/
 char hostname[]             = "10.7.0.177";
 int port                    = 3000;
 bool loggedIn               = false;
@@ -438,6 +438,7 @@ void loop() {
       }
 
       if (loggedIn && helloed) {
+        // hold connection by sending heartbeat from time to time.
         client.heartbeat(0);
       }
     }
