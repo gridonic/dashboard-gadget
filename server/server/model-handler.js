@@ -298,7 +298,6 @@ function db () {
      */
     startPoll = function (connectionId, type) {
         Connection.getGadgetArray(connectionId, type);
-        Poll.update(type, connectionId, true);
     };
 
     /**

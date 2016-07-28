@@ -96,6 +96,8 @@ function poll (DB) {
             }
         });
 
+        update(type, connectionId, true);
+
     };
 
     /**

@@ -254,7 +254,7 @@ handleStartPoll = function() {
     }
     
     startPoll.onclick = function() {
-        var type = parseInt(document.getElementById('poll-select').value);
+        var type = document.getElementById('poll-select').value;
         console.log('Poll: ' + type);
         socket.emit('startPoll', {'type': type});
         
