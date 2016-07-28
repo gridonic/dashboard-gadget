@@ -18,6 +18,7 @@ function socketHandler (Handler) {
     var onLogoutUser;
     var onSuccess;
     var onUpdateMood;
+    var onStartPoll;
 
     // Variables
     var Graphic = new graphic();
@@ -43,6 +44,7 @@ function socketHandler (Handler) {
     this.onLogoutUser = function() { return onLogoutUser();};
     this.onSuccess = function (data) { return onSuccess(data); };
     this.onUpdateMood = function (data) { return onUpdateMood(data);};
+    this.onStartPoll = function (data) { return onStartPoll(data);};
 
     /* ======================================================================
      * Private functions
@@ -68,7 +70,6 @@ function socketHandler (Handler) {
         console.log('buttons pushed');
         if (data.left && data.right) {
             console.log('both');
-            Handler.startPoll(socket.id, 3);
         } else if (data.left) {
             console.log('left');
         } else if (data.right) {
@@ -203,6 +204,10 @@ function socketHandler (Handler) {
 
     onUpdateMood = function (data) {
         Handler.changeMood(socket.id, data.currentMood);
+    };
+    
+    onStartPoll = function (data) {
+        Handler.startPoll(socket.id, data.type);
     };
 
     onDisconnect = function (data) {

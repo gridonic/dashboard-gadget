@@ -18,6 +18,7 @@ function poll (DB) {
     var pollModel;
     var pollSchema;
     var pollMongoose;
+    var timeout;
 
     this.construct = function (mongoose) {
         return construct(mongoose);
@@ -107,18 +108,18 @@ function poll (DB) {
      */
     update = function (type, connectionId, answer) {
 
-        var answerToAdd = JSON.stringify({connectionId: answer});
-        console.log('this answer:   ' + answerToAdd);
+        console.log('-------- ' + type + '   ' + connectionId + '   ' + answer);
 
         pollModel.findOne({type: type}, function (err, result) {
             if (err){
                 console.log('No poll of this type ongoing anymore, your answer comes to late.');
             }else {
-                var arrayToUpdate = result.answers;
-                arrayToUpdate.push(answerToAdd);
+                var answers = result.answers;
+                answers[connectionId] = answer;
+                
             }
 
-            pollModel.findOneAndUpdate({type: type}, {$set:{answers:arrayToUpdate}}, function (err) {
+            pollModel.findOneAndUpdate({type: type}, {$set:{answers:answers}}, function (err) {
                 if (err) {
                     console.log('Failed updating the Answers to the poll of type ' + type);
                 } else {
@@ -150,8 +151,12 @@ function poll (DB) {
      * @param answer: Either 'true' for positive or 'false' for negative answer.
      */
     calculateResult = function (socketId, answer) {
+        timeout = setTimeout(function () { alert("Waiting for results"); }, 300000);
+
+        
 
     };
+
 
 }
 

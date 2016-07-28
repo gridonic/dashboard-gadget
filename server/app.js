@@ -97,6 +97,10 @@ io.on('connection', function (socket) {
     socket.on('updateMood', function (data){
         SocketHandler.onUpdateMood(data);
     });
+    
+    socket.on('startPoll', function (data){
+        SocketHandler.onStartPoll(data);
+    });
 
     socket.on('disconnect', function() {
         SocketHandler.onDisconnect();

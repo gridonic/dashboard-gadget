@@ -8,6 +8,7 @@ var handleCreate;
 var handleLogin;
 var handleLogout;
 var handleUpdateMood;
+var handleStartPoll;
 var handleSuccess;
 var handleError;
 var bitToImage;
@@ -29,6 +30,7 @@ var login = document.getElementById('btn-login');
 var logout = document.getElementById('btn-logout');
 var canvas = document.getElementById("display");
 var updateMood = document.getElementById('btn-update');
+var startPoll = document.getElementById('poll-start');
 var context;
 var actualWaiting = WAITING_DEFAULT;
 
@@ -223,7 +225,7 @@ handleLogout = function () {
 
 /**
  * Handle the UpdateMoood-Button.
- * Login to an existing user.
+ * Changes the mood of a user via gadget.
  */
 handleUpdateMood = function () {
 
@@ -234,13 +236,32 @@ handleUpdateMood = function () {
 
     updateMood.onclick = function () {
         var mood = parseInt(document.getElementById('mood-select').value);
-        //TODO gadget 2 is hardcoded for testing, add option to choose gadget
-        var gadget = '2';
-        console.log(mood);
+        console.log('Poll: ' + mood);
         socket.emit('updateMood', {'currentMood': mood});
 
     };
 };
+
+/**
+ * Handle the Start Poll Button.
+ * Starts a poll.
+ */
+handleStartPoll = function() {
+    
+    if (startPoll === null) {
+        log('no start poll button found.');
+        return;
+    }
+    
+    startPoll.onclick = function() {
+        var type = parseInt(document.getElementById('poll-select').value);
+        console.log('Poll: ' + type);
+        socket.emit('startPoll', {'type': type});
+        
+    };
+    
+};
+
 
 handleError = function (data) {
     log('FEHLER!');
@@ -328,5 +349,6 @@ handleCreate();
 handleLogin();
 handleLogout();
 handleUpdateMood();
+handleStartPoll();
 handleButtons();
 
