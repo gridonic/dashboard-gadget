@@ -361,7 +361,7 @@ handleStartPoll = function() {
     startPoll.onclick = function() {
         var type = document.getElementById('poll-select').value;
         console.log('Poll: ' + type);
-        socket.emit('startPoll', {'type': type});
+        socket.emit('createPoll', {'type': type});
         
     };
     
@@ -475,6 +475,7 @@ handleShowTime = function (data) {
 // TODO: Adressen hier, die funktionen an sich in externes File auslagern.
 
 socket.on('show', function (data) {
+    console.log('---------der type------- ' + data.type);
     handleShow(data)
 });
 

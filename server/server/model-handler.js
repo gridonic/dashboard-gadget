@@ -34,8 +34,9 @@ function db () {
     var getIdToUsername;
     var linkGadgetToSocket;
     var getGadgetArray;
-    var startPoll;
-    var startPollFinally;
+    var createPoll;
+    var createPollFinally;
+    
 
     // variables
     var url = 'mongodb://localhost:9999/test';
@@ -75,8 +76,8 @@ function db () {
     this.getIdToUsername = function (username, gadgetId, socketId) {return getIdToUsername(username, gadgetId, socketId);};
     this.linkGadgetToSocket = function (connectionId, gadgetId) {return linkGadgetToSocket(connectionId, gadgetId);};
     this.getGadgetArray = function (connectionId, type) {return getGadgetArray(connectionId, type);};
-    this.startPoll = function (connectionId, type) {return startPoll(connectionId, type);};
-    this.startPollFinally = function (sockets, type, connectionId) {return startPollFinally(sockets, type, connectionId);};
+    this.createPoll = function (connectionId, type, socket) {return createPoll(connectionId, type, socket);};
+    this.createPollFinally = function (sockets, type, connectionId, socket) {return createPollFinally(sockets, type, connectionId, socket);};
 
     /* ======================================================================
      * Private functions
@@ -295,9 +296,10 @@ function db () {
      * Asks for an all the gadget connections.
      * @param connectionId: Array of all gadget connections except the starting one.
      * @param type: Type of the poll to be started.
+     * @param socket:
      */
-    startPoll = function (connectionId, type) {
-        Connection.getGadgetArray(connectionId, type);
+    createPoll = function (connectionId, type, socket) {
+        Connection.getGadgetArray(connectionId, type, socket);
     };
 
     /**
@@ -305,9 +307,11 @@ function db () {
      * @param sockets: Array of all gadget connections except the starting one.
      * @param type: Type of the poll to be started.
      * @param connectionId: Connection ID of the gadget who started the poll.
+     * @param socket:
      */
-    startPollFinally = function (sockets, type, connectionId) {
-        Poll.startPoll(sockets, type, connectionId);
+    createPollFinally = function (sockets, type, connectionId, socket) {
+        Poll.create(type, sockets, connectionId, socket);
+        
     };
 
     /**

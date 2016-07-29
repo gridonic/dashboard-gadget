@@ -98,7 +98,7 @@ io.on('connection', function (socket) {
         SocketHandler.onUpdateMood(data);
     });
     
-    socket.on('startPoll', function (data){
+    socket.on('createPoll', function (data){
         SocketHandler.onStartPoll(data);
     });
 

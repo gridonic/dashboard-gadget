@@ -19,6 +19,7 @@ function socketHandler (Handler) {
     var onSuccess;
     var onUpdateMood;
     var onStartPoll;
+    var onSendPoll;
 
     // Variables
     var Graphic = new graphic();
@@ -45,6 +46,7 @@ function socketHandler (Handler) {
     this.onSuccess = function (data) { return onSuccess(data); };
     this.onUpdateMood = function (data) { return onUpdateMood(data);};
     this.onStartPoll = function (data) { return onStartPoll(data);};
+    this.onSendPoll = function (data) { return onSendPoll(data);};
 
     /* ======================================================================
      * Private functions
@@ -213,7 +215,12 @@ function socketHandler (Handler) {
     };
     
     onStartPoll = function (data) {
-        Handler.startPoll(socket.id, data.type);
+        Handler.createPoll(socket.id, data.type, socket);
+
+    };
+    
+    onSendPoll = function (data) {
+        
     };
 
     onDisconnect = function (data) {

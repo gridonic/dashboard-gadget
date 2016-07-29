@@ -11,6 +11,7 @@ function poll (DB) {
     var create;
     var update;
     var calculateResult;
+    var checkResponses;
     var drawResult;
     var startPoll;
 
@@ -20,23 +21,27 @@ function poll (DB) {
     var pollMongoose;
     var timeout;
 
+
     this.construct = function (mongoose) {
         return construct(mongoose);
     };
 
-    this.create = function (type, sockets, connectionId) {
-        return create(type, sockets, connectionId);
+    this.create = function (type, sockets, connectionId, socket) {
+        return create(type, sockets, connectionId, socket);
     };
 
     this.update = function (name, currentMood) {
         return update(name, currentMood);
     };
 
-    this.startPoll = function (socketArray, type, connectionId) {
-        return startPoll(socketArray, type, connectionId);
+    this.startPoll = function (socketArray, type, connectionId, socket) {
+        return startPoll(socketArray, type, connectionId, socket);
     };
     this.calculateResult = function (socketId, answer) {
         return calculateResult(socketId, answer);
+    };
+    this.checkResponses = function (sockets, type) {
+        return checkResponses(sockets, type);
     };
 
 
@@ -54,6 +59,7 @@ function poll (DB) {
 
         pollSchema = new Schema({
             type: String,
+            started: Boolean,
             answers: {}
         });
 
@@ -66,9 +72,11 @@ function poll (DB) {
      *
      * @returns {*}
      */
-    create = function (type, sockets, connectionId) {
+    create = function (type, sockets, connectionId, socket) {
 
         var participants = {};
+        
+        //all the sockets who are connected except the one which started the poll.
 
         participants[connectionId] = true;
 
@@ -78,6 +86,7 @@ function poll (DB) {
 
         var newPoll = new pollModel({
             type: type,
+            status: false,
             answers: participants
         });
 
@@ -89,6 +98,7 @@ function poll (DB) {
                         console.log('New Poll could not be saved.');
                     } else {
                         console.log(result);
+                        startPoll(sockets, type, connectionId, socket);
                     }
                 });
             } else {
@@ -96,6 +106,7 @@ function poll (DB) {
             }
         });
 
+        //update of the answer list with the answer of the user who initiated the poll. His answer is always 'yes'
         update(type, connectionId, true);
 
     };
@@ -118,7 +129,6 @@ function poll (DB) {
             }else {
                 var answers = result.answers;
                 answers[connectionId] = answer;
-                
             }
 
             pollModel.findOneAndUpdate({type: type}, {$set:{answers:answers}}, function (err) {
@@ -135,17 +145,19 @@ function poll (DB) {
 
     /**
      * Starts the poll process due to gadget request.
-     * @param socketArray: Contains the ID's of all other gadgets to get contacted with the poll.
+     * @param sockets: Array of all sockets connected to the server except the one who started the poll.
      * @param type: Type of the poll the user wants to start via gadget.
      * @param connectionId: Connection ID of the gadget who started the poll.
+     * @param socket:
      */
-    startPoll = function (socketArray, type, connectionId) {
-        for (var i = 0; i<socketArray.length; i++){
-            console.log(socketArray[i]);
+    startPoll = function (sockets, type, connectionId, socket) {
+        for (var i = 0; i<sockets.length; i++) {
+            console.log(sockets[i]);
+            socket.to(sockets[i]).emit('show', {type: type});
         }
-        create(type, socketArray, connectionId);
 
     };
+    
 
     /**
      * Collects all answers from the joining gadgets and calculates the overall result.
@@ -159,6 +171,30 @@ function poll (DB) {
 
     };
 
+    /**
+     * Checks if all the users have yet responded to the poll.
+     * @param sockets: All the sockets the poll has been sent to.
+     * @param type: Type of the poll.
+     */
+    checkResponses = function (sockets, type) {
+        var positiveResponsesCount = 0;
+        pollModel.findOne({name: type}, function(err, result) {
+            if (err) {
+                console.log('Poll of the type ' + type + ' not yet started.');
+            } else {
+                for(var i=0; i<sockets.length; i++) {
+                    if(result[sockets[i]] !== null) {
+                        positiveResponsesCount ++;
+                    }
+                }
+            }
+        });
+
+        if(positiveResponsesCount === sockets.length) {
+            calculateResult(type);
+        }
+
+    };
 
 }
 

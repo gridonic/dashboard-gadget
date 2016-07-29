@@ -30,7 +30,7 @@ function connection (ModelHandler) {
     this.deleteConnection = function (connectionId) { return deleteConnection(connectionId); };
     this.findConnectionAndChangeMood = function (connectionId, currentMood) { return findConnectionAndChangeMood(connectionId, currentMood); };
     this.findConnectionToDelete = function (connectionId, callback) { return findConnectionToDelete(connectionId, callback); };
-    this.getGadgetArray = function (connectionId, type) { return getGadgetArray(connectionId, type); };
+    this.getGadgetArray = function (connectionId, type, socket) { return getGadgetArray(connectionId, type, socket); };
     this.update = function (connectionId, id, type) { return create(connectionId, id, type, true); };
 
     /* ======================================================================
@@ -213,9 +213,10 @@ function connection (ModelHandler) {
      *
      * @param connectionId: Socket ID of the gadget who started the poll.
      * @param type: Specific type of the poll.
+     * @param socket:
      * @returns {*}
      */
-    getGadgetArray = function (connectionId, type) {
+    getGadgetArray = function (connectionId, type, socket) {
         var query = connectionModel.find({$and: [ {connectionId: {'$ne':connectionId}}, {gadgetId: {'$ne': null}}]}).select('connectionId -_id');
         query.exec(function (err, result) {
             if (err){
@@ -225,7 +226,7 @@ function connection (ModelHandler) {
                 for(var i=0; i< result.length; i++) {
                     gadgets.push(result[i].connectionId);
                 }
-                ModelHandler.startPollFinally(gadgets, type, connectionId);
+                ModelHandler.createPollFinally(gadgets, type, connectionId, socket);
             }
         });
     };
