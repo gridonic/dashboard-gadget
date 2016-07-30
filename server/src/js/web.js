@@ -35,6 +35,8 @@ var WAITING_CREATE_USER = 1;
 var WAITING_LOGIN_USER = 2;
 var DISPLAY_WIDTH = 320;
 var DISPLAY_HEIGHT = 240;
+var HARVEST_PASSWORD_PLACEHOLDER = 'password';
+var HARVEST_PASSWORD_IDENTIFIER = 'data-harvest-pw';
 
 // Variables
 var socket = io();
@@ -104,7 +106,8 @@ dashboardUpdateContent = function () {
 
     for (var i = 0; i < keys.length; i++) {
         if (keys[i] === 'setting-harvest-password') {
-            document.getElementById(keys[i]).value = 'password';
+            document.getElementById(keys[i]).value = HARVEST_PASSWORD_PLACEHOLDER;
+            document.getElementById(keys[i]).setAttribute(HARVEST_PASSWORD_IDENTIFIER, settings[keys[i]]);
         } else {
             document.getElementById(keys[i]).value = settings[keys[i]];
         }
@@ -355,8 +358,6 @@ handleArduinoLogout = function () {
 handleDashboardLoggedIn = function (data) {
     actualWaiting = WAITING_CREATE_USER;
 
-    log('logged in successfully');
-    log(data);
     StorageHandler.setUser(data.username);
     StorageHandler.setToken(data.token);
     StorageHandler.setUserSettings(data.settings);
@@ -433,7 +434,12 @@ dashboardUserSettings = function () {
 
         for (var i = 0; i < formData.length; i++) {
             if (formData[i] instanceof HTMLInputElement) {
-                userSettings[formData[i].id] = formData[i].value;
+
+                if (formData[i].id === 'setting-harvest-password' && formData[i].value === HARVEST_PASSWORD_PLACEHOLDER) {
+                    userSettings[formData[i].id] = document.getElementById(formData[i].id).getAttribute(HARVEST_PASSWORD_IDENTIFIER);
+                } else {
+                    userSettings[formData[i].id] = formData[i].value;
+                }
             }
         }
 
@@ -544,11 +550,13 @@ handleShow = function (data) {
 };
 
 simulatorStart = function () {
-    if (document.body.className != 'simulator') {
-        return;
-    }
+    // if (document.body.className != 'simulator') {
+    //     return;
+    // }
 
-    StorageHandler.delete();
+    // StorageHandler.delete();
+
+    log('simulatorStart.');
 };
 
 handleShowWorkTime = function (data) {

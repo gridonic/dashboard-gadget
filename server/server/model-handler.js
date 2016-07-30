@@ -19,7 +19,10 @@ function modelHandler () {
     var removeConnection;
     var initDB;
     var saveUserSettings;
+    var setupDisplayForArduino;
     var setupSchema;
+    var showDisplayOnArduino;
+
     var getUser;
     var createUser;
     var loginUser;
@@ -36,11 +39,11 @@ function modelHandler () {
     
 
     // variables
+    var connected   = false;
     var url         = 'mongodb://localhost:9999/test';
     var User        = new user(this);
     var Token       = new token(this);
     var Mood        = new mood(this);
-    var connected   = false;
     var Gadget      = new gadget(this);
     var Connection  = new connection(this);
     var Poll        = new poll(this);
@@ -60,6 +63,7 @@ function modelHandler () {
     this.loginUser                  = function (username, password, gadget, socketId, callback) { return loginUser(username, password, gadget, socketId, callback); };
     this.removeConnection           = function (connectionId) { return removeConnection(connectionId); };
     this.saveUserSettings           = function (token, username, settings, callback) { return saveUserSettings(token, username, settings, callback); };
+    this.setupDisplayForArduino      = function (socketId, callback) { return setupDisplayForArduino(socketId, callback); };
 
     this.getUser = function (username, password, callback) { return getUser(username, password, callback); };
     this.createUserFinally = function (err, result, username, password, callback) { return createUserFinally(err, result, username, password, callback); };
@@ -235,7 +239,7 @@ function modelHandler () {
      * @param connectionId
      */
     removeConnection = function (connectionId) {
-        Connection.findConnectionToDelete(connectionId, function (err, result) {
+        Connection.findConnectionById(connectionId, function (err, result) {
             if (err === null) {
 
                 console.log('remove conection');
@@ -311,6 +315,51 @@ function modelHandler () {
     startPoll = function (sockets, type, connectionId, socket) {
         Poll.startPoll(sockets, type, connectionId, socket);
 
+    };
+
+    /**
+     * Display the stuff on the arduino.
+     */
+    setupDisplayForArduino = function (socketId, callback) {
+        console.log(socketId);
+
+        Connection.findConnectionById(socketId, function (err, conn) {
+            if (err) {
+                // todo: handleError
+            } else {
+                Gadget.findGadgetById(conn.gadgetId, function (err, gadget) {
+                    if (err) {
+                        // todo: handleError
+                    } else {
+                        User.getUserByUsername(gadget.lastUserName, function (err, user) {
+                            showDisplayOnArduino(callback, user);
+
+                            setInterval(function () {
+                                showDisplayOnArduino(callback, user);
+                            }, 60000);
+                        });
+                    }
+                });
+            }
+        });
+    };
+
+    showDisplayOnArduino = function (callback, user) {
+        var worktime = null;
+        var harvestCredentials = {};
+        var userSettings;
+
+        if (user.userSettings) {
+            userSettings = JSON.parse(user.userSettings);
+
+            harvestCredentials['domain'] = userSettings['setting-harvest-domain'];
+            harvestCredentials['email'] = userSettings['setting-harvest-email'];
+            harvestCredentials['password'] = User.decodeHarvestPassword(userSettings['setting-harvest-password']);
+
+            console.log(harvestCredentials);
+            worktime = 30;
+        }
+        callback(worktime);
     };
 
     /**

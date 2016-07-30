@@ -6,7 +6,7 @@ function connection (ModelHandler) {
     var construct;
     var create;
     var deleteConnection;
-    var findConnectionToDelete;
+    var findConnectionById;
     var findConnectionAndChangeMood;
     var getGadgetArray;
 
@@ -29,7 +29,7 @@ function connection (ModelHandler) {
     this.create                         = function (connectionId, id, type) { return create(connectionId, id, type, false); };
     this.deleteConnection               = function (connectionId) { return deleteConnection(connectionId); };
     this.findConnectionAndChangeMood    = function (connectionId, currentMood) { return findConnectionAndChangeMood(connectionId, currentMood); };
-    this.findConnectionToDelete         = function (connectionId, callback) { return findConnectionToDelete(connectionId, callback); };
+    this.findConnectionById             = function (connectionId, callback) { return findConnectionById(connectionId, callback); };
     this.getGadgetArray                 = function (connectionId, type, socket) { return getGadgetArray(connectionId, type, socket); };
     this.update                         = function (connectionId, id, type) { return create(connectionId, id, type, true); };
 
@@ -202,7 +202,7 @@ function connection (ModelHandler) {
      * @param connectionId: ID of connection.
      * @returns {*}
      */
-    findConnectionToDelete = function (connectionId, callback) {
+    findConnectionById = function (connectionId, callback) {
         connectionModel.findOne({connectionId: connectionId}, function (err, result) {
             callback(err, result);
         });

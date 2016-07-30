@@ -87,23 +87,33 @@ function socketHandler (Handler) {
         console.log(data);
 
         socket.emit('showBlack', {data: null});
-        var i = 0;
+        // var i = 0;
 
-        socket.emit('showWorkTime', { draw: Graphic.getWorktimeDisplay(i)});
-        setTimeout(function () {
-            socket.emit('showTime', { draw: Graphic.getActualTimeDisplay()});
-        }, 100);
-        i++;
-
-        setInterval(function () {
-            socket.emit('showWorkTime', { draw: Graphic.getWorktimeDisplay(i)});
+        Handler.setupDisplayForArduino(socket.id, function (workTime) {
+            if (workTime != null) {
+                socket.emit('showWorkTime', {draw: Graphic.getWorktimeDisplay(workTime)});
+            }
 
             setTimeout(function () {
-                socket.emit('showTime', { draw: Graphic.getActualTimeDisplay()});
+                socket.emit('showTime', { draw: Graphic.getActualTimeDisplay() });
             }, 100);
+        });
 
-            i++;
-        }, 60000);
+        // socket.emit('showWorkTime', { draw: Graphic.getWorktimeDisplay(i)});
+        // setTimeout(function () {
+        //     socket.emit('showTime', { draw: Graphic.getActualTimeDisplay()});
+        // }, 100);
+        // i++;
+        //
+        // setInterval(function () {
+        //     socket.emit('showWorkTime', { draw: Graphic.getWorktimeDisplay(i)});
+        //
+        //     setTimeout(function () {
+        //         socket.emit('showTime', { draw: Graphic.getActualTimeDisplay()});
+        //     }, 100);
+        //
+        //     i++;
+        // }, 60000);
 
         // setTimeout(function () {
         //     socket.emit('showWhite', {data: null});

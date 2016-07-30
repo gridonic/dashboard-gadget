@@ -5,7 +5,9 @@ function user (ModelHandler) {
     // Functions
     var construct;
     var create;
+    var decodeHarvestPassword;
     var getUser;
+    var getUserByUsername;
     var findUserByUsername;
     var findUserForLogin;
     var addGadgetToUser;
@@ -31,9 +33,11 @@ function user (ModelHandler) {
     this.addGadgetToUser        = function(username, gadget, callback) {return addGadgetToUser(username, gadget, callback);};
     this.construct              = function (mongoose) { return construct(mongoose); };
     this.create                 = function (username, password, callback) { return create(username, password, callback); };
+    this.decodeHarvestPassword  = function (password) { return decodeHarvestPassword(password); };
     this.findUserByUsername     = function (username, password, callback) { return findUserByUsername(username, password, callback); };
     this.findUserForLogin       = function (username, password, finalCallback, callback) { return findUserForLogin(username, password, finalCallback, callback); };
     this.getUser                = function (username, password, callback) { return getUser(username, password, callback); };
+    this.getUserByUsername      = function (username, callback) { return getUserByUsername(username, callback); };
     this.updateUserSettings     = function (username, settings, callback) { return updateUserSettings(username, settings, callback); };
 
     /* =====================================================================
@@ -102,6 +106,15 @@ function user (ModelHandler) {
         });
     };
 
+    decodeHarvestPassword = function (password) {
+        try {
+            var decoded = jwt.verify(password, key);
+            return decoded.password;
+        } catch (e) {
+            return password;
+        }
+    };
+
     getUser = function (username, password, callback) {
         userModel.find({username: username}, function (err, result) {
             var user = result[result.length - 1];
@@ -116,6 +129,23 @@ function user (ModelHandler) {
             }
         });
 
+    };
+
+    /**
+     * The easy version of getUser or findUserByUsername without password or other callbacks.
+     *
+     * @param username
+     * @param callback
+     */
+    getUserByUsername = function (username, callback) {
+        userModel.findOne({username: username}, function (err, result) {
+            if (result) {
+                result.password = null;
+                result.userSettings = result.userSettings ? result.userSettings : {};
+            }
+
+            callback(err, result);
+        });
     };
 
     /**
@@ -144,7 +174,7 @@ function user (ModelHandler) {
             } else {
                 var foundId = result._id;
                 if (bcrypt.compareSync(password, result.password)) {
-                    callback(foundId, result.userSettings);
+                    callback(foundId, result.userSettings ? result.userSettings : '{}');
                 } else {
                     finalCallback(false, {message: 'The password does not match.'});
                 }
@@ -189,6 +219,8 @@ function user (ModelHandler) {
             callback(JSON.parse(result.userSettings));
         });
     };
+
+
     
     
 }
