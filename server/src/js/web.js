@@ -475,7 +475,6 @@ handleShowTime = function (data) {
 // TODO: Adressen hier, die funktionen an sich in externes File auslagern.
 
 socket.on('show', function (data) {
-    console.log('---------der type------- ' + data.type);
     handleShow(data)
 });
 

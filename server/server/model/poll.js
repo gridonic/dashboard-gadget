@@ -30,12 +30,12 @@ function poll (DB) {
         return create(type, sockets, connectionId, socket);
     };
 
-    this.update = function (name, currentMood) {
-        return update(name, currentMood);
+    this.update = function (type, connectionId, answer) {
+        return update(type, connectionId, answer);
     };
 
-    this.startPoll = function (socketArray, type, connectionId, socket) {
-        return startPoll(socketArray, type, connectionId, socket);
+    this.startPoll = function (sockets, type, connectionId, socket) {
+        return startPoll(sockets, type, connectionId, socket);
     };
     this.calculateResult = function (socketId, answer) {
         return calculateResult(socketId, answer);
@@ -90,24 +90,25 @@ function poll (DB) {
             answers: participants
         });
 
-        pollModel.findOne({name: type}, function(err, result) {
+        console.log('this is the new poll ----------- ' + newPoll);
 
+        pollModel.findOne({type: type}, function(err, result) {
             if (result === null) {
+
                 newPoll.save(function (err, result) {
                     if (err) {
                         console.log('New Poll could not be saved.');
                     } else {
-                        console.log(result);
-                        startPoll(sockets, type, connectionId, socket);
+                        //update of the answer list with the answer of the user who initiated the poll. His answer is always 'yes'
+                        update(type, connectionId, true);
+
+                        DB.startPoll(sockets, type, connectionId, socket);
                     }
                 });
             } else {
                 console.log('Poll of this type already ongoing.');
             }
         });
-
-        //update of the answer list with the answer of the user who initiated the poll. His answer is always 'yes'
-        update(type, connectionId, true);
 
     };
 
@@ -127,6 +128,7 @@ function poll (DB) {
             if (err){
                 console.log('No poll of this type ongoing anymore, your answer comes to late.');
             }else {
+                console.log('the result: ' + result);
                 var answers = result.answers;
                 answers[connectionId] = answer;
             }
@@ -151,9 +153,14 @@ function poll (DB) {
      * @param socket:
      */
     startPoll = function (sockets, type, connectionId, socket) {
+
+        console.log('-------- ' + type + '   ' + connectionId + '   ' + socket);
+
+
         for (var i = 0; i<sockets.length; i++) {
             console.log(sockets[i]);
-            socket.to(sockets[i]).emit('show', {type: type});
+            socket.to(sockets[i]).emit('sendSuccess', {type: type});
+            console.log('socket ' + sockets[i] + ' emited!');
         }
 
     };

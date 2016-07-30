@@ -36,6 +36,7 @@ function db () {
     var getGadgetArray;
     var createPoll;
     var createPollFinally;
+    var startPoll;
     
 
     // variables
@@ -78,6 +79,7 @@ function db () {
     this.getGadgetArray = function (connectionId, type) {return getGadgetArray(connectionId, type);};
     this.createPoll = function (connectionId, type, socket) {return createPoll(connectionId, type, socket);};
     this.createPollFinally = function (sockets, type, connectionId, socket) {return createPollFinally(sockets, type, connectionId, socket);};
+    this.startPoll = function (sockets, type, connectionId, socket) {return startPoll(sockets, type, connectionId, socket);};
 
     /* ======================================================================
      * Private functions
@@ -312,6 +314,18 @@ function db () {
     createPollFinally = function (sockets, type, connectionId, socket) {
         Poll.create(type, sockets, connectionId, socket);
         
+    };
+
+    /**
+     * Asks for an all the gadget connections.
+     * @param sockets: Array of all gadget connections except the starting one.
+     * @param type: Type of the poll to be started.
+     * @param connectionId: Connection ID of the gadget who started the poll.
+     * @param socket:
+     */
+    startPoll = function (sockets, type, connectionId, socket) {
+        Poll.startPoll(sockets, type, connectionId, socket);
+
     };
 
     /**
