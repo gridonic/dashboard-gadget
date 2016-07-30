@@ -81,6 +81,8 @@ showElement = function (element) {
 
 dashboardHideUser = function () {
     elementUsername.innerHTML = '';
+    formUserSetting.reset();
+
     hideElement(sectionUser);
     hideElement(sectionLogout);
     showElement(sectionLogin);
@@ -100,7 +102,11 @@ dashboardUpdateContent = function () {
     var username = StorageHandler.getUser();
 
     for (var i = 0; i < keys.length; i++) {
-        document.getElementById(keys[i]).value = settings[keys[i]];
+        if (keys[i] === 'setting-harvest-password') {
+            document.getElementById(keys[i]).value = 'password';
+        } else {
+            document.getElementById(keys[i]).value = settings[keys[i]];
+        }
     }
 
     elementUsername.innerHTML = username;
@@ -402,6 +408,8 @@ handleDashboardStart = function () {
     if (token && username) {
         dashboardShowUser();
         dashboardUpdateContent();
+    } else {
+        dashboardHideUser();
     }
 };
 

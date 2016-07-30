@@ -13,6 +13,7 @@ function user (ModelHandler) {
 
     // Other modules
     var bcrypt = require('bcrypt');
+    var jwt = require('jsonwebtoken');
 
     // Variables
     var userModel;
@@ -21,6 +22,7 @@ function user (ModelHandler) {
 
     // Constants
     const saltRounds = 10;
+    const key = 'OU8B70JF5XJy4Cq4';
 
     /* =====================================================================
      * Public functions
@@ -142,7 +144,7 @@ function user (ModelHandler) {
             } else {
                 var foundId = result._id;
                 if (bcrypt.compareSync(password, result.password)) {
-                    callback(foundId, result.settings);
+                    callback(foundId, result.userSettings);
                 } else {
                     finalCallback(false, {message: 'The password does not match.'});
                 }
@@ -170,7 +172,19 @@ function user (ModelHandler) {
      * @param callback
      */
     updateUserSettings = function (username, settings, callback) {
-        var settingsString = JSON.stringify(settings);
+
+        var updatedSettings = settings;
+        var harvestPassword = updatedSettings['setting-harvest-password'];
+        var settingsString;
+
+        try {
+            jwt.verify(harvestPassword, key);
+        } catch (e) {
+            harvestPassword = jwt.sign({password: harvestPassword}, key);
+            updatedSettings['setting-harvest-password'] = harvestPassword;
+        }
+
+        settingsString = JSON.stringify(updatedSettings);
         userModel.findOneAndUpdate({username: username}, {$set: {userSettings: settingsString}}, {new: true}, function (err, result) {
             callback(JSON.parse(result.userSettings));
         });
