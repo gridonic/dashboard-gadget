@@ -18,6 +18,8 @@ var handleShowWorkTime;
 var handleError;
 var bitToImage;
 var log;
+var hideElement;
+var showElement;
 
 // Constants
 var WAITING_DEFAULT = 0;
@@ -38,9 +40,12 @@ var login = document.getElementById('btn-login');
 var logout = document.getElementById('btn-logout');
 var canvas = document.getElementById("display");
 var updateMood = document.getElementById('btn-update');
+var sectionCreate = document.getElementById('section-create');
 var sectionLogin = document.getElementById('section-login');
+var sectionUser = document.getElementById('section-user');
 var sectionLogout = document.getElementById('section-logout');
 var startPoll = document.getElementById('poll-start');
+var elementUsername = document.getElementById('element-username');
 var context;
 var actualWaiting = WAITING_DEFAULT;
 
@@ -55,6 +60,14 @@ log = function (message) {
     if (output) {
         output.innerHTML = output.innerHTML + '<br>' + message;
     }
+};
+
+hideElement = function (element) {
+    element.style.display = 'none';
+};
+
+showElement = function (element) {
+    element.style.display = 'block';
 };
 
 drawWorkingIcon = function (x, y) {
@@ -301,8 +314,11 @@ handleLoggedIn = function (data) {
 
     log('logged in successfully');
     log(data);
-    sectionLogout.style.display = 'block';
-    sectionLogin.style.display = 'none';
+    showElement(sectionUser);
+    showElement(sectionLogout);
+    hideElement(sectionLogin);
+    hideElement(sectionCreate);
+    elementUsername.innerHTML = data.username;
 };
 
 /**
@@ -316,7 +332,8 @@ handleLogin = function () {
         return;
     }
 
-    sectionLogout.style.display = 'none';
+    hideElement(sectionUser);
+    hideElement(sectionLogout);
 
     login.onclick = function () {
         var username = document.getElementById('login-username').value;

@@ -169,7 +169,7 @@ function modelHandler () {
                         // finally, update the gadget by adding the logged in user.
                         Gadget.update(gadgetId, userId, username);
 
-                        callback(true, {token: token});
+                        callback(true, {token: token, username: username});
                     }
                 });
             }
