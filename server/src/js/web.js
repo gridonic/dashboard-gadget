@@ -1,14 +1,16 @@
-console.log('web.js found.');
+// Modules
+require('./module/storage-handler');
 
 // Functions
 var drawWorkingIcon;
-var handleStart;
+var handleArduinoLogin;
 var handleArduinoLogout;
-var handleButtons;
-var handleCreate;
-var handleLoggedIn;
-var handleLogin;
-var handleLogout;
+var handleArduinoButtons;
+var handleDashboardCreate;
+var handleDashboardLoggedIn;
+var handleDashboardLogin;
+var handleDashboardLogout;
+var handleDashboardStart;
 var handleUpdateMood;
 var handleStartPoll;
 var handleSuccess;
@@ -20,6 +22,8 @@ var bitToImage;
 var log;
 var hideElement;
 var showElement;
+var dashboardShowUser;
+var dashboardHideUser;
 
 // Constants
 var WAITING_DEFAULT = 0;
@@ -52,6 +56,7 @@ var actualWaiting = WAITING_DEFAULT;
 if (canvas !== null) {
     context = canvas.getContext("2d");
 }
+var StorageHandler = storageHandler();
 
 log = function (message) {
     console.log(message);
@@ -68,6 +73,22 @@ hideElement = function (element) {
 
 showElement = function (element) {
     element.style.display = 'block';
+};
+
+dashboardHideUser = function () {
+    elementUsername.innerHTML = '';
+    hideElement(sectionUser);
+    hideElement(sectionLogout);
+    showElement(sectionLogin);
+    showElement(sectionCreate);
+};
+
+dashboardShowUser = function (username) {
+    elementUsername.innerHTML = username;
+    showElement(sectionUser);
+    showElement(sectionLogout);
+    hideElement(sectionLogin);
+    hideElement(sectionCreate);
 };
 
 drawWorkingIcon = function (x, y) {
@@ -235,7 +256,7 @@ bitToImage = function (bitString) {
  * All of the actions are handled by the server, we are
  * just sending the inputs to the server.
  */
-handleButtons = function () {
+handleArduinoButtons = function () {
 
     if (!arduinoRightButton || !arduinoLeftButton || !arduinoBothButton) {
         return;
@@ -258,7 +279,7 @@ handleButtons = function () {
  * Handle the Start-Button.
  * Simulates the login on the server via an arduino.
  */
-handleStart = function () {
+handleArduinoLogin = function () {
 
     if (start === null) {
         return;
@@ -275,7 +296,7 @@ handleStart = function () {
  * Handle the Create-Button.
  * Creates a User on the server.
  */
-handleCreate = function () {
+handleDashboardCreate = function () {
 
     if (create === null) {
         log('no create-button found.');
@@ -309,31 +330,26 @@ handleArduinoLogout = function () {
     };
 };
 
-handleLoggedIn = function (data) {
+handleDashboardLoggedIn = function (data) {
     actualWaiting = WAITING_CREATE_USER;
 
     log('logged in successfully');
     log(data);
-    showElement(sectionUser);
-    showElement(sectionLogout);
-    hideElement(sectionLogin);
-    hideElement(sectionCreate);
-    elementUsername.innerHTML = data.username;
+    StorageHandler.setUser(data.username);
+    StorageHandler.setToken(data.token);
+    dashboardShowUser(data.username);
 };
 
 /**
  * Handle the Login-Button.
  * Login to an existing user.
  */
-handleLogin = function () {
+handleDashboardLogin = function () {
 
     if (login === null) {
         log('no login-button found.');
         return;
     }
-
-    hideElement(sectionUser);
-    hideElement(sectionLogout);
 
     login.onclick = function () {
         var username = document.getElementById('login-username').value;
@@ -349,15 +365,26 @@ handleLogin = function () {
  * Handle the Logout-Button.
  * Logout a user.
  */
-handleLogout = function () {
+handleDashboardLogout = function () {
     if (logout === null) {
         log('no logout-button found.');
         return;
     }
     
     logout.onclick = function() {
+        StorageHandler.delete();
+        dashboardHideUser();
+        
         socket.emit('logoutUser');
     };
+};
+
+handleDashboardStart = function () {
+    var username = StorageHandler.getUser();
+    var token = StorageHandler.getToken();
+    if (token && username) {
+        dashboardShowUser(username);
+    }
 };
 
 /**
@@ -501,11 +528,6 @@ handleShowTime = function (data) {
     context.fillStyle = "#000000";
     context.font = textSize + "px Courier New";
     context.fillText(timeString, padding, DISPLAY_HEIGHT - padding);
-    // tft.setCursor(padding, displayHeight - padding - textSize);
-    // tft.setTextColor(ILI9340_BLACK);
-    // tft.setTextSize(2);
-    // tft.println(timeString);
-
 };
 
 // TODO: Adressen hier, die funktionen an sich in externes File auslagern.
@@ -546,16 +568,20 @@ socket.on('userCreated', function (data) {
 });
 
 socket.on('userLoggedIn', function (data) {
-    handleLoggedIn(data);
+    handleDashboardLoggedIn(data);
 });
 
+// Start modules
+StorageHandler.init();
+
 // Start own functions.
-handleStart();
+handleArduinoLogin();
 handleArduinoLogout();
-handleCreate();
-handleLogin();
-handleLogout();
+handleDashboardCreate();
+handleDashboardLogin();
+handleDashboardLogout();
+handleDashboardStart();
 handleUpdateMood();
 handleStartPoll();
-handleButtons();
+handleArduinoButtons();
 
