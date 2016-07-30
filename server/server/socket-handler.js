@@ -16,6 +16,7 @@ function socketHandler (Handler) {
     var onLoginGadget;
     var onLoginUser;
     var onLogoutUser;
+    var onSaveUserSettings;
     var onSuccess;
     var onUpdateMood;
     var onStartPoll;
@@ -43,6 +44,7 @@ function socketHandler (Handler) {
     this.onLoginGadget = function (data) { return onLoginGadget(data); };
     this.onLoginUser = function (data) { return onLoginUser(data); };
     this.onLogoutUser = function() { return onLogoutUser();};
+    this.onSaveUserSettings = function (data) { return onSaveUserSettings(data); };
     this.onSuccess = function (data) { return onSuccess(data); };
     this.onUpdateMood = function (data) { return onUpdateMood(data);};
     this.onStartPoll = function (data) { return onStartPoll(data);};
@@ -221,6 +223,16 @@ function socketHandler (Handler) {
 
     onUpdateMood = function (data) {
         Handler.changeMood(socket.id, data.currentMood);
+    };
+
+    onSaveUserSettings = function (data) {
+        Handler.saveUserSettings(data.token, data.username, data.settings, function (settings) {
+            if (settings === false) {
+                socket.emit('sendError', {message: 'Couldn\'t save the settings.'});
+            } else {
+                socket.emit('userSettings', settings);
+            }
+        });
     };
     
     onStartPoll = function (data) {

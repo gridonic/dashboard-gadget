@@ -2,22 +2,24 @@
 
 function user (ModelHandler) {
 
-    // functions
+    // Functions
     var construct;
     var create;
     var getUser;
     var findUserByUsername;
     var findUserForLogin;
     var addGadgetToUser;
-    var getUserIdByUsername;
+    var updateUserSettings;
+
+    // Other modules
     var bcrypt = require('bcrypt');
 
-    // variables
+    // Variables
     var userModel;
     var userSchema;
     var userMongoose;
 
-    //constants
+    // Constants
     const saltRounds = 10;
 
     /* =====================================================================
@@ -30,7 +32,7 @@ function user (ModelHandler) {
     this.findUserByUsername     = function (username, password, callback) { return findUserByUsername(username, password, callback); };
     this.findUserForLogin       = function (username, password, finalCallback, callback) { return findUserForLogin(username, password, finalCallback, callback); };
     this.getUser                = function (username, password, callback) { return getUser(username, password, callback); };
-
+    this.updateUserSettings     = function (username, settings, callback) { return updateUserSettings(username, settings, callback); };
 
     /* =====================================================================
      * Private functions
@@ -52,6 +54,7 @@ function user (ModelHandler) {
             username: String,
             id: Number,
             password: String,
+            userSettings: String,
             appActivated: Array,
             appSettings: Array,
             gadgetId: Number,
@@ -139,12 +142,11 @@ function user (ModelHandler) {
             } else {
                 var foundId = result._id;
                 if (bcrypt.compareSync(password, result.password)) {
-                    callback(foundId);
+                    callback(foundId, result.settings);
                 } else {
                     finalCallback(false, {message: 'The password does not match.'});
                 }
             }
-
         });
     };
 
@@ -157,6 +159,20 @@ function user (ModelHandler) {
     addGadgetToUser = function (username, gadget, callback) {
         userModel.findOneAndUpdate({username: username}, {$set: {gadgetId: gadget}}, function (err) {
             callback(err);
+        });
+    };
+
+    /**
+     * Update user settings, overrides old settings, returns new settings.
+     *
+     * @param username
+     * @param settings
+     * @param callback
+     */
+    updateUserSettings = function (username, settings, callback) {
+        var settingsString = JSON.stringify(settings);
+        userModel.findOneAndUpdate({username: username}, {$set: {userSettings: settingsString}}, {new: true}, function (err, result) {
+            callback(JSON.parse(result.userSettings));
         });
     };
     

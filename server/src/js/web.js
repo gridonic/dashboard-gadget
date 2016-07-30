@@ -2,6 +2,8 @@
 require('./module/storage-handler');
 
 // Functions
+var dashboardUserSettings;
+var dashboardUpdateContent;
 var drawWorkingIcon;
 var handleArduinoLogin;
 var handleArduinoLogout;
@@ -11,6 +13,7 @@ var handleDashboardLoggedIn;
 var handleDashboardLogin;
 var handleDashboardLogout;
 var handleDashboardStart;
+var handleDashboardUserSettingsUpdated;
 var handleUpdateMood;
 var handleStartPoll;
 var handleSuccess;
@@ -44,6 +47,7 @@ var login = document.getElementById('btn-login');
 var logout = document.getElementById('btn-logout');
 var canvas = document.getElementById("display");
 var updateMood = document.getElementById('btn-update');
+var formUserSetting = document.getElementById("form-user-settings");
 var sectionCreate = document.getElementById('section-create');
 var sectionLogin = document.getElementById('section-login');
 var sectionUser = document.getElementById('section-user');
@@ -83,12 +87,23 @@ dashboardHideUser = function () {
     showElement(sectionCreate);
 };
 
-dashboardShowUser = function (username) {
-    elementUsername.innerHTML = username;
+dashboardShowUser = function () {
     showElement(sectionUser);
     showElement(sectionLogout);
     hideElement(sectionLogin);
     hideElement(sectionCreate);
+};
+
+dashboardUpdateContent = function () {
+    var settings = JSON.parse(StorageHandler.getUserSettings());
+    var keys = Object.keys(settings);
+    var username = StorageHandler.getUser();
+
+    for (var i = 0; i < keys.length; i++) {
+        document.getElementById(keys[i]).value = settings[keys[i]];
+    }
+
+    elementUsername.innerHTML = username;
 };
 
 drawWorkingIcon = function (x, y) {
@@ -337,7 +352,9 @@ handleDashboardLoggedIn = function (data) {
     log(data);
     StorageHandler.setUser(data.username);
     StorageHandler.setToken(data.token);
-    dashboardShowUser(data.username);
+    StorageHandler.setUserSettings(data.settings);
+    dashboardShowUser();
+    dashboardUpdateContent();
 };
 
 /**
@@ -374,7 +391,7 @@ handleDashboardLogout = function () {
     logout.onclick = function() {
         StorageHandler.delete();
         dashboardHideUser();
-        
+
         socket.emit('logoutUser');
     };
 };
@@ -383,8 +400,38 @@ handleDashboardStart = function () {
     var username = StorageHandler.getUser();
     var token = StorageHandler.getToken();
     if (token && username) {
-        dashboardShowUser(username);
+        dashboardShowUser();
+        dashboardUpdateContent();
     }
+};
+
+dashboardUserSettings = function () {
+
+    // todo: fill content of form on start if we have them in the browser.
+
+    formUserSetting.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        var formData = formUserSetting.elements;
+        var userSettings = {};
+
+        for (var i = 0; i < formData.length; i++) {
+            if (formData[i] instanceof HTMLInputElement) {
+                userSettings[formData[i].id] = formData[i].value;
+            }
+        }
+
+        socket.emit('saveUserSettings', {
+            token: StorageHandler.getToken(),
+            username: StorageHandler.getUser(),
+            settings: userSettings
+        });
+    });
+};
+
+handleDashboardUserSettingsUpdated = function (data) {
+    StorageHandler.setUserSettings(JSON.stringify(data));
+    dashboardUpdateContent();
 };
 
 /**
@@ -567,6 +614,10 @@ socket.on('userCreated', function (data) {
     actualWaiting = WAITING_DEFAULT;
 });
 
+socket.on('userSettings', function (data) {
+    handleDashboardUserSettingsUpdated(data);
+});
+
 socket.on('userLoggedIn', function (data) {
     handleDashboardLoggedIn(data);
 });
@@ -581,6 +632,7 @@ handleDashboardCreate();
 handleDashboardLogin();
 handleDashboardLogout();
 handleDashboardStart();
+dashboardUserSettings();
 handleUpdateMood();
 handleStartPoll();
 handleArduinoButtons();

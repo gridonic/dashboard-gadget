@@ -93,6 +93,10 @@ io.on('connection', function (socket) {
     socket.on('logoutUser', function () {
         SocketHandler.onLogoutUser();
     });
+
+    socket.on('saveUserSettings', function (data) {
+        SocketHandler.onSaveUserSettings(data);
+    });
     
     socket.on('updateMood', function (data){
         SocketHandler.onUpdateMood(data);

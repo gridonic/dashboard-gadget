@@ -7,7 +7,7 @@ function token (ModelHandler) {
     var construct;
     var create;
     var update;
-    var getUserToken;
+    var createUserToken;
 
     // variables
     var tokenModel;
@@ -20,7 +20,8 @@ function token (ModelHandler) {
      * Public functions
      * ===================================================================== */
 
-    this.getUserToken           = function (id, username, gadget, socketId, callback) {return getUserToken(id, username, gadget, socketId, callback); };
+    this.checkToken             = function (token) { return isValid(token); };
+    this.createUserToken           = function (id, username, gadget, socketId, callback) { return createUserToken(id, username, gadget, socketId, callback); };
     this.construct              = function (mongoose) { return construct(mongoose); };
     this.create                 = function (id) { return create(id); };
     this.update                 = function (id) { return update(id); };
@@ -121,7 +122,7 @@ function token (ModelHandler) {
      * @param id: id of the user.
      * @param callback: Call this with the new token.
      */
-    getUserToken = function (id, callback) {
+    createUserToken = function (id, callback) {
         tokenModel.findOne({_id: id}, function (err, result) {
             if (result == null) {
                 // No token found for this user-id. Create one.

@@ -5,15 +5,18 @@ storageHandler = function () {
     var getItem;
     var getToken;
     var getUsername;
+    var getUserSettings;
     var init;
     var removeItem;
     var setItem;
     var setToken;
     var setUsername;
+    var setUserSettings;
 
     // Constants
     var PREFIX = '_dashboard';
     var ITEM_USERNAME = PREFIX + '_username';
+    var ITEM_USER_SETTINGS = PREFIX + '_user-settings';
     var ITEM_TOKEN = PREFIX + '_token';
     var ITEM_VERSION = PREFIX + '_version';
 
@@ -22,10 +25,12 @@ storageHandler = function () {
     var version = '1.0.0';
 
     // Getters & Setters
-    getToken    = function () { return getItem(ITEM_TOKEN); };
-    getUsername = function () { return getItem(ITEM_USERNAME); };
-    setToken    = function (token) { setItem(ITEM_TOKEN, token); };
-    setUsername = function (username) { setItem(ITEM_USERNAME, username); };
+    getToken        = function () { return getItem(ITEM_TOKEN); };
+    getUsername     = function () { return getItem(ITEM_USERNAME); };
+    getUserSettings = function () { return getItem(ITEM_USER_SETTINGS); };
+    setToken        = function (token) { setItem(ITEM_TOKEN, token); };
+    setUsername     = function (username) { setItem(ITEM_USERNAME, username); };
+    setUserSettings = function (settings) { setItem(ITEM_USER_SETTINGS, settings); };
 
     /**
      * Clear the storage
@@ -77,8 +82,10 @@ storageHandler = function () {
         delete: clearStorage,
         getToken: getToken,
         getUser: getUsername,
+        getUserSettings: getUserSettings,
         init: init,
         setToken: setToken,
         setUser: setUsername,
+        setUserSettings: setUserSettings,
     };
 };

@@ -18,6 +18,7 @@ function modelHandler () {
     var addUserConnection;
     var removeConnection;
     var initDB;
+    var saveUserSettings;
     var setupSchema;
     var getUser;
     var createUser;
@@ -57,6 +58,7 @@ function modelHandler () {
     this.createUser                 = function (username, password, callback) { return createUser(username, password, callback); };
     this.loginUser                  = function (username, password, gadget, socketId, callback) { return loginUser(username, password, gadget, socketId, callback); };
     this.removeConnection           = function (connectionId) { return removeConnection(connectionId); };
+    this.saveUserSettings           = function (token, username, settings, callback) { return saveUserSettings(token, username, settings, callback); };
 
     this.getUser = function (username, password, callback) { return getUser(username, password, callback); };
     this.createUserFinally = function (err, result, username, password, callback) { return createUserFinally(err, result, username, password, callback); };
@@ -140,8 +142,8 @@ function modelHandler () {
             callback(false, {message: 'The database could not be found.'});
         }
 
-        User.findUserForLogin(username, password, callback, function (id) {
-            handleLoggedInUser(id, username, gadget, socketId, callback);
+        User.findUserForLogin(username, password, callback, function (id, settings) {
+            handleLoggedInUser(id, username, gadget, socketId, settings, callback);
         });
     };
 
@@ -151,10 +153,11 @@ function modelHandler () {
      * @param username: Username.
      * @param gadgetId: The user's gadget.
      * @param socketId: Socket which the user uses.
+     * @param settings: Settings of the user.
      * @param callback: To call when user is finally logged in.
      */
-    handleLoggedInUser = function (userId, username, gadgetId, socketId, callback) {
-        Token.getUserToken(userId, function (token) {
+    handleLoggedInUser = function (userId, username, gadgetId, socketId, settings, callback) {
+        Token.createUserToken(userId, function (token) {
             if (token === null) {
                 callback(false, {message: 'The token could not be generated for the user ' + username + ' with its id: ' + id});
             } else {
@@ -169,7 +172,7 @@ function modelHandler () {
                         // finally, update the gadget by adding the logged in user.
                         Gadget.update(gadgetId, userId, username);
 
-                        callback(true, {token: token, username: username});
+                        callback(true, {token: token, username: username, settings: settings});
                     }
                 });
             }
@@ -276,6 +279,24 @@ function modelHandler () {
     createPollFinally = function (sockets, type, connectionId, socket) {
         Poll.create(type, sockets, connectionId, socket);
         
+    };
+
+    /**
+     * Save users new settings after checking if token is correct.
+     *
+     * @param token
+     * @param username
+     * @param settings
+     * @param callback
+     */
+    saveUserSettings = function (token, username, settings, callback) {
+        if (Token.checkToken(token)) {
+            User.updateUserSettings(username, settings, function (settings) {
+                callback(settings);
+            });
+        } else {
+            callback(false);
+        }
     };
 
     /**
