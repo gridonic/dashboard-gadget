@@ -12,7 +12,6 @@ function poll (DB) {
     var update;
     var calculateResult;
     var checkResponses;
-    var drawResult;
     var startPoll;
 
     //Variables
@@ -37,8 +36,8 @@ function poll (DB) {
     this.startPoll = function (sockets, type, connectionId, socket) {
         return startPoll(sockets, type, connectionId, socket);
     };
-    this.calculateResult = function (socketId, answer) {
-        return calculateResult(socketId, answer);
+    this.calculateResult = function (sockets, type) {
+        return calculateResult(type);
     };
     this.checkResponses = function (sockets, type) {
         return checkResponses(sockets, type);
@@ -154,9 +153,6 @@ function poll (DB) {
      */
     startPoll = function (sockets, type, connectionId, socket) {
 
-        console.log('-------- ' + type + '   ' + connectionId + '   ' + socket);
-
-
         for (var i = 0; i<sockets.length; i++) {
             console.log(sockets[i]);
             socket.to(sockets[i]).emit('sendSuccess', {type: type});
@@ -165,16 +161,38 @@ function poll (DB) {
 
     };
     
-
+//todo (beni) sockets beinhaltet momentan noch nicht die Stimme des Users, welcher die Umfrage gestartet hat. Wird noch integriert.
     /**
      * Collects all answers from the joining gadgets and calculates the overall result.
-     * @param socketId: Id of the gadget the specific answer comes from.
-     * @param answer: Either 'true' for positive or 'false' for negative answer.
+     * @param sockets: All the sockets the poll has been sent to.
+     * @param type: Type of the poll to calculate result for.
      */
-    calculateResult = function (socketId, answer) {
-        timeout = setTimeout(function () { alert("Waiting for results"); }, 300000);
+    calculateResult = function (sockets, type) {
+        var positiveResponses = 0;
+        var negativeResponses = 0;
 
-        
+        pollModel.findOne({type:type}, function(err, result) {
+            if (err) {
+                console.log('No poll found to calculate result for.');
+            } else {
+                for (var i = 0; i < sockets.length; i++) {
+                    if (result[sockets[i]] === true) {
+                        positiveResponses++;
+                    } else {
+                        negativeResponses++;
+                    }
+                }
+                if (positiveResponses > negativeResponses) {
+                    //positives Ergebnis anzeigen.
+                } else if (negativeResponses > positiveResponses) {
+                    //negatives Ergebnis anzeigen.
+                } else {
+                    //Gleichstand anzeigen
+                }
+                positiveResponses = 0;
+                negativeResponses = 0;
+            }
+        });
 
     };
 
@@ -184,22 +202,21 @@ function poll (DB) {
      * @param type: Type of the poll.
      */
     checkResponses = function (sockets, type) {
-        var positiveResponsesCount = 0;
-        pollModel.findOne({name: type}, function(err, result) {
+        var responsesCount = 1;
+        pollModel.findOne({type: type}, function(err, result) {
             if (err) {
                 console.log('Poll of the type ' + type + ' not yet started.');
             } else {
                 for(var i=0; i<sockets.length; i++) {
                     if(result[sockets[i]] !== null) {
-                        positiveResponsesCount ++;
+                        responsesCount ++;
+                        if(responsesCount === sockets.length){
+                            calculateResult(sockets, type);
+                        }
                     }
                 }
             }
         });
-
-        if(positiveResponsesCount === sockets.length) {
-            calculateResult(type);
-        }
 
     };
 
