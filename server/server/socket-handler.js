@@ -198,11 +198,20 @@ function socketHandler (Handler) {
     };
     
     onLoginUser = function (data) {
-        Handler.loginUser(data.username, data.password, data.gadget, socket.id, function (error) {
-            console.log('error');
-            console.log(error);
-        }, function (success) {
-            console.log(success);
+        Handler.loginUser(data.username, data.password, data.gadget, socket.id, function (loggedIn, result) {
+            if (loggedIn) {
+                console.log('success');
+                console.log(result);
+                socket.emit('userLoggedIn', result);
+            } else {
+                console.log('an error occured, login not possible.');
+                if (result && result.message) {
+                    console.log(result.message);
+                    socket.emit('sendError', {message: 'Login not possible: ' + result.message});
+                } else {
+                    socket.emit('sendError', {message: 'Login not possible.'});
+                }
+            }
         });
     };
 

@@ -6,6 +6,7 @@ var handleStart;
 var handleArduinoLogout;
 var handleButtons;
 var handleCreate;
+var handleLoggedIn;
 var handleLogin;
 var handleLogout;
 var handleUpdateMood;
@@ -21,6 +22,7 @@ var log;
 // Constants
 var WAITING_DEFAULT = 0;
 var WAITING_CREATE_USER = 1;
+var WAITING_LOGIN_USER = 2;
 var DISPLAY_WIDTH = 320;
 var DISPLAY_HEIGHT = 240;
 
@@ -292,6 +294,13 @@ handleArduinoLogout = function () {
     };
 };
 
+handleLoggedIn = function (data) {
+    actualWaiting = WAITING_CREATE_USER;
+
+    log('logged in successfully');
+    log(data);
+};
+
 /**
  * Handle the Login-Button.
  * Login to an existing user.
@@ -309,7 +318,7 @@ handleLogin = function () {
         var gadgetID = parseInt(document.getElementById('selectGadget').value);
 
         socket.emit('loginUser', {'username': username, 'password': password, 'gadget': gadgetID});
-
+        actualWaiting = WAITING_LOGIN_USER;
     };
 };
 
@@ -374,6 +383,10 @@ handleError = function (data) {
 
     switch (actualWaiting) {
         case WAITING_CREATE_USER:
+            log('output: ' + data.message);
+            actualWaiting = WAITING_DEFAULT;
+            break;
+        case WAITING_LOGIN_USER:
             log('output: ' + data.message);
             actualWaiting = WAITING_DEFAULT;
             break;
@@ -509,6 +522,9 @@ socket.on('userCreated', function (data) {
     actualWaiting = WAITING_DEFAULT;
 });
 
+socket.on('userLoggedIn', function (data) {
+    handleLoggedIn(data);
+});
 
 // Start own functions.
 handleStart();

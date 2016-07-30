@@ -1,6 +1,6 @@
 'use strict';
 
-function user (DB) {
+function user (ModelHandler) {
 
     // functions
     var construct;
@@ -11,26 +11,30 @@ function user (DB) {
     var addGadgetToUser;
     var getUserIdByUsername;
     var bcrypt = require('bcrypt');
-    var token = require('./token.js');
-
 
     // variables
     var userModel;
     var userSchema;
     var userMongoose;
-    var Token = new token(this);
 
     //constants
     const saltRounds = 10;
 
+    /* =====================================================================
+     * Public functions
+     * ===================================================================== */
 
-    this.construct = function (mongoose) { return construct(mongoose); };
-    this.findUserByUsername = function (username, password, callback) { return findUserByUsername(username, password, callback); };
-    this.findUserForLogin = function (username, password, gadget, socketId) {return findUserForLogin(username, password, gadget, socketId);};
-    this.addGadgetToUser = function(username, gadget) {return addGadgetToUser(username,gadget);};
-    this.create = function (username, password, callback) { return create(username, password, callback); };
-    this.getUser = function (username, password, callback) { return getUser(username, password, callback); };
-    this.getUserIdByUsername = function (username, gadgetId, socketId) {return getUserIdByUsername(username, gadgetId, socketId);};
+    this.addGadgetToUser        = function(username, gadget, callback) {return addGadgetToUser(username, gadget, callback);};
+    this.construct              = function (mongoose) { return construct(mongoose); };
+    this.create                 = function (username, password, callback) { return create(username, password, callback); };
+    this.findUserByUsername     = function (username, password, callback) { return findUserByUsername(username, password, callback); };
+    this.findUserForLogin       = function (username, password, finalCallback, callback) { return findUserForLogin(username, password, finalCallback, callback); };
+    this.getUser                = function (username, password, callback) { return getUser(username, password, callback); };
+
+
+    /* =====================================================================
+     * Private functions
+     * ===================================================================== */
 
     /**
      * Construct the UserSchema and the UserModel.
@@ -117,40 +121,27 @@ function user (DB) {
      */
     findUserByUsername = function (username, password, callback) {
         userModel.find({username: username}, function (err, result) {
-            DB.createUserFinally(err, result, username, password, callback);
+            ModelHandler.createUserFinally(err, result, username, password, callback);
         });
     };
-
-    /**
-     * Sends back the user id which is related to the username in the database.
-     * @param username: we want to find
-     * @param gadgetId:
-     * @param socketId: The connection the user is using.
-     */
-    getUserIdByUsername = function (username, gadgetId, socketId) {
-        userModel.findOne({username: username}, function (err, result) {
-            DB.addUserToGadgetModel(result._id, gadgetId, username);
-            DB.addUserConnection(socketId, result._id);
-        });
-    }; 
 
     /**
      * Compare the input data with the data in Database.
      * @param username: we want to compare.
      * @param password:  we want to compare.
-     * @param gadget: The user's gadget.
-     * @param socketId: The socket which the user uses.
+     * @param finalCallback: the final callback, call this when you get an error.
+     * @param callback: Call this for errors or on success.
      */
-    findUserForLogin = function (username, password, gadget, socketId) {
+    findUserForLogin = function (username, password, finalCallback, callback) {
         userModel.findOne({username: username}, function (err, result) {
-            if(result === null){
-                console.log('User not found - create a new User before try to login!');
-            }else {
+            if (result === null) {
+                finalCallback(false, {message: 'User not found - create a new User before try to login!'});
+            } else {
                 var foundId = result._id;
                 if (bcrypt.compareSync(password, result.password)) {
-                    DB.validateToken(foundId, username, gadget, socketId);
+                    callback(foundId);
                 } else {
-                    console.log('wrong pw');
+                    finalCallback(false, {message: 'The password does not match.'});
                 }
             }
 
@@ -161,17 +152,12 @@ function user (DB) {
      * Adds the gadget the user has choosen to his user account.
      * @param username: we want to add a gadget for.
      * @param gadget: the user's gadget.
+     * @param callback: call when you find an error or you have finished everything.
      */
-    addGadgetToUser = function (username, gadget) {
-
-        userModel.findOneAndUpdate({username: username}, {$set:{gadgetId:gadget}}, function (err) {
-            if (err) {
-                console.log('Failed adding gadget ' + gadget + ' to user ' + username);
-            } else {
-                console.log('User ' + username + ' uses now gadget ' + gadget);
-            }
+    addGadgetToUser = function (username, gadget, callback) {
+        userModel.findOneAndUpdate({username: username}, {$set: {gadgetId: gadget}}, function (err) {
+            callback(err);
         });
-
     };
     
     
