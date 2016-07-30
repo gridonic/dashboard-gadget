@@ -38,6 +38,8 @@ var login = document.getElementById('btn-login');
 var logout = document.getElementById('btn-logout');
 var canvas = document.getElementById("display");
 var updateMood = document.getElementById('btn-update');
+var sectionLogin = document.getElementById('section-login');
+var sectionLogout = document.getElementById('section-logout');
 var startPoll = document.getElementById('poll-start');
 var context;
 var actualWaiting = WAITING_DEFAULT;
@@ -299,6 +301,8 @@ handleLoggedIn = function (data) {
 
     log('logged in successfully');
     log(data);
+    sectionLogout.style.display = 'block';
+    sectionLogin.style.display = 'none';
 };
 
 /**
@@ -311,6 +315,8 @@ handleLogin = function () {
         log('no login-button found.');
         return;
     }
+
+    sectionLogout.style.display = 'none';
 
     login.onclick = function () {
         var username = document.getElementById('login-username').value;
