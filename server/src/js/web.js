@@ -12,7 +12,7 @@ var handleDashboardCreate;
 var handleDashboardLoggedIn;
 var handleDashboardLogin;
 var handleDashboardLogout;
-var handleDashboardStart;
+var dashboardStart;
 var handleDashboardUserSettingsUpdated;
 var handleUpdateMood;
 var handleStartPoll;
@@ -23,6 +23,7 @@ var handleShowWorkTime;
 var handleError;
 var bitToImage;
 var log;
+var simulatorStart;
 var hideElement;
 var showElement;
 var dashboardShowUser;
@@ -43,8 +44,8 @@ var arduinoLeftButton = document.getElementById('btn-arduino-left');
 var arduinoRightButton = document.getElementById('btn-arduino-right');
 var arduinoBothButton = document.getElementById('btn-arduino-both');
 var create = document.getElementById('btn-create');
-var login = document.getElementById('btn-login');
-var logout = document.getElementById('btn-logout');
+var dashboardLogin = document.getElementById('btn-login');
+var dashboardLogout = document.getElementById('btn-logout');
 var canvas = document.getElementById("display");
 var updateMood = document.getElementById('btn-update');
 var formUserSetting = document.getElementById("form-user-settings");
@@ -369,12 +370,12 @@ handleDashboardLoggedIn = function (data) {
  */
 handleDashboardLogin = function () {
 
-    if (login === null) {
+    if (dashboardLogin === null) {
         log('no login-button found.');
         return;
     }
 
-    login.onclick = function () {
+    dashboardLogin.onclick = function () {
         var username = document.getElementById('login-username').value;
         var password = document.getElementById('login-password').value;
         var gadgetID = parseInt(document.getElementById('selectGadget').value);
@@ -389,12 +390,12 @@ handleDashboardLogin = function () {
  * Logout a user.
  */
 handleDashboardLogout = function () {
-    if (logout === null) {
-        log('no logout-button found.');
+    if (dashboardLogout === null) {
+        log('no dashboard-logout-button found.');
         return;
     }
     
-    logout.onclick = function() {
+    dashboardLogout.onclick = function() {
         StorageHandler.delete();
         dashboardHideUser();
 
@@ -402,7 +403,12 @@ handleDashboardLogout = function () {
     };
 };
 
-handleDashboardStart = function () {
+dashboardStart = function () {
+
+    if (document.body.className != 'dashboard') {
+        return;
+    }
+
     var username = StorageHandler.getUser();
     var token = StorageHandler.getToken();
     if (token && username) {
@@ -415,7 +421,9 @@ handleDashboardStart = function () {
 
 dashboardUserSettings = function () {
 
-    // todo: fill content of form on start if we have them in the browser.
+    if (document.body.className != 'dashboard') {
+        return;
+    }
 
     formUserSetting.addEventListener("submit", function (event) {
         event.preventDefault();
@@ -535,6 +543,14 @@ handleShow = function (data) {
     }
 };
 
+simulatorStart = function () {
+    if (document.body.className != 'simulator') {
+        return;
+    }
+
+    StorageHandler.delete();
+};
+
 handleShowWorkTime = function (data) {
     log("handleShowWorkTime");
     log(data);
@@ -634,12 +650,13 @@ socket.on('userLoggedIn', function (data) {
 StorageHandler.init();
 
 // Start own functions.
+simulatorStart();
 handleArduinoLogin();
 handleArduinoLogout();
 handleDashboardCreate();
 handleDashboardLogin();
 handleDashboardLogout();
-handleDashboardStart();
+dashboardStart();
 dashboardUserSettings();
 handleUpdateMood();
 handleStartPoll();
