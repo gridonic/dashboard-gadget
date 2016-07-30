@@ -25,13 +25,13 @@ function connection (ModelHandler) {
      * Public functions
      * ====================================================================== */
 
-    this.construct = function (mongoose) { return construct(mongoose); };
-    this.create = function (connectionId, id, type) { return create(connectionId, id, type, false); };
-    this.deleteConnection = function (connectionId) { return deleteConnection(connectionId); };
-    this.findConnectionAndChangeMood = function (connectionId, currentMood) { return findConnectionAndChangeMood(connectionId, currentMood); };
-    this.findConnectionToDelete = function (connectionId, callback) { return findConnectionToDelete(connectionId, callback); };
-    this.getGadgetArray = function (connectionId, type, socket) { return getGadgetArray(connectionId, type, socket); };
-    this.update = function (connectionId, id, type) { return create(connectionId, id, type, true); };
+    this.construct                      = function (mongoose) { return construct(mongoose); };
+    this.create                         = function (connectionId, id, type) { return create(connectionId, id, type, false); };
+    this.deleteConnection               = function (connectionId) { return deleteConnection(connectionId); };
+    this.findConnectionAndChangeMood    = function (connectionId, currentMood) { return findConnectionAndChangeMood(connectionId, currentMood); };
+    this.findConnectionToDelete         = function (connectionId, callback) { return findConnectionToDelete(connectionId, callback); };
+    this.getGadgetArray                 = function (connectionId, type, socket) { return getGadgetArray(connectionId, type, socket); };
+    this.update                         = function (connectionId, id, type) { return create(connectionId, id, type, true); };
 
     /* ======================================================================
      * Private functions

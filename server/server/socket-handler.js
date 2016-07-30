@@ -16,6 +16,7 @@ function socketHandler (Handler) {
     var onLoginGadget;
     var onLoginUser;
     var onLogoutUser;
+    var onSaveUserSettings;
     var onSuccess;
     var onUpdateMood;
     var onStartPoll;
@@ -43,6 +44,7 @@ function socketHandler (Handler) {
     this.onLoginGadget = function (data) { return onLoginGadget(data); };
     this.onLoginUser = function (data) { return onLoginUser(data); };
     this.onLogoutUser = function() { return onLogoutUser();};
+    this.onSaveUserSettings = function (data) { return onSaveUserSettings(data); };
     this.onSuccess = function (data) { return onSuccess(data); };
     this.onUpdateMood = function (data) { return onUpdateMood(data);};
     this.onStartPoll = function (data) { return onStartPoll(data);};
@@ -198,11 +200,20 @@ function socketHandler (Handler) {
     };
     
     onLoginUser = function (data) {
-        Handler.loginUser(data.username, data.password, data.gadget, socket.id, function (error) {
-            console.log('error');
-            console.log(error);
-        }, function (success) {
-            console.log(success);
+        Handler.loginUser(data.username, data.password, data.gadget, socket.id, function (loggedIn, result) {
+            if (loggedIn) {
+                console.log('success');
+                console.log(result);
+                socket.emit('userLoggedIn', result);
+            } else {
+                console.log('an error occured, login not possible.');
+                if (result && result.message) {
+                    console.log(result.message);
+                    socket.emit('sendError', {message: 'Login not possible: ' + result.message});
+                } else {
+                    socket.emit('sendError', {message: 'Login not possible.'});
+                }
+            }
         });
     };
 
@@ -212,6 +223,16 @@ function socketHandler (Handler) {
 
     onUpdateMood = function (data) {
         Handler.changeMood(socket.id, data.currentMood);
+    };
+
+    onSaveUserSettings = function (data) {
+        Handler.saveUserSettings(data.token, data.username, data.settings, function (settings) {
+            if (settings === false) {
+                socket.emit('sendError', {message: 'Couldn\'t save the settings.'});
+            } else {
+                socket.emit('userSettings', settings);
+            }
+        });
     };
     
     onStartPoll = function (data) {

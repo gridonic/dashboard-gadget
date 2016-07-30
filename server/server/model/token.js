@@ -1,23 +1,48 @@
 'use strict';
 
-function token (DB) {
+function token (ModelHandler) {
 
     // functions
+    var isValid;
     var construct;
     var create;
     var update;
-    var checkIfTokenExists;
+    var createUserToken;
 
     // variables
     var tokenModel;
     var tokenSchema;
     var tokenMongoose;
     var jwt = require('jsonwebtoken');
+    var key = 'nq77738ORmx5bbeb';
 
-    this.construct = function (mongoose) {return construct(mongoose);};
-    this.create = function (id) {return create(id)};
-    this.checkIfTokenExists = function (id, username, gadget, socketId) {return checkIfTokenExists(id, username, gadget, socketId);};
-    this.update = function (id) {return update(id);};
+    /* =====================================================================
+     * Public functions
+     * ===================================================================== */
+
+    this.checkToken             = function (token) { return isValid(token); };
+    this.createUserToken           = function (id, username, gadget, socketId, callback) { return createUserToken(id, username, gadget, socketId, callback); };
+    this.construct              = function (mongoose) { return construct(mongoose); };
+    this.create                 = function (id) { return create(id); };
+    this.update                 = function (id) { return update(id); };
+
+    /* =====================================================================
+     * Private functions
+     * ===================================================================== */
+
+    /**
+     * Check if token is valid.
+     * @param token
+     */
+    isValid = function (token) {
+        try {
+            jwt.verify(token, key);
+            return true;
+        }
+        catch (e) {
+            return false;
+        }
+    };
 
     /**
      * Construct the TokenSchema and the TokenModel.
@@ -43,26 +68,26 @@ function token (DB) {
     /**
      * Creates a token by user id in DB.
      *
+     * Ich habe das mal angepasst, so dass es für mich korrekt aussieht, kannst du das bitte noch durchschauen? (TODO: Beni)
+     *
      * @param id - Indicates the ID of the user we want to create a Token for.
-     * @returns {*}
+     * @param callback - to call when token is created.
      */
-    create = function (id) {
-        var token = jwt.sign({foo: 'bar'}, 'shhhhh', {expiresIn: '10h'});
+    create = function (id, callback) {
+        var token = jwt.sign({token: id}, key, {expiresIn: '10h'});
 
         var createdToken = new tokenModel({
             _id: id,
             token: token
-
         });
-
         
         createdToken.save(function (err, result) {
             if (err) {
                 console.log('could not save createdToken.');
                 console.log(err);
-                return false;
-            }else{
-                console.log('Token saved: ' + result);
+                callback(null);
+            } else {
+                callback(token);
             }
         });
     };
@@ -70,22 +95,23 @@ function token (DB) {
     /**
      * Creates a new token by user id in DB.
      * @param id - Indicates the ID of the user we want to create a Token for.
-     * @returns {*}
+     * @param callback - To call with the updated token.
      */
-    update = function (id) {
-        var token = jwt.sign({foo: 'bar'}, 'shhhhh', {expiresIn: '10h'});
+    update = function (id, callback) {
+        var token = jwt.sign({token: id}, key, {expiresIn: '10h'});
 
         var createdToken = new tokenModel({
             _id: id,
             token: token
-
         });
 
         tokenModel.findOneAndUpdate({_id: id}, createdToken, function (err) {
             if (err) {
                 console.log('Failed creating a new Token for User ID: ' + id);
+                callback(null);
             } else {
                 console.log('New Token for User ID: ' + id + ' is token: ' + token);
+                callback(token);
             }
         });
     };
@@ -94,38 +120,24 @@ function token (DB) {
     /**
      * Compare the input data with the data in Database.
      * @param id: id of the user.
-     * @param username: Username.
-     * @param gadget: The user's gadget.
-     * @param socketId: Socket which the user uses.
+     * @param callback: Call this with the new token.
      */
-    //TODO Was passiert mit Token danach?
-    checkIfTokenExists = function (id, username, gadget, socketId) {
+    createUserToken = function (id, callback) {
         tokenModel.findOne({_id: id}, function (err, result) {
-           if(result == null){
-                DB.createTokenFinally(id, username);
-                DB.connectGadgetToUserModel(username, gadget);
-           } else {
-               var foundToken = result.token;
-                   try {
-                       var decoded = jwt.verify(foundToken, 'shhhhh');
-                       console.log('------------------------ ' + decoded.foo);
-                       DB.connectGadgetToUserModel(username, gadget);
-                       DB.getIdToUsername(username, gadget,socketId);
+            if (result == null) {
+                // No token found for this user-id. Create one.
+                create(id, callback);
+            } else {
+                var foundToken = result.token;
 
-                       //Token zum zurücksenden
-                   }
-                   catch (e) {
-                       console.log("Error: Token no longer valid!" );
-                       DB.createNewToken(id);
-                       DB.connectGadgetToUserModel(username, gadget);
-                       DB.getIdToUsername(username, gadget, socketId);
-
-
-                   }
-           }
-        })
+                if (isValid(foundToken)) {
+                    callback(foundToken);
+                } else {
+                    update(id, callback);
+                }
+            }
+        });
     };
-
 }
 
 module.exports = token;

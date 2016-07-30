@@ -1,13 +1,19 @@
-console.log('web.js found.');
+// Modules
+require('./module/storage-handler');
 
 // Functions
+var dashboardUserSettings;
+var dashboardUpdateContent;
 var drawWorkingIcon;
-var handleStart;
+var handleArduinoLogin;
 var handleArduinoLogout;
-var handleButtons;
-var handleCreate;
-var handleLogin;
-var handleLogout;
+var handleArduinoButtons;
+var handleDashboardCreate;
+var handleDashboardLoggedIn;
+var handleDashboardLogin;
+var handleDashboardLogout;
+var dashboardStart;
+var handleDashboardUserSettingsUpdated;
 var handleUpdateMood;
 var handleStartPoll;
 var handleSuccess;
@@ -17,10 +23,16 @@ var handleShowWorkTime;
 var handleError;
 var bitToImage;
 var log;
+var simulatorStart;
+var hideElement;
+var showElement;
+var dashboardShowUser;
+var dashboardHideUser;
 
 // Constants
 var WAITING_DEFAULT = 0;
 var WAITING_CREATE_USER = 1;
+var WAITING_LOGIN_USER = 2;
 var DISPLAY_WIDTH = 320;
 var DISPLAY_HEIGHT = 240;
 
@@ -32,17 +44,24 @@ var arduinoLeftButton = document.getElementById('btn-arduino-left');
 var arduinoRightButton = document.getElementById('btn-arduino-right');
 var arduinoBothButton = document.getElementById('btn-arduino-both');
 var create = document.getElementById('btn-create');
-var login = document.getElementById('btn-login');
-var logout = document.getElementById('btn-logout');
+var dashboardLogin = document.getElementById('btn-login');
+var dashboardLogout = document.getElementById('btn-logout');
 var canvas = document.getElementById("display");
 var updateMood = document.getElementById('btn-update');
+var formUserSetting = document.getElementById("form-user-settings");
+var sectionCreate = document.getElementById('section-create');
+var sectionLogin = document.getElementById('section-login');
+var sectionUser = document.getElementById('section-user');
+var sectionLogout = document.getElementById('section-logout');
 var startPoll = document.getElementById('poll-start');
+var elementUsername = document.getElementById('element-username');
 var context;
 var actualWaiting = WAITING_DEFAULT;
 
 if (canvas !== null) {
     context = canvas.getContext("2d");
 }
+var StorageHandler = storageHandler();
 
 log = function (message) {
     console.log(message);
@@ -51,6 +70,47 @@ log = function (message) {
     if (output) {
         output.innerHTML = output.innerHTML + '<br>' + message;
     }
+};
+
+hideElement = function (element) {
+    element.style.display = 'none';
+};
+
+showElement = function (element) {
+    element.style.display = 'block';
+};
+
+dashboardHideUser = function () {
+    elementUsername.innerHTML = '';
+    formUserSetting.reset();
+
+    hideElement(sectionUser);
+    hideElement(sectionLogout);
+    showElement(sectionLogin);
+    showElement(sectionCreate);
+};
+
+dashboardShowUser = function () {
+    showElement(sectionUser);
+    showElement(sectionLogout);
+    hideElement(sectionLogin);
+    hideElement(sectionCreate);
+};
+
+dashboardUpdateContent = function () {
+    var settings = JSON.parse(StorageHandler.getUserSettings());
+    var keys = Object.keys(settings);
+    var username = StorageHandler.getUser();
+
+    for (var i = 0; i < keys.length; i++) {
+        if (keys[i] === 'setting-harvest-password') {
+            document.getElementById(keys[i]).value = 'password';
+        } else {
+            document.getElementById(keys[i]).value = settings[keys[i]];
+        }
+    }
+
+    elementUsername.innerHTML = username;
 };
 
 drawWorkingIcon = function (x, y) {
@@ -218,7 +278,7 @@ bitToImage = function (bitString) {
  * All of the actions are handled by the server, we are
  * just sending the inputs to the server.
  */
-handleButtons = function () {
+handleArduinoButtons = function () {
 
     if (!arduinoRightButton || !arduinoLeftButton || !arduinoBothButton) {
         return;
@@ -241,7 +301,7 @@ handleButtons = function () {
  * Handle the Start-Button.
  * Simulates the login on the server via an arduino.
  */
-handleStart = function () {
+handleArduinoLogin = function () {
 
     if (start === null) {
         return;
@@ -258,7 +318,7 @@ handleStart = function () {
  * Handle the Create-Button.
  * Creates a User on the server.
  */
-handleCreate = function () {
+handleDashboardCreate = function () {
 
     if (create === null) {
         log('no create-button found.');
@@ -292,24 +352,36 @@ handleArduinoLogout = function () {
     };
 };
 
+handleDashboardLoggedIn = function (data) {
+    actualWaiting = WAITING_CREATE_USER;
+
+    log('logged in successfully');
+    log(data);
+    StorageHandler.setUser(data.username);
+    StorageHandler.setToken(data.token);
+    StorageHandler.setUserSettings(data.settings);
+    dashboardShowUser();
+    dashboardUpdateContent();
+};
+
 /**
  * Handle the Login-Button.
  * Login to an existing user.
  */
-handleLogin = function () {
+handleDashboardLogin = function () {
 
-    if (login === null) {
+    if (dashboardLogin === null) {
         log('no login-button found.');
         return;
     }
 
-    login.onclick = function () {
+    dashboardLogin.onclick = function () {
         var username = document.getElementById('login-username').value;
         var password = document.getElementById('login-password').value;
         var gadgetID = parseInt(document.getElementById('selectGadget').value);
 
         socket.emit('loginUser', {'username': username, 'password': password, 'gadget': gadgetID});
-
+        actualWaiting = WAITING_LOGIN_USER;
     };
 };
 
@@ -317,15 +389,65 @@ handleLogin = function () {
  * Handle the Logout-Button.
  * Logout a user.
  */
-handleLogout = function () {
-    if (logout === null) {
-        log('no logout-button found.');
+handleDashboardLogout = function () {
+    if (dashboardLogout === null) {
+        log('no dashboard-logout-button found.');
         return;
     }
     
-    logout.onclick = function() {
+    dashboardLogout.onclick = function() {
+        StorageHandler.delete();
+        dashboardHideUser();
+
         socket.emit('logoutUser');
     };
+};
+
+dashboardStart = function () {
+
+    if (document.body.className != 'dashboard') {
+        return;
+    }
+
+    var username = StorageHandler.getUser();
+    var token = StorageHandler.getToken();
+    if (token && username) {
+        dashboardShowUser();
+        dashboardUpdateContent();
+    } else {
+        dashboardHideUser();
+    }
+};
+
+dashboardUserSettings = function () {
+
+    if (document.body.className != 'dashboard') {
+        return;
+    }
+
+    formUserSetting.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        var formData = formUserSetting.elements;
+        var userSettings = {};
+
+        for (var i = 0; i < formData.length; i++) {
+            if (formData[i] instanceof HTMLInputElement) {
+                userSettings[formData[i].id] = formData[i].value;
+            }
+        }
+
+        socket.emit('saveUserSettings', {
+            token: StorageHandler.getToken(),
+            username: StorageHandler.getUser(),
+            settings: userSettings
+        });
+    });
+};
+
+handleDashboardUserSettingsUpdated = function (data) {
+    StorageHandler.setUserSettings(JSON.stringify(data));
+    dashboardUpdateContent();
 };
 
 /**
@@ -377,6 +499,10 @@ handleError = function (data) {
             log('output: ' + data.message);
             actualWaiting = WAITING_DEFAULT;
             break;
+        case WAITING_LOGIN_USER:
+            log('output: ' + data.message);
+            actualWaiting = WAITING_DEFAULT;
+            break;
         default:
             log('no output, not waiting for something.');
     }
@@ -415,6 +541,14 @@ handleShow = function (data) {
             }
         }
     }
+};
+
+simulatorStart = function () {
+    if (document.body.className != 'simulator') {
+        return;
+    }
+
+    StorageHandler.delete();
 };
 
 handleShowWorkTime = function (data) {
@@ -465,11 +599,6 @@ handleShowTime = function (data) {
     context.fillStyle = "#000000";
     context.font = textSize + "px Courier New";
     context.fillText(timeString, padding, DISPLAY_HEIGHT - padding);
-    // tft.setCursor(padding, displayHeight - padding - textSize);
-    // tft.setTextColor(ILI9340_BLACK);
-    // tft.setTextSize(2);
-    // tft.println(timeString);
-
 };
 
 // TODO: Adressen hier, die funktionen an sich in externes File auslagern.
@@ -508,14 +637,27 @@ socket.on('userCreated', function (data) {
     actualWaiting = WAITING_DEFAULT;
 });
 
+socket.on('userSettings', function (data) {
+    handleDashboardUserSettingsUpdated(data);
+});
+
+socket.on('userLoggedIn', function (data) {
+    handleDashboardLoggedIn(data);
+});
+
+// Start modules
+StorageHandler.init();
 
 // Start own functions.
-handleStart();
+simulatorStart();
+handleArduinoLogin();
 handleArduinoLogout();
-handleCreate();
-handleLogin();
-handleLogout();
+handleDashboardCreate();
+handleDashboardLogin();
+handleDashboardLogout();
+dashboardStart();
+dashboardUserSettings();
 handleUpdateMood();
 handleStartPoll();
-handleButtons();
+handleArduinoButtons();
 
