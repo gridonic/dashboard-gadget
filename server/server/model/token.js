@@ -32,7 +32,6 @@ function token (ModelHandler) {
     /**
      * Check if token is valid.
      * @param token
-     * @param callback
      */
     isValid = function (token) {
         try {
@@ -68,7 +67,6 @@ function token (ModelHandler) {
     /**
      * Creates a token by user id in DB.
      *
-     * TODO: Hier wird nur der Token gespeichert, aber nicht zurückgegeben. Und sehe ich das richtig, dass der Token einfach aus "bar" und shhhhh gebildet wurde?
      * Ich habe das mal angepasst, so dass es für mich korrekt aussieht, kannst du das bitte noch durchschauen? (TODO: Beni)
      *
      * @param id - Indicates the ID of the user we want to create a Token for.
