@@ -1,55 +1,59 @@
 'use strict';
 
+var connection = require('./model/connection.js');
+var gadget = require('./model/gadget.js');
+var harvest = require('./model/harvest.js');
 var mongodb = require('mongodb');
 var mongoose = require('mongoose');
-var user = require('./model/user.js');
-var token = require('./model/token.js');
 var mood = require('./model/mood.js');
-var gadget = require('./model/gadget.js');
-var connection = require('./model/connection.js');
 var poll = require('./model/poll.js');
+var token = require('./model/token.js');
+var user = require('./model/user.js');
 
 
 function modelHandler () {
 
-    // functions
+    // Functions
     var activateGadget;
     var addSocketConnection;
     var addUserConnection;
-    var removeConnection;
-    var initDB;
-    var saveUserSettings;
-    var setupDisplayForArduino;
-    var setupSchema;
-    var showDisplayOnArduino;
-
-    var getUser;
-    var createUser;
-    var loginUser;
-    var createUserFinally;
-    var handleLoggedInUser;
     var changeMood;
     var changeMoodFinally;
-    var deactivateGadget;
-    var linkGadgetToSocket;
-    var getGadgetArray;
     var createPoll;
     var createPollFinally;
+    var createUser;
+    var createUserFinally;
+    var deactivateGadget;
+    var getGadgetArray;
+    var getUser;
+    var handleLoggedInUser;
+    var initDB;
+    var linkGadgetToSocket;
+    var loginUser;
+    var prepareDisplayForArduino;
+    var removeConnection;
+    var saveUserSettings;
+    var setupSchema;
+    var showDisplayOnArduino;
+    var startDisplayOnArduino;
     var startPoll;
     var updatePoll;
     
 
-    // variables
+    // Variables
     var connected   = false;
     var url         = 'mongodb://localhost:9999/test';
-    var User        = new user(this);
-    var Token       = new token(this);
-    var Mood        = new mood(this);
-    var Gadget      = new gadget(this);
-    var Connection  = new connection(this);
-    var Poll        = new poll(this);
 
-    // constants
+    // Models
+    var Connection  = new connection(this);
+    var Gadget      = new gadget(this);
+    var Harvest     = new harvest(this);
+    var Mood        = new mood(this);
+    var Poll        = new poll(this);
+    var Token       = new token(this);
+    var User        = new user(this);
+
+    // Constants
     const NAME_GADGET1 = '1';
     const NAME_GADGET2 = '2';
 
@@ -64,7 +68,7 @@ function modelHandler () {
     this.loginUser                  = function (username, password, gadget, socketId, callback) { return loginUser(username, password, gadget, socketId, callback); };
     this.removeConnection           = function (connectionId) { return removeConnection(connectionId); };
     this.saveUserSettings           = function (token, username, settings, callback) { return saveUserSettings(token, username, settings, callback); };
-    this.setupDisplayForArduino      = function (socketId, callback) { return setupDisplayForArduino(socketId, callback); };
+    this.setupDisplayForArduino     = function (socketId, callback) { return prepareDisplayForArduino(socketId, callback); };
 
     this.getUser = function (username, password, callback) { return getUser(username, password, callback); };
     this.createUserFinally = function (err, result, username, password, callback) { return createUserFinally(err, result, username, password, callback); };
@@ -334,7 +338,7 @@ function modelHandler () {
     /**
      * Display the stuff on the arduino.
      */
-    setupDisplayForArduino = function (socketId, callback) {
+    prepareDisplayForArduino = function (socketId, callback) {
         console.log(socketId);
 
         Connection.findConnectionById(socketId, function (err, conn) {
@@ -346,11 +350,7 @@ function modelHandler () {
                         // todo: handleError
                     } else {
                         User.getUserByUsername(gadget.lastUserName, function (err, user) {
-                            showDisplayOnArduino(callback, user);
-
-                            setInterval(function () {
-                                showDisplayOnArduino(callback, user);
-                            }, 60000);
+                            startDisplayOnArduino(callback, user);
                         });
                     }
                 });
@@ -358,8 +358,36 @@ function modelHandler () {
         });
     };
 
+    /**
+     * Show the display.
+     * We call this function very often, try not to make too much stuff in here.
+     * Prepare everything you can before this function.
+     *
+     * @param callback
+     * @param user
+     */
     showDisplayOnArduino = function (callback, user) {
         var worktime = null;
+        var project = null;
+
+        if (user.userSettings) {
+            worktime = Harvest.getWorkTime();
+            project = Harvest.getProject();
+        }
+
+        callback(worktime, project);
+    };
+
+    /**
+     * Init the showing of the display here.
+     * @param callback
+     * @param user
+     */
+    startDisplayOnArduino = function (callback, user) {
+
+        // todo: check which app we have to show
+        // todo: check if we have to show something else like a poll.
+
         var harvestCredentials = {};
         var userSettings;
 
@@ -370,10 +398,14 @@ function modelHandler () {
             harvestCredentials['email'] = userSettings['setting-harvest-email'];
             harvestCredentials['password'] = User.decodeHarvestPassword(userSettings['setting-harvest-password']);
 
-            console.log(harvestCredentials);
-            worktime = 30;
+            Harvest.setCredentials(harvestCredentials);
         }
-        callback(worktime);
+
+        showDisplayOnArduino(callback, user);
+
+        setInterval(function () {
+            showDisplayOnArduino(callback, user);
+        }, 60000);
     };
 
     /**
