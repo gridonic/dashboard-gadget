@@ -89,79 +89,24 @@ function socketHandler (Handler) {
         socket.emit('showBlack', {data: null});
         // var i = 0;
 
-        Handler.setupDisplayForArduino(socket.id, function (workTime) {
-            if (workTime != null) {
+        Handler.setupDisplayForArduino(socket.id, function (workTime, project) {
+            if (workTime !== null) {
                 socket.emit('showWorkTime', {draw: Graphic.getWorktimeDisplay(workTime)});
             }
 
             setTimeout(function () {
                 socket.emit('showTime', { draw: Graphic.getActualTimeDisplay() });
             }, 100);
+
+            setTimeout(function () {
+
+                if (project !== null) {
+                    // todo!
+                    console.log('send project to gadget');
+                    console.log(project);
+                }
+            }, 200);
         });
-
-        // socket.emit('showWorkTime', { draw: Graphic.getWorktimeDisplay(i)});
-        // setTimeout(function () {
-        //     socket.emit('showTime', { draw: Graphic.getActualTimeDisplay()});
-        // }, 100);
-        // i++;
-        //
-        // setInterval(function () {
-        //     socket.emit('showWorkTime', { draw: Graphic.getWorktimeDisplay(i)});
-        //
-        //     setTimeout(function () {
-        //         socket.emit('showTime', { draw: Graphic.getActualTimeDisplay()});
-        //     }, 100);
-        //
-        //     i++;
-        // }, 60000);
-
-        // setTimeout(function () {
-        //     socket.emit('showWhite', {data: null});
-        // }, 1000);
-        //
-        // setTimeout(function () {
-        //     //     // var graphic = Graphic.getDefaultDisplay(null, 40, null);
-        //     var graphic = Graphic.getWorktimeDisplay(0);
-        //
-        //     console.log('socket.emit("showTime")');
-        //     console.log(graphic);
-        //
-        //     socket.emit('showWorkTime', { draw: graphic });
-        // }, 5000);
-        //
-        // setTimeout(function () {
-        //     //     // var graphic = Graphic.getDefaultDisplay(null, 40, null);
-        //     var graphic = Graphic.getWorktimeDisplay(50);
-        //
-        //     console.log('socket.emit("showTime")');
-        //     console.log(graphic);
-        //
-        //     socket.emit('showWorkTime', { draw: graphic });
-        // }, 10000);
-        //
-        // setTimeout(function () {
-        //     //     // var graphic = Graphic.getDefaultDisplay(null, 40, null);
-        //     var graphic = Graphic.getWorktimeDisplay(120);
-        //
-        //     console.log('socket.emit("showTime")');
-        //     console.log(graphic);
-        //
-        //     socket.emit('showWorkTime', { draw: graphic });
-        // }, 15000);
-
-        // setTimeout(function () {
-        //     var interval = setInterval(function(){ showTime() }, 2000);
-        //     var i = 0;
-        //
-        //     function showTime() {
-        //         if (i > 120) {
-        //             clearInterval(interval);
-        //         }
-        //         console.log('socket.emit("show")');
-        //         socket.emit('show', { draw: Graphic.getDefaultDisplay(null, i, null)});
-        //         i = i+10;
-        //     }
-        // }, 3000);
     };
 
     onLoginGadget = function (data) {

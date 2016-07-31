@@ -160,7 +160,16 @@ function graphic () {
 
     getActualTimeDisplay = function () {
         var date = new Date();
-        var timeString = date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes();
+        var timeString;
+
+        var addLeadingZero = function (number) {
+            if (number < 10) {
+                return '0' + number;
+            }
+            return number;
+        };
+
+        timeString = date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear() + ' ' + addLeadingZero(date.getHours()) + ':' + addLeadingZero(date.getMinutes());
 
         return displayPadding + "|" + timeString;
     };
