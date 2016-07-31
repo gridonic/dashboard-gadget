@@ -36,6 +36,7 @@ function modelHandler () {
     var createPoll;
     var createPollFinally;
     var startPoll;
+    var updatePoll;
     
 
     // variables
@@ -75,6 +76,7 @@ function modelHandler () {
     this.createPoll = function (connectionId, type, socket) {return createPoll(connectionId, type, socket);};
     this.createPollFinally = function (sockets, type, connectionId, socket) {return createPollFinally(sockets, type, connectionId, socket);};
     this.startPoll = function (sockets, type, connectionId, socket) {return startPoll(sockets, type, connectionId, socket);};
+    this.updatePoll = function (type, connectionId, answer) {return updatePoll(type, connectionId, answer);};
 
     /* =====================================================================
      * Private functions
@@ -286,6 +288,18 @@ function modelHandler () {
         Poll.create(type, sockets, connectionId, socket);
         
     };
+
+    /**
+     * Updates an ongoing poll with the answer of one user.
+     * @param type: Type of the ongoing poll the user wants to answer to.
+     * @param connectionId: Connection ID of the users gadget.
+     * @param answer: Specific answer of the user.
+     */
+    updatePoll = function (type, connectionId, answer) {
+        Poll.update(type, connectionId, answer);
+
+    };
+
 
     /**
      * Save users new settings after checking if token is correct.

@@ -100,7 +100,6 @@ function poll (DB) {
                     } else {
                         //update of the answer list with the answer of the user who initiated the poll. His answer is always 'yes'
                         update(type, connectionId, true);
-
                         DB.startPoll(sockets, type, connectionId, socket);
                     }
                 });
@@ -137,6 +136,7 @@ function poll (DB) {
                     console.log('Failed updating the Answers to the poll of type ' + type);
                 } else {
                     console.log('Answer of gadget with the connection ID' + connectionId + ' has been added to the poll!');
+                    checkResponses(socket,type);
                 }
             });
             
@@ -154,20 +154,18 @@ function poll (DB) {
     startPoll = function (sockets, type, connectionId, socket) {
 
         for (var i = 0; i<sockets.length; i++) {
-            console.log(sockets[i]);
             socket.to(sockets[i]).emit('sendSuccess', {type: type});
             console.log('socket ' + sockets[i] + ' emited!');
         }
 
     };
     
-//todo (beni) sockets beinhaltet momentan noch nicht die Stimme des Users, welcher die Umfrage gestartet hat. Wird noch integriert.
     /**
      * Collects all answers from the joining gadgets and calculates the overall result.
-     * @param sockets: All the sockets the poll has been sent to.
+     * @param socket: 
      * @param type: Type of the poll to calculate result for.
      */
-    calculateResult = function (sockets, type) {
+    calculateResult = function (socket, type) {
         var positiveResponses = 0;
         var negativeResponses = 0;
 
@@ -175,19 +173,20 @@ function poll (DB) {
             if (err) {
                 console.log('No poll found to calculate result for.');
             } else {
-                for (var i = 0; i < sockets.length; i++) {
-                    if (result[sockets[i]] === true) {
-                        positiveResponses++;
+                var respondingUsers = Object.getOwnPropertyNames(result.answers);
+                for (var i = 0; i<respondingUsers.length; i++) {
+                    if (result.answers[respondingUsers[i]] === true) {
+                        positiveResponses ++;
                     } else {
-                        negativeResponses++;
+                        negativeResponses ++;
                     }
                 }
                 if (positiveResponses > negativeResponses) {
-                    //positives Ergebnis anzeigen.
+                    console.log('The poll ended positive');
                 } else if (negativeResponses > positiveResponses) {
-                    //negatives Ergebnis anzeigen.
+                    console.log('The poll ended negative');
                 } else {
-                    //Gleichstand anzeigen
+                    console.log('The poll ended with a tie');
                 }
                 positiveResponses = 0;
                 negativeResponses = 0;
@@ -198,26 +197,26 @@ function poll (DB) {
 
     /**
      * Checks if all the users have yet responded to the poll.
-     * @param sockets: All the sockets the poll has been sent to.
+     * @param socket: 
      * @param type: Type of the poll.
      */
-    checkResponses = function (sockets, type) {
-        var responsesCount = 1;
+    checkResponses = function (socket, type) {
+        var responsesCount = 0;
         pollModel.findOne({type: type}, function(err, result) {
             if (err) {
                 console.log('Poll of the type ' + type + ' not yet started.');
             } else {
-                for(var i=0; i<sockets.length; i++) {
-                    if(result[sockets[i]] !== null) {
+                var invitedUsers = Object.getOwnPropertyNames(result.answers);
+                for(var i=0; i<invitedUsers.length; i++) {
+                    if(result.answers[invitedUsers[i]] !== null) {
                         responsesCount ++;
-                        if(responsesCount === sockets.length){
-                            calculateResult(sockets, type);
+                        if(responsesCount === invitedUsers.length){
+                            calculateResult(socket, type);
                         }
                     }
                 }
             }
         });
-
     };
 
 }
