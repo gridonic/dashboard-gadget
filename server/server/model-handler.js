@@ -80,7 +80,7 @@ function modelHandler () {
     this.createPoll = function (connectionId, type, socket) {return createPoll(connectionId, type, socket);};
     this.createPollFinally = function (sockets, type, connectionId, socket) {return createPollFinally(sockets, type, connectionId, socket);};
     this.startPoll = function (sockets, type, connectionId, socket) {return startPoll(sockets, type, connectionId, socket);};
-    this.updatePoll = function (type, connectionId, answer) {return updatePoll(type, connectionId, answer);};
+    this.updatePoll = function (socket, connectionId, type, answer) {return updatePoll(socket, connectionId, type, answer);};
 
     /* =====================================================================
      * Private functions
@@ -295,12 +295,13 @@ function modelHandler () {
 
     /**
      * Updates an ongoing poll with the answer of one user.
-     * @param type: Type of the ongoing poll the user wants to answer to.
+     * @param socket:
      * @param connectionId: Connection ID of the users gadget.
+     * @param type: Type of the ongoing poll the user wants to answer to.
      * @param answer: Specific answer of the user.
      */
-    updatePoll = function (type, connectionId, answer) {
-        Poll.update(type, connectionId, answer);
+    updatePoll = function (socket, connectionId, type, answer) {
+        Poll.update(type, connectionId, socket, answer);
 
     };
 
@@ -345,7 +346,7 @@ function modelHandler () {
             if (err) {
                 // todo: handleError
             } else {
-                Gadget.findGadgetById(conn.gadgetId, function (err, gadget) {
+                Gadget.findGadgetById(parseInt(conn.gadgetId), function (err, gadget) {
                     if (err) {
                         // todo: handleError
                     } else {

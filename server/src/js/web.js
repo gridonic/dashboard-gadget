@@ -14,6 +14,7 @@ var handleDashboardLogin;
 var handleDashboardLogout;
 var dashboardStart;
 var handleDashboardUserSettingsUpdated;
+var handleNewPoll;
 var handleUpdateMood;
 var handleStartPoll;
 var handleSuccess;
@@ -281,23 +282,40 @@ bitToImage = function (bitString) {
  * All of the actions are handled by the server, we are
  * just sending the inputs to the server.
  */
-handleArduinoButtons = function () {
+handleArduinoButtons = function (data) {
 
     if (!arduinoRightButton || !arduinoLeftButton || !arduinoBothButton) {
         return;
     }
 
-    arduinoBothButton.onclick = function () {
-        socket.emit('buttonsPushed', {left: true, right: true});
-    };
+    if (data.screen === 'pollToAnswer') {
 
-    arduinoLeftButton.onclick = function () {
-        socket.emit('buttonsPushed', {left: true, right: false});
-    };
+        arduinoBothButton.onclick = function () {
+            log('no interaction for both buttons on this screen');
+        };
+        arduinoLeftButton.onclick = function () {
+            socket.emit('buttonsPushed', {left: true, right: false, screen: data.screen, type: data.type});
+        };
+        arduinoRightButton.onclick = function () {
+            socket.emit('buttonsPushed', {left: false, right: true, screen: data.screen, type: data.type});
+        };
+        
+    } else {
 
-    arduinoRightButton.onclick = function () {
-        socket.emit('buttonsPushed', {left: false, right: true});
-    };
+        arduinoBothButton.onclick = function () {
+            socket.emit('buttonsPushed', {left: true, right: true});
+        };
+
+        arduinoLeftButton.onclick = function () {
+            socket.emit('buttonsPushed', {left: true, right: false});
+        };
+
+        arduinoRightButton.onclick = function () {
+            socket.emit('buttonsPushed', {left: false, right: true});
+        };
+        
+    }
+
 };
 
 /**
@@ -454,6 +472,16 @@ dashboardUserSettings = function () {
 handleDashboardUserSettingsUpdated = function (data) {
     StorageHandler.setUserSettings(JSON.stringify(data));
     dashboardUpdateContent();
+};
+
+/**
+ * Handle new incoming poll.
+ */
+handleNewPoll = function (data) {
+    log('new incoming poll');
+    log(data.type);
+    handleArduinoButtons({screen: 'pollToAnswer', type: data.type});
+    
 };
 
 /**
@@ -653,6 +681,10 @@ socket.on('userLoggedIn', function (data) {
     handleDashboardLoggedIn(data);
 });
 
+socket.on('newPoll', function (data) {
+    handleNewPoll(data);
+});
+
 // Start modules
 StorageHandler.init();
 
@@ -667,5 +699,6 @@ dashboardStart();
 dashboardUserSettings();
 handleUpdateMood();
 handleStartPoll();
-handleArduinoButtons();
+handleArduinoButtons(data);
+handleNewPoll();
 

@@ -71,15 +71,25 @@ function socketHandler (Handler) {
     };
 
     onButtonsPushed = function (data) {
-        console.log('buttons pushed');
-        if (data.left && data.right) {
-            console.log('both');
-        } else if (data.left) {
-            console.log('left');
-        } else if (data.right) {
-            console.log('right');
+        if (data.screen === 'pollToAnswer') {
+            if (data.right) {
+                Handler.updatePoll(socket, socket.id, data.type, true);
+            } else {
+                Handler.updatePoll(socket, socket.id, data.type, false);
+            }
+        } else {
+            console.log('buttons pushed');
+            if (data.left && data.right) {
+                console.log('both');
+            } else if (data.left) {
+                console.log('left');
+            } else if (data.right) {
+                console.log('right');
+            }
+            console.log(data);
+
         }
-        console.log(data);
+
     };
 
     onHello = function (data) {

@@ -29,8 +29,8 @@ function poll (DB) {
         return create(type, sockets, connectionId, socket);
     };
 
-    this.update = function (type, connectionId, answer) {
-        return update(type, connectionId, answer);
+    this.update = function (type, connectionId, socket, answer) {
+        return update(type, connectionId, socket, answer);
     };
 
     this.startPoll = function (sockets, type, connectionId, socket) {
@@ -99,7 +99,7 @@ function poll (DB) {
                         console.log('New Poll could not be saved.');
                     } else {
                         //update of the answer list with the answer of the user who initiated the poll. His answer is always 'yes'
-                        update(type, connectionId, true);
+                        update(type, connectionId, socket, true);
                         DB.startPoll(sockets, type, connectionId, socket);
                     }
                 });
@@ -115,10 +115,11 @@ function poll (DB) {
      *
      * @param type - Type of the poll the answer is for.
      * @param connectionId - Id of the connection the answer comes from.
+     * @param socket
      * @param answer - Boolean value true=yes, false=no.
      * @returns {*}
      */
-    update = function (type, connectionId, answer) {
+    update = function (type, connectionId, socket, answer) {
 
         console.log('-------- ' + type + '   ' + connectionId + '   ' + answer);
 
@@ -154,7 +155,7 @@ function poll (DB) {
     startPoll = function (sockets, type, connectionId, socket) {
 
         for (var i = 0; i<sockets.length; i++) {
-            socket.to(sockets[i]).emit('sendSuccess', {type: type});
+            socket.to(sockets[i]).emit('newPoll', {type: type});
             console.log('socket ' + sockets[i] + ' emited!');
         }
 
