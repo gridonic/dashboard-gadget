@@ -534,6 +534,10 @@ socket.on('showMenu', function (data) {
     DisplayDrawer.showMenu(data);
 });
 
+socket.on('showProject', function (data) {
+    DisplayDrawer.showProject(data);
+});
+
 socket.on('showWorkTime', function (data) {
     DisplayDrawer.showWorkTime(data);
 });

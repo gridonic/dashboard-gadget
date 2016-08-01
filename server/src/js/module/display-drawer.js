@@ -8,6 +8,7 @@ displayDrawer = function () {
     var showDisplay;
     var showMainDisplay;
     var showMenu;
+    var showProject;
     var showTime;
     var showWorkTime;
 
@@ -19,6 +20,7 @@ displayDrawer = function () {
 
     // Variables
     var canvas = document.getElementById("display");
+    var projectBox = document.getElementById("project-box");
     var context;
 
     /**
@@ -272,9 +274,6 @@ displayDrawer = function () {
     };
 
     showMenu = function (data) {
-        log("showMenu");
-        log(data);
-
         var splitData = data.draw.split('|');
         var start = parseInt(splitData[0]);
         var padding = parseInt(splitData[1]);
@@ -290,6 +289,19 @@ displayDrawer = function () {
             context.fillRect(activeLeft, start, singleLineWidth, lineHeight);
         }
         context.fillRect(padding, start + lineHeight, lineWidth, lineHeight);
+    };
+
+    showProject = function (data) {
+        console.log(data.color);
+        if (data.color === undefined || data.color === null) {
+            projectBox.style.backgroundColor = 'transparent';
+        } else {
+            var dataSplit = data.color.split('|');
+            var r = dataSplit[0];
+            var g = dataSplit[1];
+            var b = dataSplit[2];
+            projectBox.style.backgroundColor = 'rgba(' + r + ',' + g + ',' + b + ', 1)';
+        }
     };
 
     /**
@@ -356,6 +368,7 @@ displayDrawer = function () {
         showDisplay:        showDisplay,
         showMainDisplay:    showMainDisplay,
         showMenu:           showMenu,
+        showProject:        showProject,
         showTime:           showTime,
         showWorkTime:       showWorkTime,
     };

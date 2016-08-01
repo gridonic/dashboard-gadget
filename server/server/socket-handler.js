@@ -135,7 +135,7 @@ function socketHandler (Handler) {
             var time = 50;
 
             setTimeout(function () {
-                if (workTime !== null) {
+                if (updateTime && workTime !== null) {
                     socket.emit('showWorkTime', {draw: Graphic.getWorktimeDisplay(workTime)});
                 }
             }, 0);
@@ -148,10 +148,12 @@ function socketHandler (Handler) {
 
             setTimeout(function () {
 
-                if (project !== null) {
-                    // todo: send project info to the arduino!
+                if (updateTime && project !== null) {
                     console.log('send project to gadget');
-                    console.log(project);
+                    socket.emit('showProject', {color: project.color});
+                } else if (updateTime) {
+                    console.log('send null-project to gadget');
+                    socket.emit('showProject', {color: null});
                 }
             }, time * 2);
 

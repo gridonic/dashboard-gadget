@@ -3,6 +3,7 @@
 function harvestModule () {
 
     // Functions
+    var construct;
     var getProject;
     var getWorkTime;
     var loadDataFromHarvest;
@@ -10,6 +11,8 @@ function harvestModule () {
 
     // Models
     var harvest = require('harvest');
+    var project = require('./../model/project.js');
+    var Project = new project();
 
     // Variables
     var Harvest = null;
@@ -21,6 +24,7 @@ function harvestModule () {
     var i;
     var progressTime;
     var progressProject;
+    var allProjects;
 
     // Constants
     var DAILY_WORKING_HOUR = 8;
@@ -28,6 +32,7 @@ function harvestModule () {
     /* =====================================================================
      * Public functions
      * ===================================================================== */
+    this.construct = function (mongoose) { return construct (mongoose); };
     this.getProject = function () { return getProject(); };
     this.getWorkTime = function () { return getWorkTime(); };
     this.setCredentials = function (credentials) { return setCredentials(credentials); };
@@ -35,6 +40,14 @@ function harvestModule () {
     /* =====================================================================
      * Private functions
      * ===================================================================== */
+
+    construct = function (mongoose) {
+        Project.construct(mongoose);
+
+        Project.getAllProjects(function (result) {
+            allProjects = result;
+        });
+    };
 
     /**
      * Get actual work time in percent.
@@ -81,6 +94,23 @@ function harvestModule () {
                             task: entries[i].task,
                             client: entries[i].client,
                         };
+
+                        Project.getProjectColor(progressProject, function (project, result) {
+                            progressProject = {
+                                project_id: project.project_id,
+                                project: project.project,
+                                task: project.task,
+                                client: project.client,
+                                color: result.projectColor,
+                            };
+
+                            actualProject = progressProject;
+
+                            Project.getAllProjects(function (result) {
+                                allProjects = result;
+                            });
+                        });
+
                     }
                 }
 

@@ -55,7 +55,7 @@ function modelHandler () {
     var AppHandler  = new appHandler(this);
     var Connection  = new connection(this);
     var Gadget      = new gadget(this);
-    var Harvest     = new harvest(this);
+    var Harvest     = new harvest();
     var Mood        = new mood(this);
     var Poll        = new poll(this);
     var Token       = new token(this);
@@ -510,7 +510,7 @@ function modelHandler () {
         i++;
 
         displayInterval = setInterval(function () {
-            var showTime = (i === oneMinute);
+            var showTime = (i % oneMinute == 0);
 
             showDisplayOnArduino(
                 callback,
@@ -529,6 +529,7 @@ function modelHandler () {
      */
     setupSchema = function () {
         App.construct(mongoose);
+        Harvest.construct(mongoose);
         User.construct(mongoose);
         Token.construct(mongoose);
         Mood.construct(mongoose);
