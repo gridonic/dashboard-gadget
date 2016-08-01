@@ -11,6 +11,7 @@ function poll (DB) {
     var create;
     var update;
     var calculateResult;
+    //var calculateResultAnyway;
     var checkResponses;
     var startPoll;
 
@@ -18,7 +19,7 @@ function poll (DB) {
     var pollModel;
     var pollSchema;
     var pollMongoose;
-    var timeout;
+    //var pollEnd;
 
 
     this.construct = function (mongoose) {
@@ -36,12 +37,13 @@ function poll (DB) {
     this.startPoll = function (sockets, type, connectionId, socket) {
         return startPoll(sockets, type, connectionId, socket);
     };
-/*    this.calculateResult = function (sockets, type) {
+    this.calculateResult = function (sockets, type) {
         return calculateResult(type);
     };
     this.checkResponses = function (sockets, type) {
         return checkResponses(sockets, type);
-    };*/
+    };
+
 
 
     /**
@@ -101,6 +103,7 @@ function poll (DB) {
                         //update of the answer list with the answer of the user who initiated the poll. His answer is always 'yes'
                         update(type, connectionId, socket, true);
                         DB.startPoll(sockets, type, connectionId, socket);
+                        //calculateResultAnyway(socket, type);
                     }
                 });
             } else {
@@ -124,7 +127,7 @@ function poll (DB) {
         console.log('-------- ' + type + '   ' + connectionId + '   ' + answer);
 
         pollModel.findOne({type: type}, function (err, result) {
-            if (err){
+            if (err || result === null){
                 console.log('No poll of this type ongoing anymore, your answer comes to late.');
             }else {
                 console.log('the result: ' + result);
@@ -171,7 +174,7 @@ function poll (DB) {
         var negativeResponses = 0;
 
         pollModel.findOne({type:type}, function(err, result) {
-            if (err) {
+            if (err || result === null) {
                 console.log('No poll found to calculate result for.');
             } else {
                 var respondingUsers = Object.getOwnPropertyNames(result.answers);
@@ -189,20 +192,23 @@ function poll (DB) {
                 } else {
                     console.log('The poll ended with a tie');
                 }
-                //clean-up after result of the poll was published
                 positiveResponses = 0;
                 negativeResponses = 0;
-                result.remove(function (err) {
-                    if (err) {
-                        console.log('Poll could not be deleted after it get finished.');
-                    } else {
-                        console.log('Polltype ' + type + ' deleted from data model!');
-                    }
-                });
             }
         });
 
     };
+
+/*    /!**
+     * Calculates the result of the poll after five minutes without checking if all users responded.
+     * @param socket:
+     * @param type: Type of the poll to calculate result for.
+     *!/
+    calculateResultAnyway = function(socket, type) {
+        pollEnd = setTimeout(calculateResultAnyway, 5000);
+        calculateResult(socket, type);
+        pollEnd = clearTimeout(calculateResultAnyway);
+    };*/
 
     /**
      * Checks if all the users have yet responded to the poll.
@@ -212,7 +218,7 @@ function poll (DB) {
     checkResponses = function (socket, type) {
         var responsesCount = 0;
         pollModel.findOne({type: type}, function(err, result) {
-            if (err) {
+            if (err || result === null) {
                 console.log('Poll of the type ' + type + ' not yet started.');
             } else {
                 var invitedUsers = Object.getOwnPropertyNames(result.answers);
@@ -227,6 +233,7 @@ function poll (DB) {
             }
         });
     };
+
 
 }
 

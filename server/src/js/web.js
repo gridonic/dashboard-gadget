@@ -291,7 +291,7 @@ handleArduinoButtons = function (data) {
     }
 
     if (data.screen === 'pollToAnswer') {
-
+        
         arduinoBothButton.onclick = function () {
             log('no interaction for both buttons on this screen');
         };
@@ -480,8 +480,9 @@ handleDashboardUserSettingsUpdated = function (data) {
  * Handle new incoming poll.
  */
 handleNewPoll = function (data) {
-    log('new incoming poll of type ' + data.type);
-    buttonData = {screen: 'pollToAnswer', type: data.type};
+    var type = data.type;
+    log('new incoming poll of type ' + type);
+    buttonData = {screen: 'pollToAnswer', type: type};
     handleArduinoButtons(buttonData);
     buttonData = null;
     
