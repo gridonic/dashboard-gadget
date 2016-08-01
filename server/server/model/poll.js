@@ -205,6 +205,13 @@ function poll (DB) {
      * @param type: Type of the poll to calculate result for.
      */
     calculateResultAnyway = function(socket, type) {
+        pollModel.findOne({type: type}, function(err, result) {
+            if (err){
+                console.log('Pollsearch failed');
+            } else if (result !== null){
+                calculateResult(socket, type);
+            }
+        });
         calculateResult(socket, type);
         pollEnd = clearTimeout(calculateResultAnyway);
     };
