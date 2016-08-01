@@ -116,7 +116,8 @@ function user (ModelHandler) {
             appSettings: String,
             gadgetId: Number,
             actualMoodId: Number,
-            actualProjectId: Number
+            actualProjectId: Number,
+            currentDisplay: String,
         });
 
         userSchema.methods.sayHello = function () {

@@ -46,7 +46,7 @@ function modelHandler () {
 
     // Variables
     var connected   = false;
-    var url         = 'mongodb://localhost:9999/test';
+    var url         = 'mongodb://localhost:9999/dashboard-gadget';
     var self        = this;
 
     // Models
