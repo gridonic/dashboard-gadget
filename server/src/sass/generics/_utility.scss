@@ -4,8 +4,9 @@
 ._margined-top      { margin-top: $base-unit-horizontal * 2; }
 ._margined-bottom   { margin-bottom: $base-unit-horizontal * 2; }
 
-// Text-Aligns
+// Text
 
 ._text-left         { text-align: left; }
 ._text-right        { text-align: right; }
 ._text-center       { text-align: center; }
+._text-italic       { font-style: italic; }

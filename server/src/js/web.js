@@ -130,7 +130,7 @@ dashboardUpdateContent = function () {
     for (i = 0; i < apps.length; i++) {
         var buttonDataString = '';
         appContent += '<h6>' + apps[i]['name'] + '</h6>';
-        appContent += '<p class="italic">' + apps[i]['description'] + '</p>';
+        appContent += '<p class="_text-italic">' + apps[i]['description'] + '</p>';
 
         if (apps[i].settings !== 'null') {
             var appSettings = JSON.parse(apps[i].settings);
