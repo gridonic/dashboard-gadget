@@ -192,8 +192,16 @@ function poll (DB) {
                 } else {
                     console.log('The poll ended with a tie');
                 }
+                //cleanup
                 positiveResponses = 0;
                 negativeResponses = 0;
+                result.remove(function (err) {
+                    if (err) {
+                        console.log('Poll could not be removed from data model.');
+                    } else {
+                        console.log('Poll has been removed from data model.');
+                    }
+                });
             }
         });
 
