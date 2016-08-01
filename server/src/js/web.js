@@ -1,12 +1,12 @@
 // Modules
 require('./module/storage-handler');
+require('./module/display-drawer');
 
 // Functions
 var dashboardStart;
 var dashboardUserApps;
 var dashboardUserSettings;
 var dashboardUpdateContent;
-var drawWorkingIcon;
 var handleArduinoLogin;
 var handleArduinoLogout;
 var handleArduinoButtons;
@@ -20,11 +20,7 @@ var handleDashboardUserUpdated;
 var handleUpdateMood;
 var handleStartPoll;
 var handleSuccess;
-var handleShow;
-var handleShowTime;
-var handleShowWorkTime;
 var handleError;
-var bitToImage;
 var log;
 var simulatorStart;
 var hideElement;
@@ -38,8 +34,6 @@ var pollData = {type: 'defaultType'};
 var WAITING_DEFAULT = 0;
 var WAITING_CREATE_USER = 1;
 var WAITING_LOGIN_USER = 2;
-var DISPLAY_WIDTH = 320;
-var DISPLAY_HEIGHT = 240;
 var HARVEST_PASSWORD_PLACEHOLDER = 'password';
 var HARVEST_PASSWORD_IDENTIFIER = 'data-harvest-pw';
 
@@ -53,7 +47,6 @@ var arduinoBothButton = document.getElementById('btn-arduino-both');
 var create = document.getElementById('btn-create');
 var dashboardLogin = document.getElementById('btn-login');
 var dashboardLogout = document.getElementById('btn-logout');
-var canvas = document.getElementById("display");
 var updateMood = document.getElementById('btn-update');
 var formUserSetting = document.getElementById("form-user-settings");
 var dashboardAppContainer = document.getElementById('app-container');
@@ -63,13 +56,10 @@ var sectionUser = document.getElementById('section-user');
 var sectionLogout = document.getElementById('section-logout');
 var startPoll = document.getElementById('poll-start');
 var elementUsername = document.getElementById('element-username');
-var context;
 var actualWaiting = WAITING_DEFAULT;
 
-if (canvas !== null) {
-    context = canvas.getContext("2d");
-}
 var StorageHandler = storageHandler();
+var DisplayDrawer = displayDrawer();
 
 log = function (message) {
     console.log(message);
@@ -207,154 +197,6 @@ dashboardUserApps = function () {
             });
         }
     }
-};
-
-drawWorkingIcon = function (x, y) {
-
-    context.fillStyle = "#000000";
-
-    context.fillRect(x + 2, y, 1, 1);
-    context.fillRect(x + 3, y, 1, 1);
-    context.fillRect(x + 4, y, 1, 1);
-    context.fillRect(x + 5, y, 1, 1);
-    context.fillRect(x + 6, y, 1, 1);
-    context.fillRect(x + 7, y, 1, 1);
-    context.fillRect(x + 8, y, 1, 1);
-    context.fillRect(x + 9, y, 1, 1);
-
-    context.fillRect(x + 2, y + 1, 1, 1);  context.fillRect(x + 9, y + 1, 1, 1);
-    context.fillRect(x + 2, y + 2, 1, 1);  context.fillRect(x + 9, y + 2, 1, 1);
-    context.fillRect(x + 3, y + 3, 1, 1);  context.fillRect(x + 8, y + 3, 1, 1);
-    context.fillRect(x + 4, y + 4, 1, 1);  context.fillRect(x + 7, y + 4, 1, 1);
-    context.fillRect(x + 5, y + 5, 2, 2);
-    context.fillRect(x + 4, y + 7, 1, 1);  context.fillRect(x + 7, y + 7, 1, 1);
-    context.fillRect(x + 3, y + 8, 1, 1);  context.fillRect(x + 8, y + 8, 1, 1);
-    context.fillRect(x + 2, y + 9, 1, 1);  context.fillRect(x + 9, y + 9, 1, 1);
-    context.fillRect(x + 2, y + 10, 1, 1);  context.fillRect(x + 9, y + 10, 1, 1);
-
-    context.fillRect(x + 2, y + 11, 1, 1);
-    context.fillRect(x + 3, y + 11, 1, 1);
-    context.fillRect(x + 4, y + 11, 1, 1);
-    context.fillRect(x + 5, y + 11, 1, 1);
-    context.fillRect(x + 6, y + 11, 1, 1);
-    context.fillRect(x + 7, y + 11, 1, 1);
-    context.fillRect(x + 8, y + 11, 1, 1);
-    context.fillRect(x + 9, y + 11, 1, 1);
-};
-
-bitToImage = function (bitString) {
-    var imageString = "";
-    var bitStringArray = bitString.split('');
-    var current;
-    var numberString;
-    var i = 0;
-    var j;
-    var hexChar = {
-        A: '0000',
-        B: '0001',
-        C: '0010',
-        D: '0011',
-        E: '0100',
-        F: '0101',
-        G: '0110',
-        H: '0111',
-        I: '1000',
-        J: '1001',
-        K: '1010',
-        L: '1011',
-        M: '1100',
-        N: '1101',
-        O: '1110',
-        P: '1111',
-    };
-    var hexCharSix = {
-        A: '000000',
-        B: '000001',
-        C: '000010',
-        D: '000011',
-        E: '000100',
-        F: '000101',
-        G: '000110',
-        H: '000111',
-        I: '001000',
-        J: '001001',
-        K: '001010',
-        L: '001011',
-        M: '001100',
-        N: '001101',
-        O: '001110',
-        P: '001111',
-        Q: '010000',
-        R: '010001',
-        S: '010010',
-        T: '010011',
-        U: '010100',
-        V: '010101',
-        W: '010110',
-        X: '010111',
-        Y: '011000',
-        Z: '011001',
-        a: '011010',
-        b: '011011',
-        c: '011100',
-        d: '011101',
-        e: '011110',
-        f: '011111',
-        g: '100000',
-        h: '100001',
-        i: '100010',
-        j: '100011',
-        k: '100100',
-        l: '100101',
-        m: '100110',
-        n: '100111',
-        o: '101000',
-        p: '101001',
-        q: '101010',
-        r: '101011',
-        s: '101100',
-        t: '101101',
-        u: '101110',
-        v: '101111',
-        w: '110000',
-        x: '110001',
-        y: '110010',
-        z: '110011',
-        '0': '110100',
-        '1': '110101',
-        '2': '110110',
-        '3': '110111',
-        '4': '111000',
-        '5': '111001',
-        '6': '111010',
-        '7': '111011',
-        '8': '111100',
-        '9': '111101',
-        'ä': '111110',
-        'ö': '111111',
-    };
-
-    for (i; i < bitString.length; i++) {
-        current = bitStringArray[i];
-
-        if (current == '-' || current == 'x') {
-            numberString = "";
-            i++;
-            while (bitStringArray[i] != 'x' && bitStringArray[i] != '-' && !hexChar[bitStringArray[i]] && i < bitString.length) {
-                numberString += bitStringArray[i];
-                i++;
-            }
-            i--;
-
-            for (j = 0; j < parseInt(numberString); j++) {
-                imageString += current == "x" ? '1111' : '0000';
-            }
-        } else if (hexChar[current]) {
-            imageString += hexChar[current];
-        }
-    }
-
-    return imageString;
 };
 
 /**
@@ -674,95 +516,26 @@ handleSuccess = function (data) {
     }
 };
 
-handleShow = function (data) {
-    log('socketShow');
-
-    if (data.draw) {
-
-        var draw = bitToImage(data.draw).split("");
-
-        context.fillStyle = "#ffffff";
-        context.fillRect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-
-        context.fillStyle = "#000000";
-        var x = 0;
-        for (var i = 0; i < DISPLAY_HEIGHT; i++) {
-            for (var j = 0; j < DISPLAY_WIDTH; j++) {
-                if (draw[x] === '1') {
-                    context.fillRect(j, i, 1, 1);
-                }
-                x++;
-            }
-        }
-    }
-};
-
 simulatorStart = function () {
     log('simulatorStart.');
-};
-
-handleShowWorkTime = function (data) {
-    log("handleShowWorkTime");
-    log(data);
-
-    var splitData = data.draw.split('|');
-    var iconSize = 12;
-    var start = parseInt(splitData[0]);
-    var padding = parseInt(splitData[1]);
-    var height = parseInt(splitData[2]);
-    var percent = parseInt(splitData[3]);
-    var rectWidth = DISPLAY_WIDTH - (padding * 2) - iconSize;
-    var workingWidth = rectWidth * percent / 100;
-
-    context.fillStyle = "#ffffff";
-    context.fillRect(0, start, DISPLAY_WIDTH, (start + padding * 2 + height));
-
-    context.fillStyle = "#000000";
-    context.fillRect((padding + iconSize), start + padding, rectWidth, height);
-    context.fillStyle = "#ffffff";
-    context.fillRect((padding + iconSize) + 1, start + padding + 1, rectWidth - 2, height - 2);
-
-    drawWorkingIcon(padding, start + padding);
-
-    context.fillStyle = "#000000";
-    if (percent <= 100) {
-        context.fillRect(padding + iconSize, start + padding, workingWidth, height);
-    } else {
-        workingWidth = rectWidth * 100 / percent;
-        context.fillRect(padding + iconSize, start + padding, workingWidth - 1, height);
-        context.fillRect(workingWidth + 1 + padding + iconSize, start + padding, rectWidth - workingWidth - 1, height);
-    }
-};
-
-handleShowTime = function (data) {
-    log("showTime");
-    log(data);
-
-    var splitData = data.draw.split('|');
-    var textSize = 15;
-    var padding = parseInt(splitData[0]);
-    var timeString = splitData[1];
-
-    context.fillStyle = "#ffffff";
-    context.fillRect(0, DISPLAY_HEIGHT - padding * 2 - textSize, DISPLAY_WIDTH, padding * 2 + textSize);
-
-    context.fillStyle = "#000000";
-    context.font = textSize + "px Courier New";
-    context.fillText(timeString, padding, DISPLAY_HEIGHT - padding);
 };
 
 // Todo: Socket-calls & socket-handling hier, die oben aufgeführten Funktionen an sich in externes File auslagern.
 
 socket.on('show', function (data) {
-    handleShow(data)
+    DisplayDrawer.showDisplay(data);
+});
+
+socket.on('showMainDisplay', function (data) {
+    DisplayDrawer.showMainDisplay(data);
 });
 
 socket.on('showWorkTime', function (data) {
-    handleShowWorkTime(data);
+    DisplayDrawer.showWorkTime(data);
 });
 
 socket.on('showTime', function (data) {
-    handleShowTime(data);
+    DisplayDrawer.showTime(data);
 });
 
 socket.on('access', function (data) {
@@ -798,12 +571,14 @@ socket.on('userLoggedIn', function (data) {
 socket.on('newPoll', function (data) {
     handleNewPoll(data);
 });
+
 socket.on('updateUserData', function (data) {
     handleDashboardUserUpdated(data);
 });
 
 // Start modules
 StorageHandler.init();
+DisplayDrawer.init();
 
 // Start own functions.
 simulatorStart();

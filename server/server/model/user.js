@@ -13,6 +13,7 @@ function user (ModelHandler) {
     var getUserApps;
     var getUser;
     var getUserByUsername;
+    var setCurrentDisplay;
     var updateUserSettings;
 
     // Other modules
@@ -44,6 +45,7 @@ function user (ModelHandler) {
     this.getUserByUsername      = function (username, callback) { return getUserByUsername(username, callback); };
     this.removeAppFromUser      = function (username, appId, callback) { return changeAppOfUser(false, username, appId, null, callback); };
     this.updateUserSettings     = function (username, settings, callback) { return updateUserSettings(username, settings, callback); };
+    this.setCurrentDisplay      = function (username, display) { return setCurrentDisplay(username, display); };
 
     /* =====================================================================
      * Private functions
@@ -271,6 +273,12 @@ function user (ModelHandler) {
     addGadgetToUser = function (username, gadget, callback) {
         userModel.findOneAndUpdate({username: username}, {$set: {gadgetId: gadget}}, function (err) {
             callback(err);
+        });
+    };
+
+    setCurrentDisplay = function (username, currentDisplay) {
+        userModel.findOneAndUpdate({username: username}, {$set: { currentDisplay: currentDisplay }}, function (err, result) {
+            // do nothing at the moment.
         });
     };
 

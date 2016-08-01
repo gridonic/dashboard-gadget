@@ -5,6 +5,7 @@ function app () {
     // functions
     var construct;
     var create;
+    var findById;
     var getAll;
 
     // variables
@@ -21,6 +22,7 @@ function app () {
 
     this.construct  = function (mongoose) { return construct(mongoose); };
     this.create     = function (appObject) { return create(appObject); };
+    this.findById   = function (id, callback) { return findById(id, callback); };
     this.getAll     = function (callback) { return getAll(callback); };
 
     /* ======================================================================
@@ -72,6 +74,12 @@ function app () {
             } else {
                 console.log('The app ' + appObject.name + ' is already created in DB');
             }
+        });
+    };
+
+    findById = function (id, callback) {
+        appModel.findOne({_id: id}, function (err, result) {
+            callback(err, result);
         });
     };
 

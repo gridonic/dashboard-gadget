@@ -48,6 +48,7 @@ function modelHandler () {
     var connected   = false;
     var url         = 'mongodb://localhost:9999/dashboard-gadget';
     var self        = this;
+    var displayInterval;
 
     // Models
     var App         = new app(this);
@@ -399,17 +400,19 @@ function modelHandler () {
      *
      * @param callback
      * @param user
+     * @param updateTime should the time been update on the screen or not?
+     * @param currentDisplay what do we show at the moment on the display?
      */
-    showDisplayOnArduino = function (callback, user, showTime) {
+    showDisplayOnArduino = function (callback, user, updateTime, currentDisplay) {
         var worktime = null;
         var project = null;
 
-        if (user && user.userSettings) {
+        if (updateTime && user && user.userSettings) {
             worktime = Harvest.getWorkTime();
             project = Harvest.getProject();
         }
 
-        callback(worktime, showTime, project);
+        callback(worktime, updateTime, project, currentDisplay);
     };
 
     /**
@@ -427,6 +430,20 @@ function modelHandler () {
         var userSettings;
         var userApps;
         var userAppSettings;
+        var i = 0;
+        var intervalTiming = 500;
+        var oneMinute = 60000 / intervalTiming;
+        var currentDisplay = null;
+
+        var getCurrentDisplay = function (display, step, stepDuration) {
+            if (display && display.app) {
+                return AppHandler.getActualAppDisplay(step, stepDuration);
+            }
+        };
+
+        if (displayInterval) {
+            clearInterval(displayInterval);
+        }
 
         if (user && user.userSettings) {
             userSettings = JSON.parse(user.userSettings);
@@ -440,18 +457,50 @@ function modelHandler () {
 
         if (user && user.appActivated) {
 
+            userApps = user.appActivated;
+            userAppSettings = JSON.parse(user.appSettings);
+
             if (!user.currentDisplay) {
-                // AppHandler.getDisplayContent(user.appActivated[0]);
+                console.log('set currentDisplay first, user has nothing to display at the moment.');
+                currentDisplay = {
+                    app: userApps[0]
+                };
+                App.findById(currentDisplay.app, function (err, result) {
+                    if (err || result == null) {
+                        // todo: handle error.
+                    } else {
+                        AppHandler.prepareAppDisplay(result, userAppSettings[currentDisplay.app]);
+                    }
+                });
+                User.setCurrentDisplay(user.username, JSON.stringify(currentDisplay));
+            } else if (user.currentDisplay) {
+                currentDisplay = JSON.parse(user.currentDisplay);
+
+                if (currentDisplay && currentDisplay.app && user.appActivated.indexOf(currentDisplay.app) > -1) {
+                    console.log('currentDisplay is already set.');
+                    App.findById(currentDisplay.app, function (err, result) {
+                        if (err || result == null) {
+                            // todo: handle error.
+                        } else {
+                            AppHandler.prepareAppDisplay(result, userAppSettings[currentDisplay.app]);
+                        }
+                    });
+                }
             }
-            console.log('show user apps on arduino');
-            // todo: check which app we have to show
         }
 
-        showDisplayOnArduino(callback, user, true);
+        showDisplayOnArduino(callback, user, true, getCurrentDisplay(currentDisplay, i, intervalTiming));
+        i++;
 
-        setInterval(function () {
-            showDisplayOnArduino(callback, user, true);
-        }, 60000);
+        displayInterval = setInterval(function () {
+            if (i === oneMinute) {
+                showDisplayOnArduino(callback, user, true, getCurrentDisplay(currentDisplay, i, intervalTiming));
+            } else {
+                showDisplayOnArduino(callback, user, false, getCurrentDisplay(currentDisplay, i, intervalTiming));
+            }
+
+            i++;
+        }, 500);
     };
 
     /**

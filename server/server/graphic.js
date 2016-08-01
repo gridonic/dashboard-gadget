@@ -7,10 +7,12 @@ function graphic () {
     var generateFullLines;
     var generateLines;
     var generateHorizontalLine;
+    var generateRectangle;
     var generateWorkTime;
     var getActualTimeDisplay;
     var getBlackDisplay;
     var getDefaultDisplay;
+    var getDisplayAtmung;
     var getStartDisplay;
     var getWhiteDisplay;
     var getWorktimeDisplay;
@@ -24,10 +26,13 @@ function graphic () {
     var displayPadding = 10;
     var workTimeHeight = 12;
     var workIconSize = 12;
+    var displayMainTop = displayHeight - displayHeight / 4 * 3;
+    var displayMainSize = displayHeight / 2;
+    var displayMainLeft = displayWidth / 2 - displayMainSize / 2;
 
     // Constants
-    var WHITE = '0';
-    var BLACK = '1';
+    var COLOR_WHITE = '0';
+    var COLOR_BLACK = '1';
 
     // JSON-Files
     var workIconRaw     = require('./png-json/work-icon.json');
@@ -41,6 +46,7 @@ function graphic () {
     this.getActualTimeDisplay = function () { return getActualTimeDisplay(); };
     this.getBlackDisplay = function () { return getBlackDisplay(); };
     this.getDefaultDisplay = function (time, workingPercent, icon) { return getDefaultDisplay(time, workingPercent, icon); };
+    this.getDisplayAtmung = function (inOut) { return getDisplayAtmung(inOut); };
     this.getStartDisplay = function () { return getStartDisplay(); };
     this.getWhiteDisplay = function () { return getWhiteDisplay(); };
     this.getWorktimeDisplay = function (workingPercent) { return getWorktimeDisplay(workingPercent); };
@@ -58,7 +64,7 @@ function graphic () {
      * @returns {*}
      */
     generateEmptyLines = function (lines) {
-        return generateLines(lines, WHITE);
+        return generateLines(lines, COLOR_WHITE);
     };
 
     /**
@@ -70,7 +76,7 @@ function graphic () {
      * @returns {*}
      */
     generateFullLines = function (lines) {
-        return generateLines(lines, BLACK);
+        return generateLines(lines, COLOR_BLACK);
     };
 
     /**
@@ -85,9 +91,9 @@ function graphic () {
 
         for (var i = 0; i < displayWidth; i++) {
             if (i < displayPadding || i >= displayWidth - displayPadding) {
-                lineString += WHITE;
+                lineString += COLOR_WHITE;
             } else {
-                lineString += BLACK;
+                lineString += COLOR_BLACK;
             }
         }
         return lineString;
@@ -111,6 +117,21 @@ function graphic () {
     };
 
     /**
+     * Returns a rectangle, based on a borderColor and a rectangleColor
+     *
+     * @param x
+     * @param y
+     * @param w
+     * @param h
+     * @param borderColor
+     * @param rectColor
+     * @returns {string}
+     */
+    generateRectangle = function (x, y, w, h, borderColor, rectColor) {
+        return 'RECT' + '|' + x + '|' + y + '|' + w + '|' + h + '|' + borderColor + '|' + rectColor;
+    };
+
+    /**
      * Generate the working-time stati on top of the screen.
      *
      * @param percent
@@ -131,9 +152,9 @@ function graphic () {
                         || i == stop || i == stop - 1
                         || (i > start && i < (start + workingWidth))
                     ) {
-                        lineString += BLACK;
+                        lineString += COLOR_BLACK;
                     } else {
-                        lineString += WHITE;
+                        lineString += COLOR_WHITE;
                     }
                 }
             }
@@ -147,9 +168,9 @@ function graphic () {
                         || i == start + workingWidth - 1
                         || i == start + workingWidth - 2
                     ) {
-                        lineString += WHITE;
+                        lineString += COLOR_WHITE;
                     } else {
-                        lineString += BLACK;
+                        lineString += COLOR_BLACK;
                     }
                 }
             }
@@ -197,6 +218,16 @@ function graphic () {
             + generateEmptyLines(displayHeight - displayPadding - workTimeHeight)
         );
 
+    };
+
+    getDisplayAtmung = function (inOrOut) {
+        var rectColor = COLOR_BLACK;
+
+        if (inOrOut) {
+            rectColor = COLOR_WHITE;
+        }
+
+        return generateRectangle(displayMainLeft, displayMainTop, displayMainSize, displayMainSize, COLOR_BLACK, rectColor);
     };
 
     /**

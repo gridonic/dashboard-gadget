@@ -130,13 +130,15 @@ function socketHandler (Handler) {
         socket.emit('showBlack', {data: null});
         // var i = 0;
 
-        Handler.setupDisplayForArduino(socket.id, function (workTime, showTime, project) {
-            if (workTime !== null) {
-                socket.emit('showWorkTime', {draw: Graphic.getWorktimeDisplay(workTime)});
-            }
+        Handler.setupDisplayForArduino(socket.id, function (workTime, updateTime, project, currentDisplay) {
+            setTimeout(function () {
+                if (workTime !== null) {
+                    socket.emit('showWorkTime', {draw: Graphic.getWorktimeDisplay(workTime)});
+                }
+            }, 0);
 
             setTimeout(function () {
-                if (showTime !== null) {
+                if (updateTime) {
                     socket.emit('showTime', {draw: Graphic.getActualTimeDisplay()});
                 }
             }, 100);
@@ -149,6 +151,13 @@ function socketHandler (Handler) {
                     console.log(project);
                 }
             }, 200);
+
+            setTimeout(function () {
+                if (currentDisplay !== null) {
+                    // Display the current App, Poll or something else.
+                    socket.emit('showMainDisplay', {draw: currentDisplay});
+                }
+            }, 300);
         });
     };
 
