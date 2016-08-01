@@ -36,12 +36,12 @@ function poll (DB) {
     this.startPoll = function (sockets, type, connectionId, socket) {
         return startPoll(sockets, type, connectionId, socket);
     };
-    this.calculateResult = function (sockets, type) {
+/*    this.calculateResult = function (sockets, type) {
         return calculateResult(type);
     };
     this.checkResponses = function (sockets, type) {
         return checkResponses(sockets, type);
-    };
+    };*/
 
 
     /**
@@ -189,8 +189,16 @@ function poll (DB) {
                 } else {
                     console.log('The poll ended with a tie');
                 }
+                //clean-up after result of the poll was published
                 positiveResponses = 0;
                 negativeResponses = 0;
+                result.remove(function (err) {
+                    if (err) {
+                        console.log('Poll could not be deleted after it get finished.');
+                    } else {
+                        console.log('Polltype ' + type + ' deleted from data model!');
+                    }
+                });
             }
         });
 

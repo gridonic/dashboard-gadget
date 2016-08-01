@@ -74,8 +74,10 @@ function socketHandler (Handler) {
         if (data.screen === 'pollToAnswer') {
             if (data.right) {
                 Handler.updatePoll(socket, socket.id, data.type, true);
+                log(socket.id + ' answered with YES');
             } else {
                 Handler.updatePoll(socket, socket.id, data.type, false);
+                log(socket.id + ' answered with NO');
             }
         } else {
             console.log('buttons pushed');
