@@ -171,7 +171,6 @@ function modelHandler () {
      */
     loginUser = function (username, password, gadget, socketId, callback) {
         if (!connected) {
-            console.log('no DB connected');
             callback(false, {message: 'The database could not be found.'});
         }
 
@@ -400,10 +399,11 @@ function modelHandler () {
      *
      * @param callback
      * @param user
-     * @param updateTime should the time been update on the screen or not?
-     * @param currentDisplay what do we show at the moment on the display?
+     * @param updateTime        Should the time been update on the screen or not?
+     * @param currentDisplay    What do we show at the moment on the display?
+     * @param menu              How many menu-points and which one is active
      */
-    showDisplayOnArduino = function (callback, user, updateTime, currentDisplay) {
+    showDisplayOnArduino = function (callback, user, updateTime, currentDisplay, menu) {
         var worktime = null;
         var project = null;
 
@@ -412,7 +412,7 @@ function modelHandler () {
             project = Harvest.getProject();
         }
 
-        callback(worktime, updateTime, project, currentDisplay);
+        callback(worktime, updateTime, project, currentDisplay, menu);
     };
 
     /**
@@ -438,6 +438,17 @@ function modelHandler () {
         var getCurrentDisplay = function (display, step, stepDuration) {
             if (display && display.app) {
                 return AppHandler.getActualAppDisplay(step, stepDuration);
+            }
+        };
+
+        var getMenu = function (display) {
+            if (display && display.app) {
+                return {
+                    counts: userApps.length,
+                    active: userApps.indexOf(display.app)
+                };
+            } else {
+                return null;
             }
         };
 
@@ -489,15 +500,25 @@ function modelHandler () {
             }
         }
 
-        showDisplayOnArduino(callback, user, true, getCurrentDisplay(currentDisplay, i, intervalTiming));
+        showDisplayOnArduino(
+            callback,
+            user,
+            true,
+            getCurrentDisplay(currentDisplay, i, intervalTiming),
+            getMenu(currentDisplay)
+        );
         i++;
 
         displayInterval = setInterval(function () {
-            if (i === oneMinute) {
-                showDisplayOnArduino(callback, user, true, getCurrentDisplay(currentDisplay, i, intervalTiming));
-            } else {
-                showDisplayOnArduino(callback, user, false, getCurrentDisplay(currentDisplay, i, intervalTiming));
-            }
+            var showTime = (i === oneMinute);
+
+            showDisplayOnArduino(
+                callback,
+                user,
+                showTime,
+                getCurrentDisplay(currentDisplay, i, intervalTiming),
+                getMenu(currentDisplay)
+            );
 
             i++;
         }, 500);

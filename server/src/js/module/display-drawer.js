@@ -7,6 +7,7 @@ displayDrawer = function () {
     var log;
     var showDisplay;
     var showMainDisplay;
+    var showMenu;
     var showTime;
     var showWorkTime;
 
@@ -253,23 +254,42 @@ displayDrawer = function () {
             var borderColorCircle   = drawData[4] === "1" ? COLOR_BLACK : COLOR_WHITE;
             var circleColor         = drawData[5] === "1" ? COLOR_BLACK : COLOR_WHITE;
 
-            context.fillStyle = '#ffffff';
+            context.fillStyle = COLOR_WHITE;
             context.fillRect(xCircle - radCircle, yCircle - radCircle, radCircle * 2, radCircle * 2);
 
             context.fillStyle = borderColorCircle;
-
             context.beginPath();
             context.arc(xCircle, yCircle, radCircle, 0, 2 * Math.PI);
             context.closePath();
             context.fill();
 
             context.fillStyle = circleColor;
-
             context.beginPath();
             context.arc(xCircle, yCircle, radCircle - 2, 0, 2 * Math.PI);
             context.closePath();
             context.fill();
         }
+    };
+
+    showMenu = function (data) {
+        log("showMenu");
+        log(data);
+
+        var splitData = data.draw.split('|');
+        var start = parseInt(splitData[0]);
+        var padding = parseInt(splitData[1]);
+        var counts = parseInt(splitData[2]);
+        var active = parseInt(splitData[3]) + 1;
+        var lineHeight = parseInt(splitData[4]);
+        var lineWidth = DISPLAY_WIDTH - (padding * 2);
+        var singleLineWidth = Math.round(lineWidth / counts);
+        var activeLeft = padding + (active - 1) * singleLineWidth;
+
+        context.fillStyle = COLOR_BLACK;
+        if (counts > 1) {
+            context.fillRect(activeLeft, start, singleLineWidth, lineHeight);
+        }
+        context.fillRect(padding, start + lineHeight, lineWidth, lineHeight);
     };
 
     /**
@@ -335,6 +355,7 @@ displayDrawer = function () {
         init:               init,
         showDisplay:        showDisplay,
         showMainDisplay:    showMainDisplay,
+        showMenu:           showMenu,
         showTime:           showTime,
         showWorkTime:       showWorkTime,
     };

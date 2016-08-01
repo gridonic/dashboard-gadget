@@ -6,8 +6,9 @@ function graphic () {
     var generateCircle;
     var generateEmptyLines;
     var generateFullLines;
-    var generateLines;
     var generateHorizontalLine;
+    var generateLines;
+    var generateMenu;
     var generateRectangle;
     var generateWorkTime;
     var getActualTimeDisplay;
@@ -48,6 +49,7 @@ function graphic () {
     this.getBlackDisplay = function () { return getBlackDisplay(); };
     this.getDefaultDisplay = function (time, workingPercent, icon) { return getDefaultDisplay(time, workingPercent, icon); };
     this.getDisplayAtmung = function (inOut) { return getDisplayAtmung(inOut); };
+    this.getMenu = function (menu) { return generateMenu(menu.counts, menu.active); };
     this.getStartDisplay = function () { return getStartDisplay(); };
     this.getWhiteDisplay = function () { return getWhiteDisplay(); };
     this.getWorktimeDisplay = function (workingPercent) { return getWorktimeDisplay(workingPercent); };
@@ -129,6 +131,17 @@ function graphic () {
             }
         }
         return lineString;
+    };
+
+    /**
+     * Generates a menu-string
+     *
+     * @param counts
+     * @param active
+     * @returns {string}
+     */
+    generateMenu = function (counts, active) {
+        return '206|' + displayPadding + '|' + counts + '|' + active + '|2';
     };
 
     /**

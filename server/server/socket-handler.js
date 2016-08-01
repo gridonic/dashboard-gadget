@@ -130,7 +130,10 @@ function socketHandler (Handler) {
         socket.emit('showBlack', {data: null});
         // var i = 0;
 
-        Handler.setupDisplayForArduino(socket.id, function (workTime, updateTime, project, currentDisplay) {
+        Handler.setupDisplayForArduino(socket.id, function (workTime, updateTime, project, currentDisplay, menu) {
+
+            var time = 50;
+
             setTimeout(function () {
                 if (workTime !== null) {
                     socket.emit('showWorkTime', {draw: Graphic.getWorktimeDisplay(workTime)});
@@ -141,7 +144,7 @@ function socketHandler (Handler) {
                 if (updateTime) {
                     socket.emit('showTime', {draw: Graphic.getActualTimeDisplay()});
                 }
-            }, 100);
+            }, time);
 
             setTimeout(function () {
 
@@ -150,14 +153,21 @@ function socketHandler (Handler) {
                     console.log('send project to gadget');
                     console.log(project);
                 }
-            }, 200);
+            }, time * 2);
 
             setTimeout(function () {
                 if (currentDisplay !== null) {
                     // Display the current App, Poll or something else.
                     socket.emit('showMainDisplay', {draw: currentDisplay});
                 }
-            }, 300);
+            }, time * 3);
+
+            setTimeout(function () {
+                if (menu !== null) {
+                    // Display the menu on the display.
+                    socket.emit('showMenu', {draw: Graphic.getMenu(menu)});
+                }
+            }, time * 4);
         });
     };
 
