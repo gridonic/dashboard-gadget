@@ -428,7 +428,7 @@ function modelHandler () {
         var userApps;
         var userAppSettings;
 
-        if (user.userSettings) {
+        if (user && user.userSettings) {
             userSettings = JSON.parse(user.userSettings);
 
             harvestCredentials['domain'] = userSettings['setting-harvest-domain'];
@@ -438,7 +438,11 @@ function modelHandler () {
             Harvest.setCredentials(harvestCredentials);
         }
 
-        if (user.appActivated) {
+        if (user && user.appActivated) {
+
+            if (!user.currentDisplay) {
+                // AppHandler.getDisplayContent(user.appActivated[0]);
+            }
             console.log('show user apps on arduino');
             // todo: check which app we have to show
         }
