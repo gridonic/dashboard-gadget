@@ -11,7 +11,7 @@ function poll (DB) {
     var create;
     var update;
     var calculateResult;
-    //var calculateResultAnyway;
+    var calculateResultAnyway;
     var checkResponses;
     var startPoll;
 
@@ -19,7 +19,7 @@ function poll (DB) {
     var pollModel;
     var pollSchema;
     var pollMongoose;
-    //var pollEnd;
+    var pollEnd;
 
 
     this.construct = function (mongoose) {
@@ -103,7 +103,6 @@ function poll (DB) {
                         //update of the answer list with the answer of the user who initiated the poll. His answer is always 'yes'
                         update(type, connectionId, socket, true);
                         DB.startPoll(sockets, type, connectionId, socket);
-                        //calculateResultAnyway(socket, type);
                     }
                 });
             } else {
@@ -141,7 +140,8 @@ function poll (DB) {
                 } else {
                     console.log('Answer of gadget with the connection ID' + connectionId + ' has been added to the poll!');
                     checkResponses(socket,type);
-                }
+                    //wait five minutes before finishing the poll automatically
+                    pollEnd = setTimeout(function () { calculateResultAnyway(socket, type); }, 300000)                }
             });
             
         });
@@ -181,7 +181,7 @@ function poll (DB) {
                 for (var i = 0; i<respondingUsers.length; i++) {
                     if (result.answers[respondingUsers[i]] === true) {
                         positiveResponses ++;
-                    } else {
+                    } else if (result.answers[respondingUsers[i]] === false) {
                         negativeResponses ++;
                     }
                 }
@@ -199,16 +199,15 @@ function poll (DB) {
 
     };
 
-/*    /!**
+    /**
      * Calculates the result of the poll after five minutes without checking if all users responded.
      * @param socket:
      * @param type: Type of the poll to calculate result for.
-     *!/
+     */
     calculateResultAnyway = function(socket, type) {
-        pollEnd = setTimeout(calculateResultAnyway, 5000);
         calculateResult(socket, type);
         pollEnd = clearTimeout(calculateResultAnyway);
-    };*/
+    };
 
     /**
      * Checks if all the users have yet responded to the poll.
