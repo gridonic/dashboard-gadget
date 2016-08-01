@@ -129,15 +129,21 @@ function connection (ModelHandler) {
             });
         } else if (type === self.TYPE_GADGET) {
 
-            // create connection for this gadget
-            model = new connectionModel({
-                connectionId: connectionId,
-                gadgetId: id,
-                userId: null
-            });
+            connectionModel.findOneAndUpdate({gadgetId: id}, {$set:{connectionId:connectionId}}, function (err, doc) {
 
-            connectionModel.findOne({gadgetId: id}, function(err, result) {
-                saveModel(model, err, result);
+                if (doc === null) {
+                    // create connection for this gadget
+                    model = new connectionModel({
+                        connectionId: connectionId,
+                        gadgetId: id,
+                        userId: null
+                    });
+                    connectionModel.findOne({gadgetId: id}, function (err, result) {
+                        saveModel(model, err, result);
+                    });
+                } else {
+                    console.log('Connection has been updated');
+                }
             });
 
         } else if (type === self.TYPE_USER) {
