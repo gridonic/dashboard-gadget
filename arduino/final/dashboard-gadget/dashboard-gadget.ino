@@ -79,9 +79,9 @@ void initLEDs() {
   delay(defaultDelay);
   setColor("project", 0, 255, 0);
   delay(defaultDelay);
-//  setColor("project", 0, 0, 255);
-//  delay(defaultDelay);
-//  setColor("project", 0, 0, 0);
+  setColor("project", 0, 0, 255);
+  delay(defaultDelay);
+  setColor("project", 0, 0, 0);
 }
 
 void setColor(String led, int red, int green, int blue)
