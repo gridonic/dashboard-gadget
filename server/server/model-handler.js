@@ -400,16 +400,16 @@ function modelHandler () {
      * @param callback
      * @param user
      */
-    showDisplayOnArduino = function (callback, user) {
+    showDisplayOnArduino = function (callback, user, showTime) {
         var worktime = null;
         var project = null;
 
-        if (user.userSettings) {
+        if (user && user.userSettings) {
             worktime = Harvest.getWorkTime();
             project = Harvest.getProject();
         }
 
-        callback(worktime, project);
+        callback(worktime, showTime, project);
     };
 
     /**
@@ -419,11 +419,14 @@ function modelHandler () {
      */
     startDisplayOnArduino = function (callback, user) {
 
-        // todo: check which app we have to show
         // todo: check if we have to show something else like a poll.
+
+        console.log(user);
 
         var harvestCredentials = {};
         var userSettings;
+        var userApps;
+        var userAppSettings;
 
         if (user.userSettings) {
             userSettings = JSON.parse(user.userSettings);
@@ -435,10 +438,15 @@ function modelHandler () {
             Harvest.setCredentials(harvestCredentials);
         }
 
-        showDisplayOnArduino(callback, user);
+        if (user.appActivated) {
+            console.log('show user apps on arduino');
+            // todo: check which app we have to show
+        }
+
+        showDisplayOnArduino(callback, user, true);
 
         setInterval(function () {
-            showDisplayOnArduino(callback, user);
+            showDisplayOnArduino(callback, user, true);
         }, 60000);
     };
 

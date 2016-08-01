@@ -130,13 +130,15 @@ function socketHandler (Handler) {
         socket.emit('showBlack', {data: null});
         // var i = 0;
 
-        Handler.setupDisplayForArduino(socket.id, function (workTime, project) {
+        Handler.setupDisplayForArduino(socket.id, function (workTime, showTime, project) {
             if (workTime !== null) {
                 socket.emit('showWorkTime', {draw: Graphic.getWorktimeDisplay(workTime)});
             }
 
             setTimeout(function () {
-                socket.emit('showTime', { draw: Graphic.getActualTimeDisplay() });
+                if (showTime !== null) {
+                    socket.emit('showTime', {draw: Graphic.getActualTimeDisplay()});
+                }
             }, 100);
 
             setTimeout(function () {
