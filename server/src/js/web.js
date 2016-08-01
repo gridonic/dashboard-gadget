@@ -751,7 +751,7 @@ handleShowTime = function (data) {
     context.fillText(timeString, padding, DISPLAY_HEIGHT - padding);
 };
 
-// TODO: Adressen hier, die funktionen an sich in externes File auslagern.
+// Todo: Socket-calls & socket-handling hier, die oben aufgeführten Funktionen an sich in externes File auslagern.
 
 socket.on('show', function (data) {
     handleShow(data)

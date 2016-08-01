@@ -142,7 +142,7 @@ function socketHandler (Handler) {
             setTimeout(function () {
 
                 if (project !== null) {
-                    // todo!
+                    // todo: send project info to the arduino!
                     console.log('send project to gadget');
                     console.log(project);
                 }
