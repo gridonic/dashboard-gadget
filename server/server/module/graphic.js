@@ -37,8 +37,8 @@ function graphic () {
     var COLOR_BLACK = '1';
 
     // JSON-Files
-    var workIconRaw     = require('./png-json/work-icon.json');
-    var startImageRaw   = require('./png-json/start-image.json');
+    var workIconRaw     = require('./../png-json/work-icon.json');
+    var startImageRaw   = require('./../png-json/start-image.json');
 
 
     /* ======================================================================

@@ -1,5 +1,5 @@
 'use strict';
-var graphic = require('./graphic.js');
+var graphic = require('./module/graphic.js');
 
 function socketHandler (Handler) {
 
