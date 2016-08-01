@@ -11,6 +11,11 @@
 #define _rst            9
 #define _dc             8
 
+// Pins for the LEDs
+const int LEDProjectR = 24;
+const int LEDProjectG = 25;
+const int LEDProjectB = 26;
+
 // Variables for display
 Adafruit_ILI9340 tft        = Adafruit_ILI9340(_cs, _dc, _rst);
 unsigned int displayWidth   = 320;
@@ -60,8 +65,37 @@ void setup() {
   loggedIn = false;
   helloed = false;
 
+  initLEDs();
   initDisplay();
   initEthernet();
+}
+
+void initLEDs() {
+  pinMode(LEDProjectR, OUTPUT);
+  pinMode(LEDProjectG, OUTPUT);
+  pinMode(LEDProjectB, OUTPUT);
+
+  setColor("project", 255, 0, 0);
+  delay(defaultDelay);
+  setColor("project", 0, 255, 0);
+  delay(defaultDelay);
+//  setColor("project", 0, 0, 255);
+//  delay(defaultDelay);
+//  setColor("project", 0, 0, 0);
+}
+
+void setColor(String led, int red, int green, int blue)
+{
+    
+    red = 255 - red;
+    green = 255 - green;
+    blue = 255 - blue;
+
+    if (led == "project") {
+      analogWrite(LEDProjectR, red);
+      analogWrite(LEDProjectG, green);
+      analogWrite(LEDProjectB, blue); 
+    }
 }
 
 /**
