@@ -5,16 +5,19 @@ function socketHandler (Handler) {
 
     // Functions
     var loadUser;
+    var handleNewUserApps;
 
     // On-functions
-    var onLogoutGadget;
+    var onActivateApp;
     var onButtonsPushed;
     var onCreateUser;
+    var onDeactivateApp;
     var onDisconnect;
     var onError;
     var onHello;
     var onLoginGadget;
     var onLoginUser;
+    var onLogoutGadget;
     var onLogoutUser;
     var onSaveUserSettings;
     var onSuccess;
@@ -35,9 +38,11 @@ function socketHandler (Handler) {
         socket = s;
     };
 
+    this.onActivateApp = function (data) { return onActivateApp(data); };
     this.onArduinoLogout = function (data) { return onLogoutGadget(data); };
     this.onButtonsPushed = function (data) { return onButtonsPushed(data); };
     this.onCreateUser = function (data) { return onCreateUser(data); };
+    this.onDeactivateApp = function (data) { return onDeactivateApp(data); };
     this.onDisconnect = function (data) { return onDisconnect(data); };
     this.onError = function (data) { return onError(data); };
     this.onHello = function (data) { return onHello(data); };
@@ -70,6 +75,23 @@ function socketHandler (Handler) {
         });
     };
 
+    handleNewUserApps = function (success, user) {
+        if (success) {
+            socket.emit('updateUserData', {user: user});
+        } else {
+            socket.emit('sendError', {
+                message: 'The server could not update the apps and app-settings.'
+            });
+        }
+    };
+
+    onActivateApp = function (data) {
+        console.log('onActivateApp');
+        console.log(data);
+
+        Handler.changeUserApp(Handler.APP_ACTIVATE, data.user, data.token, data.appId, data.appSettings, handleNewUserApps);
+    };
+
     onButtonsPushed = function (data) {
         if (data.screen === 'pollToAnswer') {
             if (data.right) {
@@ -92,6 +114,13 @@ function socketHandler (Handler) {
 
         }
 
+    };
+
+    onDeactivateApp = function (data) {
+        console.log('onDeactivateApp');
+        console.log(data);
+
+        Handler.changeUserApp(Handler.APP_DEACTIVATE, data.user, data.token, data.appId, null, handleNewUserApps);
     };
 
     onHello = function (data) {

@@ -66,12 +66,24 @@ io.on('connection', function (socket) {
 
     console.log('connection has started. ' + 'id: ' + socket.id);
 
-    socket.on('hello', function (message) {
-        SocketHandler.onHello(message);
+    socket.on('activateApp', function (data) {
+        SocketHandler.onActivateApp(data);
     });
 
     socket.on('buttonsPushed', function (data) {
         SocketHandler.onButtonsPushed(data);
+    });
+
+    socket.on('createUser', function (data) {
+        SocketHandler.onCreateUser(data);
+    });
+
+    socket.on('deactivateApp', function (data) {
+        SocketHandler.onDeactivateApp(data);
+    });
+
+    socket.on('hello', function (message) {
+        SocketHandler.onHello(message);
     });
 
     socket.on('loginGadget', function (data) {
@@ -80,10 +92,6 @@ io.on('connection', function (socket) {
 
     socket.on('logout', function (data) {
         SocketHandler.onArduinoLogout(data);
-    });
-
-    socket.on('createUser', function (data) {
-        SocketHandler.onCreateUser(data);
     });
 
     socket.on('loginUser', function (data) {

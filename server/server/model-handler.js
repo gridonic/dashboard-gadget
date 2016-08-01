@@ -1,5 +1,7 @@
 'use strict';
 
+var app = require('./model/app.js');
+var appHandler = require('./app-handler.js');
 var connection = require('./model/connection.js');
 var gadget = require('./model/gadget.js');
 var harvest = require('./model/harvest.js');
@@ -19,6 +21,8 @@ function modelHandler () {
     var addUserConnection;
     var changeMood;
     var changeMoodFinally;
+    var changeUserApp;
+    var createModels;
     var createPoll;
     var createPollFinally;
     var createUser;
@@ -43,8 +47,11 @@ function modelHandler () {
     // Variables
     var connected   = false;
     var url         = 'mongodb://localhost:9999/test';
+    var self        = this;
 
     // Models
+    var App         = new app(this);
+    var AppHandler  = new appHandler(this);
     var Connection  = new connection(this);
     var Gadget      = new gadget(this);
     var Harvest     = new harvest(this);
@@ -56,6 +63,8 @@ function modelHandler () {
     // Constants
     const NAME_GADGET1 = '1';
     const NAME_GADGET2 = '2';
+    this.APP_ACTIVATE = '1';
+    this.APP_DEACTIVATE = '2';
 
     /* =====================================================================
      * Public functions
@@ -64,6 +73,7 @@ function modelHandler () {
     this.activateGadget             = function (id) { return activateGadget(id); };
     this.addSocketConnection        = function (id) { return addSocketConnection(id); };
     this.addUserConnection          = function (connectionId, userId) { return addUserConnection(connectionId, userId); };
+    this.changeUserApp              = function (mode, u, t, id, settings, c) { return changeUserApp(mode, u, t, id, settings, c); };
     this.createUser                 = function (username, password, callback) { return createUser(username, password, callback); };
     this.loginUser                  = function (username, password, gadget, socketId, callback) { return loginUser(username, password, gadget, socketId, callback); };
     this.removeConnection           = function (connectionId) { return removeConnection(connectionId); };
@@ -92,6 +102,16 @@ function modelHandler () {
 
     addUserConnection = function (connectionId, userId) {
         Connection.update(connectionId, userId, Connection.TYPE_USER);
+    };
+
+    changeUserApp = function (mode, user, token, appId, appSettings, callback) {
+        if (Token.checkToken(token)) {
+            if (mode === self.APP_ACTIVATE) {
+                User.addAppToUser(user, appId, appSettings, callback);
+            } else if (mode === self.APP_DEACTIVATE) {
+                User.removeAppFromUser(user, appId, callback);
+            }
+        }
     };
 
     /**
@@ -184,7 +204,17 @@ function modelHandler () {
                         // finally, update the gadget by adding the logged in user.
                         Gadget.update(gadgetId, userId, username);
 
-                        callback(true, {token: token, username: username, settings: settings});
+                        App.getAll(function (err, apps) {
+
+                            // todo beat: get user apps einbinden.
+
+                            callback(true, {
+                                token: token,
+                                username: username,
+                                settings: settings,
+                                apps: apps,
+                            });
+                        });
                     }
                 });
             }
@@ -333,7 +363,6 @@ function modelHandler () {
      */
     startPoll = function (sockets, type, connectionId, socket) {
         Poll.startPoll(sockets, type, connectionId, socket);
-
     };
 
     /**
@@ -413,16 +442,24 @@ function modelHandler () {
      * Create all Schemas, mostly by constructing its model.js-files
      */
     setupSchema = function () {
+        App.construct(mongoose);
         User.construct(mongoose);
         Token.construct(mongoose);
         Mood.construct(mongoose);
         Gadget.construct(mongoose);
         Connection.construct(mongoose);
         Poll.construct(mongoose);
+    };
+
+    createModels = function () {
         Mood.create(NAME_GADGET1);
         Mood.create(NAME_GADGET2);
         Gadget.create(NAME_GADGET1);
         Gadget.create(NAME_GADGET2);
+
+        // Create all Apps
+        App.create(AppHandler.getAppBreathing());
+        App.create(AppHandler.getAppTest());
     };
 
     /**
@@ -447,6 +484,7 @@ function modelHandler () {
             console.log('database is open and connected.!');
             connected = true;
             setupSchema();
+            createModels();
         });
     };
 
