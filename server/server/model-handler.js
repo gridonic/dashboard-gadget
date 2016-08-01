@@ -205,14 +205,18 @@ function modelHandler () {
                         Gadget.update(gadgetId, userId, username);
 
                         App.getAll(function (err, apps) {
-
-                            // todo beat: get user apps einbinden.
-
-                            callback(true, {
-                                token: token,
-                                username: username,
-                                settings: settings,
-                                apps: apps,
+                            User.getUserByUsername(username, function (err, user) {
+                                if (err || user == null) {
+                                    callback(false, {message: 'user could not be found on the server after the login.'});
+                                } else {
+                                    callback(true, {
+                                        token: token,
+                                        username: username,
+                                        settings: settings,
+                                        apps: apps,
+                                        user: user
+                                    });
+                                }
                             });
                         });
                     }

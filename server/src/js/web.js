@@ -470,17 +470,17 @@ handleArduinoLogout = function () {
  * @param data
  */
 handleDashboardLoggedIn = function (data) {
-    actualWaiting = WAITING_CREATE_USER;
+    actualWaiting = WAITING_DEFAULT;
 
     StorageHandler.setUser(data.username);
     StorageHandler.setToken(data.token);
     StorageHandler.setUserSettings(data.settings);
     StorageHandler.setApps(data.apps);
-    if (data.appActivated) {
-        StorageHandler.setUserApps(data.appActivated);
+    if (data.user.appActivated) {
+        StorageHandler.setUserApps(data.user.appActivated);
     }
-    if (data.appSettings) {
-        StorageHandler.setUserAppSettings(data.appSettings);
+    if (data.user.appSettings) {
+        StorageHandler.setUserAppSettings(data.user.appSettings);
     }
     dashboardShowUser();
     dashboardUpdateContent();
