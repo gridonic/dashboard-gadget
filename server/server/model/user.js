@@ -3,14 +3,16 @@
 function user (ModelHandler) {
 
     // Functions
+    var addGadgetToUser;
+    var changeAppOfUser;
     var construct;
     var create;
     var decodeHarvestPassword;
-    var getUser;
-    var getUserByUsername;
     var findUserByUsername;
     var findUserForLogin;
-    var addGadgetToUser;
+    var getUserApps;
+    var getUser;
+    var getUserByUsername;
     var updateUserSettings;
 
     // Other modules
@@ -30,19 +32,68 @@ function user (ModelHandler) {
      * Public functions
      * ===================================================================== */
 
-    this.addGadgetToUser        = function(username, gadget, callback) {return addGadgetToUser(username, gadget, callback);};
+    this.addGadgetToUser        = function(username, gadget, callback) { return addGadgetToUser(username, gadget, callback);};
+    this.addAppToUser           = function (username, appId, appSettings, callback) { return changeAppOfUser(true, username, appId, appSettings, callback); };
     this.construct              = function (mongoose) { return construct(mongoose); };
     this.create                 = function (username, password, callback) { return create(username, password, callback); };
     this.decodeHarvestPassword  = function (password) { return decodeHarvestPassword(password); };
     this.findUserByUsername     = function (username, password, callback) { return findUserByUsername(username, password, callback); };
     this.findUserForLogin       = function (username, password, finalCallback, callback) { return findUserForLogin(username, password, finalCallback, callback); };
     this.getUser                = function (username, password, callback) { return getUser(username, password, callback); };
+    this.getUserApps            = function (username, apps, callback) { return getUserApps(username, apps, callback); };
     this.getUserByUsername      = function (username, callback) { return getUserByUsername(username, callback); };
+    this.removeAppFromUser      = function (username, appId, callback) { return changeAppOfUser(false, username, appId, null, callback); };
     this.updateUserSettings     = function (username, settings, callback) { return updateUserSettings(username, settings, callback); };
 
     /* =====================================================================
      * Private functions
      * ===================================================================== */
+
+    changeAppOfUser = function (mode, username, appId, appSettings, callback) {
+        userModel.findOne({username: username}, function (err, result) {
+            if (err || result == null) {
+                callback(false, null);
+            } else {
+                var model = result;
+                var originalAppSettings = {};
+
+                if (model.appSettings) {
+                    originalAppSettings = JSON.parse(model.appSettings);
+                }
+
+                if (mode) {
+                    if (model.appActivated.indexOf(appId) < 0) {
+                        model.appActivated.push(appId);
+                    }
+                    originalAppSettings[appId] = appSettings;
+                } else {
+                    var index = model.appActivated.indexOf(appId);
+                    if (index > -1) {
+                        model.appActivated.splice(index, 1);
+                    }
+                    originalAppSettings[appId] = null;
+                }
+
+                model.appSettings = JSON.stringify(originalAppSettings);
+
+                userModel.findOneAndUpdate(
+                    {username: username},
+                    {$set: {
+                        appSettings: model.appSettings,
+                        appActivated: model.appActivated
+                    }},
+                    {new: true},
+                    function (err, result) {
+                        if (err) {
+                            callback(false, null);
+                        } else {
+                            callback(true, result);
+                        }
+                    }
+                );
+            }
+        });
+    };
 
     /**
      * Construct the UserSchema and the UserModel.
@@ -62,10 +113,11 @@ function user (ModelHandler) {
             password: String,
             userSettings: String,
             appActivated: Array,
-            appSettings: Array,
+            appSettings: String,
             gadgetId: Number,
             actualMoodId: Number,
-            actualProjectId: Number
+            actualProjectId: Number,
+            currentDisplay: String,
         });
 
         userSchema.methods.sayHello = function () {
@@ -113,6 +165,34 @@ function user (ModelHandler) {
         } catch (e) {
             return password;
         }
+    };
+
+    getUserApps = function (username, apps, callback) {
+        userModel.findOne({username: username}, function (err, result) {
+            if (err) {
+                callback(apps);
+            } else {
+
+                var id;
+                var i;
+                var j;
+
+                var activatedApps = result.appActivated;
+                var individualAppSettings = result.appSettings;
+
+                for (i = 0; i < activatedApps.length; i++) {
+                    for (j = 0; j < apps.length; j++) {
+                        id = apps[j]['_id'];
+                        if (activatedApps[i] == id) {
+                            apps[j].isActivated = true;
+                            apps[j].userSettings = individualAppSettings[id];
+                        }
+                    }
+                }
+
+                callback(apps);
+            }
+        });
     };
 
     getUser = function (username, password, callback) {

@@ -2,6 +2,8 @@
 require('./module/storage-handler');
 
 // Functions
+var dashboardStart;
+var dashboardUserApps;
 var dashboardUserSettings;
 var dashboardUpdateContent;
 var drawWorkingIcon;
@@ -12,9 +14,9 @@ var handleDashboardCreate;
 var handleDashboardLoggedIn;
 var handleDashboardLogin;
 var handleDashboardLogout;
-var dashboardStart;
 var handleDashboardUserSettingsUpdated;
 var handleNewPoll;
+var handleDashboardUserUpdated;
 var handleUpdateMood;
 var handleStartPoll;
 var handleSuccess;
@@ -54,6 +56,7 @@ var dashboardLogout = document.getElementById('btn-logout');
 var canvas = document.getElementById("display");
 var updateMood = document.getElementById('btn-update');
 var formUserSetting = document.getElementById("form-user-settings");
+var dashboardAppContainer = document.getElementById('app-container');
 var sectionCreate = document.getElementById('section-create');
 var sectionLogin = document.getElementById('section-login');
 var sectionUser = document.getElementById('section-user');
@@ -102,12 +105,20 @@ dashboardShowUser = function () {
     hideElement(sectionCreate);
 };
 
+/**
+ * Update all the flexible content on the dashboard.
+ */
 dashboardUpdateContent = function () {
     var settings = JSON.parse(StorageHandler.getUserSettings());
     var keys = Object.keys(settings);
     var username = StorageHandler.getUser();
+    var apps = StorageHandler.getApps();
+    var userApps = StorageHandler.getUserApps();
+    var userAppSettings = StorageHandler.getUserAppSettings();
+    var appContent = '';
+    var i;
 
-    for (var i = 0; i < keys.length; i++) {
+    for (i = 0; i < keys.length; i++) {
         if (keys[i] === 'setting-harvest-password') {
             document.getElementById(keys[i]).value = HARVEST_PASSWORD_PLACEHOLDER;
             document.getElementById(keys[i]).setAttribute(HARVEST_PASSWORD_IDENTIFIER, settings[keys[i]]);
@@ -116,7 +127,86 @@ dashboardUpdateContent = function () {
         }
     }
 
+    for (i = 0; i < apps.length; i++) {
+        var buttonDataString = '';
+        appContent += '<h6>' + apps[i]['name'] + '</h6>';
+        appContent += '<p class="_text-italic">' + apps[i]['description'] + '</p>';
+
+        if (apps[i].settings !== 'null') {
+            var appSettings = JSON.parse(apps[i].settings);
+            for (var key in appSettings) {
+                if (appSettings.hasOwnProperty(key)) {
+                    if (appSettings[key] === 'number') {
+                        var id = apps[i]['_id'] + '---' + key;
+                        var value = '';
+                        buttonDataString += '|' + id;
+
+                        if (userApps && userApps.indexOf(apps[i]['_id']) > -1 && userAppSettings[apps[i]['_id']] != null) {
+                            value = userAppSettings[apps[i]['_id']][key];
+                        }
+
+                        appContent += '<div class="row form-group"><div class="col-sm-4"><label>' + key + '</label></div>' +
+                            '<div class="col-sm-8"><input class="form-control" type="number" id="' + id + '" value="' + value + '"></div></div>';
+                    }
+                }
+            }
+        }
+
+        if (userApps && userApps.indexOf(apps[i]['_id']) > -1) {
+            appContent += '<button class="deactivate-app btn btn-danger _margined-bottom" data-appid="' + apps[i]['_id'] + '">Deaktivieren</button>';
+        } else {
+            appContent += '<button class="activate-app btn btn-success _margined-bottom" data-appid="' + apps[i]['_id'] + '" data-settings="' + buttonDataString + '">Aktivieren</button>';
+        }
+    }
+
+    dashboardAppContainer.innerHTML = appContent;
+    dashboardUserApps();
     elementUsername.innerHTML = username;
+};
+
+dashboardUserApps = function () {
+    var activateButtons = document.getElementsByClassName('activate-app');
+    var deactivateButtons = document.getElementsByClassName('deactivate-app');
+    var i;
+    var j;
+
+    for (i = 0; i < activateButtons.length; i++) {
+        activateButtons[i].onclick = function () {
+            var appId = this.dataset.appid;
+            var settings = this.dataset.settings;
+            var settingsArray;
+            var settingsData = {};
+            var identifier;
+
+            if (settings.length > 0) {
+                settingsArray = settings.split('|');
+                for (j = 0; j < settingsArray.length; j++) {
+                    if (settingsArray[j].length > 0) {
+                        identifier = settingsArray[j].split('---');
+                        settingsData[identifier[1]] = document.getElementById(settingsArray[j]).value;
+                    }
+                }
+            }
+
+            socket.emit('activateApp', {
+                user: StorageHandler.getUser(),
+                token: StorageHandler.getToken(),
+                appId: appId,
+                appSettings: settingsData,
+            });
+        }
+    }
+
+    for (i = 0; i < deactivateButtons.length; i++) {
+        deactivateButtons[i].onclick = function () {
+            var appId = this.dataset.appid;
+            socket.emit('deactivateApp', {
+                user: StorageHandler.getUser(),
+                token: StorageHandler.getToken(),
+                appId: appId,
+            });
+        }
+    }
 };
 
 drawWorkingIcon = function (x, y) {
@@ -375,12 +465,23 @@ handleArduinoLogout = function () {
     };
 };
 
+/**
+ * Handle the event, when a user is successfully logged in on the dashboard.
+ * @param data
+ */
 handleDashboardLoggedIn = function (data) {
-    actualWaiting = WAITING_CREATE_USER;
+    actualWaiting = WAITING_DEFAULT;
 
     StorageHandler.setUser(data.username);
     StorageHandler.setToken(data.token);
     StorageHandler.setUserSettings(data.settings);
+    StorageHandler.setApps(data.apps);
+    if (data.user.appActivated) {
+        StorageHandler.setUserApps(data.user.appActivated);
+    }
+    if (data.user.appSettings) {
+        StorageHandler.setUserAppSettings(data.user.appSettings);
+    }
     dashboardShowUser();
     dashboardUpdateContent();
 };
@@ -473,6 +574,21 @@ dashboardUserSettings = function () {
 
 handleDashboardUserSettingsUpdated = function (data) {
     StorageHandler.setUserSettings(JSON.stringify(data));
+    dashboardUpdateContent();
+};
+
+handleDashboardUserUpdated = function (data) {
+    console.log(data);
+    StorageHandler.setUser(data.user.username);
+
+    if (data.user.appActivated) {
+        StorageHandler.setUserApps(data.user.appActivated);
+    }
+
+    if (data.user.appSettings) {
+        StorageHandler.setUserAppSettings(data.user.appSettings);
+    }
+
     dashboardUpdateContent();
 };
 
@@ -582,12 +698,6 @@ handleShow = function (data) {
 };
 
 simulatorStart = function () {
-    // if (document.body.className != 'simulator') {
-    //     return;
-    // }
-
-    // StorageHandler.delete();
-
     log('simulatorStart.');
 };
 
@@ -641,7 +751,7 @@ handleShowTime = function (data) {
     context.fillText(timeString, padding, DISPLAY_HEIGHT - padding);
 };
 
-// TODO: Adressen hier, die funktionen an sich in externes File auslagern.
+// Todo: Socket-calls & socket-handling hier, die oben aufgeführten Funktionen an sich in externes File auslagern.
 
 socket.on('show', function (data) {
     handleShow(data)
@@ -687,6 +797,9 @@ socket.on('userLoggedIn', function (data) {
 
 socket.on('newPoll', function (data) {
     handleNewPoll(data);
+});
+socket.on('updateUserData', function (data) {
+    handleDashboardUserUpdated(data);
 });
 
 // Start modules
