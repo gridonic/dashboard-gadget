@@ -29,7 +29,8 @@ var hideElement;
 var showElement;
 var dashboardShowUser;
 var dashboardHideUser;
-var buttonData = null;
+var buttonData = {screen: 'defaultScreen'};
+var pollData = {type: 'defaultType'};
 
 // Constants
 var WAITING_DEFAULT = 0;
@@ -479,8 +480,7 @@ handleDashboardUserSettingsUpdated = function (data) {
  * Handle new incoming poll.
  */
 handleNewPoll = function (data) {
-    log('new incoming poll');
-    log(data.type);
+    log('new incoming poll of type ' + data.type);
     buttonData = {screen: 'pollToAnswer', type: data.type};
     handleArduinoButtons(buttonData);
     buttonData = null;
@@ -703,5 +703,5 @@ dashboardUserSettings();
 handleUpdateMood();
 handleStartPoll();
 handleArduinoButtons(buttonData);
-handleNewPoll();
+handleNewPoll(pollData);
 
