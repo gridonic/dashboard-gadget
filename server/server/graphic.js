@@ -3,6 +3,7 @@
 function graphic () {
 
     // Functions
+    var generateCircle;
     var generateEmptyLines;
     var generateFullLines;
     var generateLines;
@@ -54,6 +55,20 @@ function graphic () {
     /* ======================================================================
      * Private functions
      * ====================================================================== */
+
+    /**
+     * Returns a circle, based on a borderColor and a rectangleColor
+     *
+     * @param x
+     * @param y
+     * @param rad
+     * @param borderColor
+     * @param rectColor
+     * @returns {string}
+     */
+    generateCircle = function (x, y, rad, borderColor, rectColor) {
+        return 'CIRC' + '|' + x + '|' + y + '|' + rad + '|' + borderColor + '|' + rectColor;
+    };
 
     /**
      * Generates empty lines.
@@ -227,7 +242,8 @@ function graphic () {
             rectColor = COLOR_WHITE;
         }
 
-        return generateRectangle(displayMainLeft, displayMainTop, displayMainSize, displayMainSize, COLOR_BLACK, rectColor);
+        // return generateRectangle(displayMainLeft, displayMainTop, displayMainSize, displayMainSize, COLOR_BLACK, rectColor);
+        return generateCircle(displayMainLeft + displayMainSize / 2, displayMainTop + displayMainSize / 2, displayMainSize / 2, COLOR_BLACK, rectColor);
     };
 
     /**

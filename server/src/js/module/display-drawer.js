@@ -231,9 +231,8 @@ displayDrawer = function () {
     showMainDisplay = function (data) {
         var drawData = data.draw.split('|');
 
-        console.log(data.draw);
-
         if (drawData[0] === 'RECT') {
+
             var x = parseInt(drawData[1]);
             var y = parseInt(drawData[2]);
             var w = parseInt(drawData[3]);
@@ -241,14 +240,35 @@ displayDrawer = function () {
             var borderColor = drawData[5] === "1" ? COLOR_BLACK : COLOR_WHITE;
             var rectColor = drawData[6] === "1" ? COLOR_BLACK : COLOR_WHITE;
 
-            console.log(borderColor);
-            console.log(rectColor);
-
             context.fillStyle = borderColor;
             context.fillRect(x, y, w, h);
 
             context.fillStyle = rectColor;
             context.fillRect(x + 2, y + 2, w - 4, h - 4);
+        } else if (drawData[0] === 'CIRC') {
+
+            var xCircle             = parseInt(drawData[1]);
+            var yCircle             = parseInt(drawData[2]);
+            var radCircle           = parseInt(drawData[3]);
+            var borderColorCircle   = drawData[4] === "1" ? COLOR_BLACK : COLOR_WHITE;
+            var circleColor         = drawData[5] === "1" ? COLOR_BLACK : COLOR_WHITE;
+
+            context.fillStyle = '#ffffff';
+            context.fillRect(xCircle - radCircle, yCircle - radCircle, radCircle * 2, radCircle * 2);
+
+            context.fillStyle = borderColorCircle;
+
+            context.beginPath();
+            context.arc(xCircle, yCircle, radCircle, 0, 2 * Math.PI);
+            context.closePath();
+            context.fill();
+
+            context.fillStyle = circleColor;
+
+            context.beginPath();
+            context.arc(xCircle, yCircle, radCircle - 2, 0, 2 * Math.PI);
+            context.closePath();
+            context.fill();
         }
     };
 
