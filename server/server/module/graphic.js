@@ -48,7 +48,7 @@ function graphic () {
     this.getActualTimeDisplay = function () { return getActualTimeDisplay(); };
     this.getBlackDisplay = function () { return getBlackDisplay(); };
     this.getDefaultDisplay = function (time, workingPercent, icon) { return getDefaultDisplay(time, workingPercent, icon); };
-    this.getDisplayAtmung = function (inOut) { return getDisplayAtmung(inOut); };
+    this.getDisplayAtmung = function (size) { return getDisplayAtmung(size); };
     this.getMenu = function (menu) { return generateMenu(menu.counts, menu.active); };
     this.getStartDisplay = function () { return getStartDisplay(); };
     this.getWhiteDisplay = function () { return getWhiteDisplay(); };
@@ -248,15 +248,15 @@ function graphic () {
 
     };
 
-    getDisplayAtmung = function (inOrOut) {
-        var rectColor = COLOR_BLACK;
-
-        if (inOrOut) {
-            rectColor = COLOR_WHITE;
+    getDisplayAtmung = function (size) {
+        var color = COLOR_BLACK;
+        var circleSize = (displayMainSize / 2) * size;
+        if (circleSize == 0) {
+            circleSize = 4;
         }
 
         // return generateRectangle(displayMainLeft, displayMainTop, displayMainSize, displayMainSize, COLOR_BLACK, rectColor);
-        return generateCircle(displayMainLeft + displayMainSize / 2, displayMainTop + displayMainSize / 2, displayMainSize / 2, COLOR_BLACK, rectColor);
+        return generateCircle(displayMainLeft + displayMainSize / 2, displayMainTop + displayMainSize / 2, circleSize, color, color);
     };
 
     /**

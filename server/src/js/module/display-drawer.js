@@ -257,7 +257,7 @@ displayDrawer = function () {
             var circleColor         = drawData[5] === "1" ? COLOR_BLACK : COLOR_WHITE;
 
             context.fillStyle = COLOR_WHITE;
-            context.fillRect(xCircle - radCircle, yCircle - radCircle, radCircle * 2, radCircle * 2);
+            context.fillRect(xCircle - DISPLAY_HEIGHT / 4, yCircle - DISPLAY_HEIGHT / 4, DISPLAY_HEIGHT / 2, DISPLAY_HEIGHT / 2);
 
             context.fillStyle = borderColorCircle;
             context.beginPath();

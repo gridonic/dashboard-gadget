@@ -73,7 +73,12 @@ function appHandler () {
 
     getDisplayAppAtmung = function (settings, step, stepDuration) {
         var time = step * stepDuration;
-        return Graphic.getDisplayAtmung(Math.round(time / settings.Geschwindigkeit) % 2);
+        var size = (time / settings.Geschwindigkeit) % 2;
+        if (size > 1) {
+            size = 2 - size;
+        }
+
+        return Graphic.getDisplayAtmung(size);
     };
 
 }
