@@ -28,7 +28,6 @@ const int LEDMoodB = 41;          // mood color
 const int ButtonLeftPin = A1;
 const int ButtonRightPin = A0;
 
-
 // Variables for the LEDs
 const int LED_BUTTON_LEFT         = 1;
 const int LED_BUTTON_RIGHT        = 2;
@@ -451,22 +450,24 @@ void showWorktimeOnScreen(String m)
 
 void showMenuOnScreen(String m)
 {
-  unsigned int start = splitString(m, '|', 0).toInt();
-  unsigned int padding = splitString(m, '|', 1).toInt();
-  unsigned int counts = splitString(m, '|', 2).toInt();
-  unsigned int active = splitString(m, '|', 3).toInt() + 1;
-  unsigned int lineHeight = splitString(m, '|', 4).toInt();
-  unsigned int lineWidth = displayWidth - (padding * 2);
-  unsigned int singleLineWidth = (float) lineWidth / (float) counts;
-  unsigned int activeLeft = (float) (padding + (active - 1)) * (float) singleLineWidth;
+  /*    var splitData = data.draw.split('|');
+        var start = parseInt(splitData[0]);
+        var padding = parseInt(splitData[1]);
+        var counts = parseInt(splitData[2]);
+        var active = parseInt(splitData[3]) + 1;
+        var lineHeight = parseInt(splitData[4]);
+        var lineWidth = DISPLAY_WIDTH - (padding * 2);
+        var singleLineWidth = Math.round(lineWidth / counts);
+        var activeLeft = padding + (active - 1) * singleLineWidth;
 
-  tft.fillRect(0, start, displayWidth, lineHeight * 2, ILI9340_WHITE);
+        context.fillStyle = COLOR_BLACK;
+        if (counts > 1) {
+            context.fillRect(activeLeft, start, singleLineWidth, lineHeight);
+        }
+        context.fillRect(padding, start + lineHeight, lineWidth, lineHeight);
+   */
 
-  if (counts > 1) {
-      tft.fillRect(activeLeft, start, singleLineWidth, lineHeight, ILI9340_BLACK);
-  }
-
-  tft.fillRect(padding, start + lineHeight, lineWidth, lineHeight, ILI9340_BLACK);
+   Serial.println(m);
 }
 
 void showTimeOnScreen(String m)
@@ -480,38 +481,6 @@ void showTimeOnScreen(String m)
   tft.setTextColor(ILI9340_BLACK);
   tft.setTextSize(2);
   tft.println(timeString);
-}
-
-void showMainDisplayOnScreen(String m)
-{
-  /* if (drawData[0] === 'RECT') {
-
-            var x = parseInt(drawData[1]);
-            var y = parseInt(drawData[2]);
-            var w = parseInt(drawData[3]);
-            var h = parseInt(drawData[4]);
-            var borderColor = drawData[5] === "1" ? COLOR_BLACK : COLOR_WHITE;
-            var rectColor = drawData[6] === "1" ? COLOR_BLACK : COLOR_WHITE;
-
-            context.fillStyle = borderColor;
-            context.fillRect(x, y, w, h);
-
-            context.fillStyle = rectColor;
-            context.fillRect(x + 2, y + 2, w - 4, h - 4);
-        }
-   */
-
-  if (splitString(m, '|', 0) == "CIRC") {
-    unsigned int xCircle            = splitString(m, '|', 1).toInt();
-    unsigned int yCircle            = splitString(m, '|', 2).toInt();
-    unsigned int radCircle          = splitString(m, '|', 3).toInt();
-    unsigned int borderColorCircle  = splitString(m, '|', 4) == "1" ? ILI9340_BLACK : ILI9340_WHITE;
-    unsigned int colorCircle        = splitString(m, '|', 5) == "1" ? ILI9340_BLACK : ILI9340_WHITE;
-
-    tft.fillRect(xCircle - displayHeight / 4 - 1, yCircle - displayHeight / 4 - 1, displayHeight / 2 + 2, displayHeight / 2 + 2, ILI9340_WHITE);
-    tft.fillCircle(xCircle, yCircle, radCircle, borderColorCircle);
-    tft.fillCircle(xCircle, yCircle, radCircle - 2, colorCircle);
-  }
 }
 
 void setProjectColor(String m)
@@ -531,6 +500,7 @@ void setProjectColor(String m)
  */
 void handleResponse()
 {
+  logger("handleResponse: " + RID);
   if (RID == "access")
   {
     loggedIn = true;
@@ -574,11 +544,6 @@ void handleResponse()
     showMenuOnScreen(Rcontent);
   }
 
-  else if (RID == "showMainDisplay")
-  {
-    showMainDisplayOnScreen(Rcontent);
-  }
-
   else
   {
     logger("monitor");
@@ -619,6 +584,11 @@ void checkButtons() {
     buttonValuesPush();
 
     if (loopIndex / checkButtonInterval > 5) {
+
+//      Serial.print("left: ");
+//      Serial.print(buttonLeftValues[3]);
+//      Serial.print(". right: ");
+//      Serial.println(buttonRightValues[3]);
 
       if (buttonLeftActive == 0 && buttonLeftValues[3] + buttonActivateDiff < buttonLeftValues[0] &&
           buttonLeftValues[3] <= buttonLeftValues[2] &&
@@ -678,7 +648,66 @@ void checkButtons() {
         buttonRightActive = 0;
         setColor(LED_BUTTON_RIGHT, 0, 0, 255);
       }
+
+      
     }
+
+//    if (buttonRightValue != buttonRightValueLast || buttonLeftValue != buttonLeftValueLast) {
+//      Serial.print("right: ");
+//      Serial.print(buttonRightValue);
+//      Serial.print(". left: ");
+//      Serial.println(buttonLeftValue);
+//    }
+//
+//    // activate left button
+//    if (buttonLeftActive == 0 && buttonLeftValue + buttonActivateDiff < buttonLeftValueLast) {
+//      buttonLeftActive = loopIndex;
+//      setColor(LED_BUTTON_LEFT, 255, 0, 0);
+//    }
+//
+//    // activate right button
+//    if (buttonRightActive == 0 && buttonRightValue + buttonActivateDiff < buttonRightValueLast) {
+//      buttonRightActive = loopIndex;
+//      setColor(LED_BUTTON_RIGHT, 255, 0, 0);
+//    }
+//
+//    // check if there are buttons active
+//    if (buttonLeftActive > 0 && buttonRightActive > 0) {
+//      Serial.println("Both buttons active");
+//      setColor(LED_BUTTON_RIGHT, 0, 255, 0);
+//      setColor(LED_BUTTON_LEFT, 0, 255, 0);
+//    }
+//
+//    else if (buttonLeftActive > 0 && buttonLeftValueLast >= buttonLeftValue) {
+//      Serial.println("button left active " + (String) buttonLeftValue);
+//    }
+//    
+//    else if (buttonRightActive > 0 && buttonRightValueLast >= buttonRightValue) {
+//      Serial.println("button right active " + (String) buttonRightValue);
+//    }
+//
+//    if (buttonLeftActive > 0 && buttonLeftActive + checkButtonInterval * 30 < loopIndex) {
+////    if (buttonLeftValueLast + buttonDeactivateDiff < buttonLeftValue) {
+////      Serial.print("left last: ");
+////      Serial.print(buttonLeftValueLast);
+////      Serial.print(" value: ");
+////      Serial.println(buttonLeftValue);
+//      buttonLeftActive = 0;
+//      setColor(LED_BUTTON_LEFT, 0, 0, 255);
+//    }
+//
+//    if (buttonRightActive > 0 && buttonRightActive + checkButtonInterval * 30 < loopIndex) {
+////    if (buttonRightValueLast + buttonDeactivateDiff < buttonRightValue) {
+////        Serial.print("right last: ");
+////        Serial.print(buttonRightValueLast);
+////        Serial.print(" value: ");
+////        Serial.println(buttonRightValue);
+//        buttonRightActive = 0;
+//        setColor(LED_BUTTON_RIGHT, 0, 0, 255);
+//      }
+//
+//    buttonLeftValueLast = buttonLeftValue;
+//    buttonRightValueLast = buttonRightValue;
   }
 }
 

@@ -127,7 +127,7 @@ function socketHandler (Handler) {
         console.log('socketHELLO');
         console.log(data);
 
-        socket.emit('showBlack', {data: null});
+        socket.emit('showWhite', {data: null});
         // var i = 0;
 
         Handler.setupDisplayForArduino(socket.id, function (workTime, updateTime, project, currentDisplay, menu) {
