@@ -52,7 +52,7 @@ unsigned int displayHeight  = 240;
 // Variables for the ethernet-module
 SocketIOClient client;
 byte mac[]                  = { 0x20, 0x67, 0x89, 0x4F, 0x60, 0x75 }; // generated here: http://www.miniwebtool.com/mac-address-generator/
-char hostname[]             = "192.168.2.98";
+char hostname[]             = "192.168.2.98"; // "192.168.43.231";
 int port                    = 3000;
 bool loggedIn               = false;
 bool helloed                = false;
@@ -71,7 +71,6 @@ int           gadgetID      = 1;
 int           miniDelay     = 250;
 int           defaultDelay  = 500;
 int           longDelay     = 1000;
-
 
 // Functions
 void logger(String message);
@@ -94,12 +93,14 @@ void setup() {
   loggedIn = false;
   helloed = false;
   
+  initDisplay();
   initButtons();
   initLEDs();
-  initDisplay();
   if (internet) {
     initEthernet();
   }
+  delay(defaultDelay);
+  tft.fillScreen(ILI9340_WHITE);
 }
 
 void initButtons() {
@@ -195,12 +196,14 @@ void initDisplay()
   tft.fillScreen(ILI9340_BLACK);
   delay(defaultDelay);
   tft.fillScreen(ILI9340_WHITE);
-  tft.setTextColor(ILI9340_BLACK);
-  tft.setTextSize(2);
-  tft.println("screen initialized.");
-  tft.println("");
-  tft.println("loading...");
-  delay(miniDelay);
+//  tft.setTextColor(ILI9340_BLACK);
+//  tft.setTextSize(2);
+//  tft.println("screen initialized.");
+//  tft.println("");
+//  tft.println("loading...");
+  delay(defaultDelay);
+  showOnScreen(F("x7211Ox79MDx78IDx78A-1Px76O-2Px76M-2Dx76I-2Dx76A-3Px74O-1B-2Px74M-1DI-1Dx74I-1HM-1Dx74A-1PO-2Px72O-1Bx2A-1Px72M-1Dx2I-1Dx72I-1Dx2M-1Dx72I-1Dx2I-1Dx72O-1Bx2A-1Hx72O-2PO-2Px73I-1HM-1Bx74I-1DI-1Dx74O-1B-2Hx71Nx2O-4Px2Lx68Ix3I-2Bx3Dx68Ax3I-2Dx2O-1Px5O-1Dx3M-2Dx3O-1Px1M-2Hx6I-1Hx3IDx2O-1Px1O-1Px3M-1Hx11O-1Dx2O-2Hx2M-1Px5I-2Hx2M-3Hx2O-1Px1M-3Hx4M-2Bx3IBx2O-1Px1O-1Px3A-2Px10M-1Dx2O-2Px2I-1Hx4O-3Bx2M-3Dx2O-1Px1M-3Bx4I-3Hx2I-1Px1O-1Px1O-1Px2M-3Dx10O-1Hx3I-1Hx2M-1Px4M-4Px1M-3Bx2O-1Px1M-4Hx2O-4Dx2I-1Hx1O-1Px1O-1Px2I-3Bx11Ax4I-1Dx2OBx5I-3Bx2M-4Px1O-1Px1M-4Dx2O-4Bx2I-1Hx1O-1Px1O-1Px2A-3Dx11Ix4M-1Bx3Dx5A-1HIDx2MBx1I-1Px1O-1Px1M-1PI-1Bx2M-1Dx1A-1Px1I-1Dx1O-1Px1O-1Px1O-2PIHx17A-1Px7O-1Bx1OHx2MBx1M-1Px1O-1Px1M-1Px1ABx2I-1Px1I-1Px1I-1Bx1O-1Px1O-1Px1O-1Dx1Mx18A-1Hx7O-1Hx5MBx1O-1Hx1O-1Px1M-1Px1I-1Px1IBx2M-1Hx1I-2PO-1Px1O-1Px1M-1Hx20M-1Dx7M-1Hx5MBx1O-1Px1O-1Px1M-1Px1M-1Px1ADx2O-1Hx1I-2PO-1Px1O-1Px1M-1Px17Dx2M-1Bx7M-1Px5MBx1O-1Px1O-1Px1M-1Px1M-1Px1ADx3ADx1I-2HO-1Px1O-1Px1IBx17ODx3A-1Px6M-1Px5MBx1M-1Px1O-1Px1M-1Px1O-1Hx1ADx3ADx1ID-1DO-1Px1O-1Px1IBx17M-1Px2A-1Hx6MBx6MBO-2Px1O-1Px1M-1Px1O-1Hx1AHx3ADx1ID-1BO-1Px1O-1Px1IBx17I-1Px2M-1Dx6MBx1O-2Px1M-3Bx2O-1Px1M-1Px1O-1Hx1AHx3IDx1IDIBO-1Px1O-1Px1IDx17I-1Dx2M-1Dx6MBx1O-2Px1M-3Dx2O-1Px1M-1Px1O-1HO-1Hx3ADx1IDM-1O-1Px1O-1Px1IBx17M-1Dx2I-1Hx6MBx1O-2Px1M-3Px2O-1Px1M-1Px1O-1Hx1AHx3ADx1IDM-1G-1Px1O-1Px1IBx17O-2Px1A-1Px6M-1Px1A-1Px1M-3Px2O-1Px1M-1Px1O-1Px1ADx3ADx1IDO-1C-1Px1O-1Px1IBx18A-1PO-1Bx7M-1Px1M-1Px1MBM-1Px2O-1Px1M-1Px1M-1Px1ADx3ADx1IDx1A-2Px1O-1Px1IBx18I-1DM-1Dx7M-1Hx1O-1Px1MBO-1Hx2O-1Px1M-1Px1M-1Px1ADx2O-1Hx1IDx1I-2Px1O-1Px1M-1Px17M-1DI-1Hx7O-1Hx1O-1Px1MBO-1Dx2O-1Px1M-1Px1I-1Px1IBx2M-1Hx1IDx1I-2Px1O-1Px1M-1Px17O-4Px7O-1Dx1O-1Px1MBx1ADx2O-1Px1M-1Px1ABx2I-1Px1I-1Px1IDx1M-2Px1O-1Px1M-1Hx1Ox16A-2Bx9A-1PM-1Px1MBx1IBx2O-1Px1M-1PM-1Bx2M-1DO-2Px1IDx1O-2Px1O-1Px1O-1Bx1IHx15I-2Dx9I-4Px1MBx1I-1Px1O-1Px1M-4Dx2O-4Bx2IDx2A-1Px1O-1Px2A-3Dx15M-2Hx9M-4Px1MBx1M-1Px1O-1Px1M-4Hx2O-4Dx2IDx2A-1Px1O-1Px2I-3Bx15O-2Px9O-4Px1MBx1O-1Hx1O-1Px1M-3Bx4I-3Hx2IDx2I-1Px1O-1Px2M-3Dx15O-2Hx10I-2Bx2MBx1O-1Dx1O-1Px1M-3Hx4M-2Bx3IDx2M-1Px1O-1Px2O-3Hx15M-2Dx11A-1Px2MBx2ADx1O-1Px1M-2Hx6I-1Hx3IDx2O-1Px1O-1Px3M-1Bx16I-2Dx76A-3Px74O-1B-2Px74M-1DI-1Dx74I-1HM-1Dx74A-1PO-2Px72O-1Bx2A-1Px72M-1Dx2I-1Dx72I-1Hx2M-1Dx72M-1Px2O-1Dx72OBx4AHx73Dx4Ix74Lx4Nx7105=="));
+  delay(defaultDelay);
 }
 
 /**
@@ -318,6 +321,7 @@ String splitString(String data, char separator, int index)
 void showOnScreen(String m)
 {
   logger("showOnScreen");
+  logger((String) m.length());
   char message[m.length()];
   m.toCharArray(message, m.length());
   logger("length of message: ");
@@ -342,8 +346,9 @@ void showOnScreen(String m)
         x++;
         next = message[x];
       }
+      
       x--;
-      number += message[x];
+//      number += message[x]; // removed because at the gridonic-logo, every numbers last digit was twice saved.
 
       for (k = 0; k < number.toInt(); k++) {
         if (current == 'x') {
