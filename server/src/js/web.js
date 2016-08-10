@@ -126,9 +126,12 @@ dashboardUpdateContent = function () {
             var appSettings = JSON.parse(apps[i].settings);
             for (var key in appSettings) {
                 if (appSettings.hasOwnProperty(key)) {
+                    var id;
+                    var value;
+
                     if (appSettings[key] === 'number') {
-                        var id = apps[i]['_id'] + '---' + key;
-                        var value = '';
+                        id = apps[i]['_id'] + '---' + key;
+                        value = '';
                         buttonDataString += '|' + id;
 
                         if (userApps && userApps.indexOf(apps[i]['_id']) > -1 && userAppSettings[apps[i]['_id']] != null) {
@@ -137,6 +140,17 @@ dashboardUpdateContent = function () {
 
                         appContent += '<div class="row form-group"><div class="col-sm-4"><label>' + key + '</label></div>' +
                             '<div class="col-sm-8"><input class="form-control" type="number" id="' + id + '" value="' + value + '"></div></div>';
+                    } else if (appSettings[key] === 'string') {
+                        id = apps[i]['_id'] + '---' + key;
+                        value = '';
+                        buttonDataString += '|' + id;
+
+                        if (userApps && userApps.indexOf(apps[i]['_id']) > -1 && userAppSettings[apps[i]['_id']] != null) {
+                            value = userAppSettings[apps[i]['_id']][key];
+                        }
+
+                        appContent += '<div class="row form-group"><div class="col-sm-4"><label>' + key + '</label></div>' +
+                            '<div class="col-sm-8"><input class="form-control" type="text" id="' + id + '" value="' + value + '"></div></div>';
                     }
                 }
             }

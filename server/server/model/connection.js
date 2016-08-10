@@ -129,6 +129,7 @@ function connection (ModelHandler) {
             });
         } else if (type === self.TYPE_GADGET) {
 
+            //overwriting connections with new gadget ID in data model
             connectionModel.findOneAndUpdate({gadgetId: id}, {$set:{connectionId:connectionId}}, function (err, doc) {
 
                 if (doc === null) {

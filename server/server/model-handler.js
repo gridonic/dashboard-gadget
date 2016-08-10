@@ -546,6 +546,7 @@ function modelHandler () {
 
         // Create all Apps
         App.create(AppHandler.getAppBreathing());
+        App.create(AppHandler.getAppServer());
         App.create(AppHandler.getAppTest());
     };
 
