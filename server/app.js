@@ -70,6 +70,10 @@ io.on('connection', function (socket) {
         SocketHandler.onActivateApp(data);
     });
 
+    socket.on('arduinoButtonPushed', function (data) {
+        SocketHandler.onArduinoButtonsPushed(data);
+    });
+
     socket.on('buttonsPushed', function (data) {
         SocketHandler.onButtonsPushed(data);
     });
