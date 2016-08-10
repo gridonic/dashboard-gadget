@@ -372,9 +372,6 @@ function graphic () {
             bitString += '-' + iWhite;
         }
 
-        console.log(imageString.length);
-        console.log(bitString.length);
-
         return bitString;
     };
 }

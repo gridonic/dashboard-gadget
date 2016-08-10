@@ -9,6 +9,7 @@ function socketHandler (Handler) {
 
     // On-functions
     var onActivateApp;
+    var onArduinoButtonsPushed;
     var onButtonsPushed;
     var onCreateUser;
     var onDeactivateApp;
@@ -28,6 +29,7 @@ function socketHandler (Handler) {
     // Variables
     var Graphic = new graphic();
     var socket = null;
+    var helloed = false;
 
     /* ======================================================================
      * Public functions
@@ -39,6 +41,7 @@ function socketHandler (Handler) {
     };
 
     this.onActivateApp = function (data) { return onActivateApp(data); };
+    this.onArduinoButtonsPushed = function (data) { return onArduinoButtonsPushed(data); };
     this.onArduinoLogout = function (data) { return onLogoutGadget(data); };
     this.onButtonsPushed = function (data) { return onButtonsPushed(data); };
     this.onCreateUser = function (data) { return onCreateUser(data); };
@@ -92,7 +95,29 @@ function socketHandler (Handler) {
         Handler.changeUserApp(Handler.APP_ACTIVATE, data.user, data.token, data.appId, data.appSettings, handleNewUserApps);
     };
 
+    onArduinoButtonsPushed = function (data) {
+        var newData = {};
+
+        if (data.buttons === 'r') {
+            newData.right = true;
+        } else if (data.buttons === 'p-r') {
+            newData.right = true;
+            newData.screen = 'pollToAnswer';
+        } else if (data.buttons === 'l') {
+            newData.left = true;
+        } else if (data.buttons === 'p-l') {
+            newData.left = true;
+            newData.screen = 'pollToAnswer';
+        } else if (data.buttons === 'b') {
+            newData.left = true;
+            newData.right = true;
+        }
+
+        onButtonsPushed(newData);
+    };
+
     onButtonsPushed = function (data) {
+
         if (data.screen === 'pollToAnswer') {
             if (data.right) {
                 Handler.updatePoll(socket, socket.id, data.type, true);
@@ -110,7 +135,7 @@ function socketHandler (Handler) {
             } else if (data.right) {
                 console.log('right');
             }
-            console.log(data);
+            // console.log(data);
 
         }
 
@@ -127,50 +152,55 @@ function socketHandler (Handler) {
         console.log('socketHELLO');
         console.log(data);
 
-        socket.emit('showBlack', {data: null});
+        socket.emit('showWhite', {data: null});
         // var i = 0;
 
-        Handler.setupDisplayForArduino(socket.id, function (workTime, updateTime, project, currentDisplay, menu) {
+        if (!helloed) {
 
-            var time = 50;
+            helloed = true;
 
-            setTimeout(function () {
-                if (updateTime && workTime !== null) {
-                    socket.emit('showWorkTime', {draw: Graphic.getWorktimeDisplay(workTime)});
-                }
-            }, 0);
+            Handler.setupDisplayForArduino(socket.id, function (workTime, updateTime, project, currentDisplay, menu) {
 
-            setTimeout(function () {
-                if (updateTime) {
-                    socket.emit('showTime', {draw: Graphic.getActualTimeDisplay()});
-                }
-            }, time);
+                var time = 50;
 
-            setTimeout(function () {
+                setTimeout(function () {
+                    if (updateTime && workTime !== null) {
+                        socket.emit('showWorkTime', {draw: Graphic.getWorktimeDisplay(workTime)});
+                    }
+                }, 0);
 
-                if (updateTime && project !== null) {
-                    console.log('send project to gadget');
-                    socket.emit('showProject', {color: project.color});
-                } else if (updateTime) {
-                    console.log('send null-project to gadget');
-                    socket.emit('showProject', {color: null});
-                }
-            }, time * 2);
+                setTimeout(function () {
+                    if (updateTime) {
+                        socket.emit('showTime', {draw: Graphic.getActualTimeDisplay()});
+                    }
+                }, time);
 
-            setTimeout(function () {
-                if (currentDisplay !== null) {
-                    // Display the current App, Poll or something else.
-                    socket.emit('showMainDisplay', {draw: currentDisplay});
-                }
-            }, time * 3);
+                setTimeout(function () {
 
-            setTimeout(function () {
-                if (menu !== null) {
-                    // Display the menu on the display.
-                    socket.emit('showMenu', {draw: Graphic.getMenu(menu)});
-                }
-            }, time * 4);
-        });
+                    if (updateTime && project !== null) {
+                        console.log('send project to gadget');
+                        socket.emit('showProject', {color: project.color});
+                    } else if (updateTime) {
+                        console.log('send null-project to gadget');
+                        socket.emit('showProject', {color: null});
+                    }
+                }, time * 2);
+
+                setTimeout(function () {
+                    if (currentDisplay !== null) {
+                        // Display the current App, Poll or something else.
+                        socket.emit('showMainDisplay', {draw: currentDisplay});
+                    }
+                }, time * 3);
+
+                setTimeout(function () {
+                    if (menu !== null) {
+                        // Display the menu on the display.
+                        socket.emit('showMenu', {draw: Graphic.getMenu(menu)});
+                    }
+                }, time * 4);
+            });
+        }
     };
 
     onLoginGadget = function (data) {
