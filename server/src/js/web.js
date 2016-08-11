@@ -27,8 +27,9 @@ var hideElement;
 var showElement;
 var dashboardShowUser;
 var dashboardHideUser;
-var buttonData = {screen: 'defaultScreen'};
-var pollData = {type: 'defaultType'};
+// var buttonData = {screen: 'defaultScreen'};
+// var pollData = {};
+// var pollData = {type: 'defaultType'};
 
 // Constants
 var WAITING_DEFAULT = 0;
@@ -36,6 +37,9 @@ var WAITING_CREATE_USER = 1;
 var WAITING_LOGIN_USER = 2;
 var HARVEST_PASSWORD_PLACEHOLDER = 'password';
 var HARVEST_PASSWORD_IDENTIFIER = 'data-harvest-pw';
+var SCREEN_POLL_ACTIVE = 'pollToAnswer';
+var SCREEN_DEFAULT = 'default-screen';
+var POLL_TYPE_DEFAULT = 'defaultType';
 
 // Variables
 var socket = io();
@@ -57,6 +61,8 @@ var sectionLogout = document.getElementById('section-logout');
 var startPoll = document.getElementById('poll-start');
 var elementUsername = document.getElementById('element-username');
 var actualWaiting = WAITING_DEFAULT;
+var actualScreen = SCREEN_DEFAULT;
+var actualPollType;
 
 var StorageHandler = storageHandler();
 var DisplayDrawer = displayDrawer();
@@ -230,40 +236,35 @@ dashboardUserApps = function () {
  * All of the actions are handled by the server, we are
  * just sending the inputs to the server.
  */
-handleArduinoButtons = function (data) {
+handleArduinoButtons = function () {
 
     if (!arduinoRightButton || !arduinoLeftButton || !arduinoBothButton) {
         return;
     }
 
-    if (data.screen === 'pollToAnswer') {
-        
-        arduinoBothButton.onclick = function () {
-            log('no interaction for both buttons on this screen');
-        };
-        arduinoLeftButton.onclick = function () {
-            socket.emit('buttonsPushed', {left: true, right: false, screen: data.screen, type: data.type});
-        };
-        arduinoRightButton.onclick = function () {
-            socket.emit('buttonsPushed', {left: false, right: true, screen: data.screen, type: data.type});
-        };
-        
-    } else {
-
-        arduinoBothButton.onclick = function () {
+    arduinoBothButton.onclick = function () {
+        if (actualScreen === SCREEN_DEFAULT) {
             socket.emit('buttonsPushed', {left: true, right: true});
-        };
+        } else if (actualScreen === SCREEN_POLL_ACTIVE) {
+            log('no interaction for both buttons on this screen');
+        }
+    };
 
-        arduinoLeftButton.onclick = function () {
+    arduinoLeftButton.onclick = function () {
+        if (actualScreen === SCREEN_DEFAULT) {
             socket.emit('buttonsPushed', {left: true, right: false});
-        };
+        } else if (actualScreen === SCREEN_POLL_ACTIVE) {
+            socket.emit('buttonsPushed', {left: true, right: false, screen: actualScreen, type: actualPollType});
+        }
+    };
 
-        arduinoRightButton.onclick = function () {
+    arduinoRightButton.onclick = function () {
+        if (actualScreen === SCREEN_DEFAULT) {
             socket.emit('buttonsPushed', {left: false, right: true});
-        };
-        
-    }
-
+        } else if (actualScreen === SCREEN_POLL_ACTIVE) {
+            socket.emit('buttonsPushed', {left: false, right: true, screen: actualScreen, type: actualPollType});
+        }
+    };
 };
 
 /**
@@ -332,12 +333,15 @@ handleDashboardLoggedIn = function (data) {
     StorageHandler.setToken(data.token);
     StorageHandler.setUserSettings(data.settings);
     StorageHandler.setApps(data.apps);
+
     if (data.user.appActivated) {
         StorageHandler.setUserApps(data.user.appActivated);
     }
+
     if (data.user.appSettings) {
         StorageHandler.setUserAppSettings(data.user.appSettings);
     }
+
     dashboardShowUser();
     dashboardUpdateContent();
 };
@@ -452,12 +456,9 @@ handleDashboardUserUpdated = function (data) {
  * Handle new incoming poll.
  */
 handleNewPoll = function (data) {
-    var type = data.type;
-    log('new incoming poll of type ' + type);
-    buttonData = {screen: 'pollToAnswer', type: type};
-    handleArduinoButtons(buttonData);
-    buttonData = null;
-    
+    log('new incoming poll of type ' + data.type);
+    actualPollType = data.type;
+    actualScreen = SCREEN_POLL_ACTIVE;
 };
 
 /**
@@ -613,6 +614,6 @@ dashboardStart();
 dashboardUserSettings();
 handleUpdateMood();
 handleStartPoll();
-handleArduinoButtons(buttonData);
-handleNewPoll(pollData);
+handleArduinoButtons();
+// handleNewPoll(pollData);
 

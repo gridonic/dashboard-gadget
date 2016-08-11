@@ -13,6 +13,7 @@ function appHandler () {
     var prepareAppDisplay;
     var getDisplayAppAtmung;
     var getDisplayAppServer;
+    var getDisplayAppTest;
     var checkHTTP;
     var checkHTTPS;
 
@@ -22,6 +23,7 @@ function appHandler () {
 
     // Constants
     var APP_ATMUNG_NAME = 'Atmung';
+    var APP_TEST_NAME = 'Test-App';
     var APP_SERVERSTATUS_NAME = 'Serverstatus';
 
     /* ======================================================================
@@ -45,6 +47,8 @@ function appHandler () {
             return getDisplayAppAtmung(actualDisplay.settings, step, stepDuration);
         } else if (actualDisplay.app && actualDisplay.app.name === APP_SERVERSTATUS_NAME) {
             return getDisplayAppServer(actualDisplay.settings);
+        } else if (actualDisplay.app && actualDisplay.app.name === APP_TEST_NAME) {
+            return getDisplayAppTest();
         }
     };
 
@@ -82,7 +86,7 @@ function appHandler () {
      */
     getAppTest = function () {
         return {
-            name: 'Test-App',
+            name: APP_TEST_NAME,
             description: 'Eine App, nur um die Apps zu testen.',
             settings: null
         };
@@ -120,6 +124,10 @@ function appHandler () {
                 checkHTTP(splittedURL[i]);
             }
         }
+    };
+
+    getDisplayAppTest = function () {
+        return Graphic.getDisplayTest();
     };
 
     checkHTTPS = function (url) {

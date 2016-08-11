@@ -25,6 +25,7 @@ function socketHandler (Handler) {
     var onUpdateMood;
     var onStartPoll;
     var onSendPoll;
+    var showDisplay;
 
     // Variables
     var Graphic = new graphic();
@@ -88,6 +89,47 @@ function socketHandler (Handler) {
         }
     };
 
+    showDisplay = function (workTime, updateTime, project, currentDisplay, menu) {
+        var time = 50;
+
+        setTimeout(function () {
+            if (updateTime && workTime !== null) {
+                socket.emit('showWorkTime', {draw: Graphic.getWorktimeDisplay(workTime)});
+            }
+        }, 0);
+
+        setTimeout(function () {
+            if (updateTime) {
+                socket.emit('showTime', {draw: Graphic.getActualTimeDisplay()});
+            }
+        }, time);
+
+        setTimeout(function () {
+
+            if (updateTime && project !== null) {
+                console.log('send project to gadget');
+                socket.emit('showProject', {color: project.color});
+            } else if (updateTime) {
+                console.log('send null-project to gadget');
+                socket.emit('showProject', {color: null});
+            }
+        }, time * 2);
+
+        setTimeout(function () {
+            if (currentDisplay !== null) {
+                // Display the current App, Poll or something else.
+                socket.emit('showMainDisplay', {draw: currentDisplay});
+            }
+        }, time * 3);
+
+        setTimeout(function () {
+            if (menu !== null) {
+                // Display the menu on the display.
+                socket.emit('showMenu', {draw: Graphic.getMenu(menu)});
+            }
+        }, time * 4);
+    };
+
     onActivateApp = function (data) {
         console.log('onActivateApp');
         console.log(data);
@@ -130,10 +172,13 @@ function socketHandler (Handler) {
             console.log('buttons pushed');
             if (data.left && data.right) {
                 console.log('both');
+                console.log('go in to menu');
             } else if (data.left) {
                 console.log('left');
+                Handler.switchApp('left', socket.id, showDisplay);
             } else if (data.right) {
                 console.log('right');
+                Handler.switchApp('right', socket.id, showDisplay);
             }
             // console.log(data);
 
@@ -156,50 +201,8 @@ function socketHandler (Handler) {
         // var i = 0;
 
         if (!helloed) {
-
             helloed = true;
-
-            Handler.setupDisplayForArduino(socket.id, function (workTime, updateTime, project, currentDisplay, menu) {
-
-                var time = 50;
-
-                setTimeout(function () {
-                    if (updateTime && workTime !== null) {
-                        socket.emit('showWorkTime', {draw: Graphic.getWorktimeDisplay(workTime)});
-                    }
-                }, 0);
-
-                setTimeout(function () {
-                    if (updateTime) {
-                        socket.emit('showTime', {draw: Graphic.getActualTimeDisplay()});
-                    }
-                }, time);
-
-                setTimeout(function () {
-
-                    if (updateTime && project !== null) {
-                        console.log('send project to gadget');
-                        socket.emit('showProject', {color: project.color});
-                    } else if (updateTime) {
-                        console.log('send null-project to gadget');
-                        socket.emit('showProject', {color: null});
-                    }
-                }, time * 2);
-
-                setTimeout(function () {
-                    if (currentDisplay !== null) {
-                        // Display the current App, Poll or something else.
-                        socket.emit('showMainDisplay', {draw: currentDisplay});
-                    }
-                }, time * 3);
-
-                setTimeout(function () {
-                    if (menu !== null) {
-                        // Display the menu on the display.
-                        socket.emit('showMenu', {draw: Graphic.getMenu(menu)});
-                    }
-                }, time * 4);
-            });
+            Handler.setupDisplayForArduino(socket.id, showDisplay);
         }
     };
 

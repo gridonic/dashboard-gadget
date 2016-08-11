@@ -274,6 +274,8 @@ displayDrawer = function () {
     };
 
     showMenu = function (data) {
+        log('showMenu');
+        log(data);
         var splitData = data.draw.split('|');
         var start = parseInt(splitData[0]);
         var padding = parseInt(splitData[1]);
@@ -284,6 +286,9 @@ displayDrawer = function () {
         var singleLineWidth = Math.round(lineWidth / counts);
         var activeLeft = padding + (active - 1) * singleLineWidth;
 
+        context.fillStyle = COLOR_WHITE;
+        context.fillRect(padding, start, lineWidth, lineHeight);
+
         context.fillStyle = COLOR_BLACK;
         if (counts > 1) {
             context.fillRect(activeLeft, start, singleLineWidth, lineHeight);
@@ -292,7 +297,8 @@ displayDrawer = function () {
     };
 
     showProject = function (data) {
-        console.log(data.color);
+        log('showProject');
+        log(data);
         if (data.color === undefined || data.color === null) {
             projectBox.style.backgroundColor = 'transparent';
         } else {

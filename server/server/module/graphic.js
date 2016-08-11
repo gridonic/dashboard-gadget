@@ -48,6 +48,7 @@ function graphic () {
     this.getActualTimeDisplay = function () { return getActualTimeDisplay(); };
     this.getBlackDisplay = function () { return getBlackDisplay(); };
     this.getDefaultDisplay = function (time, workingPercent, icon) { return getDefaultDisplay(time, workingPercent, icon); };
+    this.getDisplayTest = function () { return generateRectangle(100, 100, 120, 40, COLOR_BLACK, COLOR_WHITE); };
     this.getDisplayAtmung = function (size) { return getDisplayAtmung(size); };
     this.getMenu = function (menu) { return generateMenu(menu.counts, menu.active); };
     this.getStartDisplay = function () { return getStartDisplay(); };

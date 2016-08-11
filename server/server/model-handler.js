@@ -41,6 +41,7 @@ function modelHandler () {
     var showDisplayOnArduino;
     var startDisplayOnArduino;
     var startPoll;
+    var switchUserApp;
     var updatePoll;
     
 
@@ -80,6 +81,7 @@ function modelHandler () {
     this.removeConnection           = function (connectionId) { return removeConnection(connectionId); };
     this.saveUserSettings           = function (token, username, settings, callback) { return saveUserSettings(token, username, settings, callback); };
     this.setupDisplayForArduino     = function (socketId, callback) { return prepareDisplayForArduino(socketId, callback); };
+    this.switchApp                  = function (direction, socketId, callback) { return switchUserApp(direction, socketId, callback); };
 
     this.getUser = function (username, password, callback) { return getUser(username, password, callback); };
     this.createUserFinally = function (err, result, username, password, callback) { return createUserFinally(err, result, username, password, callback); };
@@ -438,6 +440,9 @@ function modelHandler () {
         var getCurrentDisplay = function (display, step, stepDuration) {
             if (display && display.app) {
                 return AppHandler.getActualAppDisplay(step, stepDuration);
+            } else {
+                console.log('no display, no display.app');
+                return null;
             }
         };
 
@@ -488,7 +493,6 @@ function modelHandler () {
                 currentDisplay = JSON.parse(user.currentDisplay);
 
                 if (currentDisplay && currentDisplay.app && user.appActivated.indexOf(currentDisplay.app) > -1) {
-                    console.log('currentDisplay is already set.');
                     App.findById(currentDisplay.app, function (err, result) {
                         if (err || result == null) {
                             // todo: handle error.
@@ -522,6 +526,38 @@ function modelHandler () {
 
             i++;
         }, 500);
+    };
+
+    switchUserApp = function (direction, socketId, callback) {
+        Connection.findConnectionById(socketId, function (err, conn) {
+            if (err) {
+                // todo: handleError
+            } else {
+                Gadget.findGadgetById(parseInt(conn.gadgetId), function (err, gadget) {
+                    if (err) {
+                        // todo: handleError
+                    } else {
+                        User.getUserByUsername(gadget.lastUserName, function (err, user) {
+                            var userCurrentDisplay = JSON.parse(user.currentDisplay);
+                            var actualAppPosition = user.appActivated.indexOf(userCurrentDisplay.app);
+                            var newAppPosition = 0;
+
+                            if (user.appActivated.length > 1) {
+                                if (direction === 'left') {
+                                    newAppPosition = actualAppPosition !== 0 ?  actualAppPosition - 1 : user.appActivated.length - 1;
+                                } else if (direction === 'right') {
+                                    newAppPosition = actualAppPosition !== user.appActivated.length - 1 ? actualAppPosition + 1 : 0;
+                                }
+                            }
+
+                            User.setCurrentDisplay(user.username, JSON.stringify({ app: user.appActivated[newAppPosition] }));
+                            user.currentDisplay = JSON.stringify({app: user.appActivated[newAppPosition]});
+                            startDisplayOnArduino(callback, user);
+                        });
+                    }
+                });
+            }
+        });
     };
 
     /**
