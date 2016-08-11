@@ -274,8 +274,6 @@ displayDrawer = function () {
     };
 
     showMenu = function (data) {
-        log('showMenu');
-        log(data);
         var splitData = data.draw.split('|');
         var start = parseInt(splitData[0]);
         var padding = parseInt(splitData[1]);
