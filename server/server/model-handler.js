@@ -233,17 +233,10 @@ function modelHandler () {
      * @param currentMood: New mood status the user wants to set via his gadget.
      */
     changeMood = function (connectionId, currentMood) {
-        Connection.findConnectionAndChangeMood(connectionId, currentMood);
-    };
-
-    /**
-     * Request the final mood change in moodmodel.
-     * @param gadgetId: Id of the gadget which requests the mood change.
-     * @param currentMood: New mood status the user wants to set via his gadget.
-     */
-    changeMoodFinally = function (gadgetId, currentMood) {
-        console.log(gadgetId + '------' + currentMood);
-        Mood.update(gadgetId, currentMood);
+        Connection.findConnectionAndChangeMood(connectionId, currentMood, function (gadgetId, currentMood) {
+            console.log(gadgetId + '------' + currentMood);
+            Mood.update(gadgetId, currentMood);
+        });
     };
 
     /**

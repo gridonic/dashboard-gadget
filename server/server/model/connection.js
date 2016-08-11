@@ -28,7 +28,7 @@ function connection (ModelHandler) {
     this.construct                      = function (mongoose) { return construct(mongoose); };
     this.create                         = function (connectionId, id, type) { return create(connectionId, id, type, false); };
     this.deleteConnection               = function (connectionId) { return deleteConnection(connectionId); };
-    this.findConnectionAndChangeMood    = function (connectionId, currentMood) { return findConnectionAndChangeMood(connectionId, currentMood); };
+    this.findConnectionAndChangeMood    = function (connectionId, currentMood, callback) { return findConnectionAndChangeMood(connectionId, currentMood, callback); };
     this.findConnectionById             = function (connectionId, callback) { return findConnectionById(connectionId, callback); };
     this.getGadgetArray                 = function (connectionId, type, socket) { return getGadgetArray(connectionId, type, socket); };
     this.update                         = function (connectionId, id, type) { return create(connectionId, id, type, true); };
@@ -191,14 +191,15 @@ function connection (ModelHandler) {
      *
      * @param connectionId: ID of connection.
      * @param currentMood: The mood the user wants to set.
+     * @param callback: return result to this function.
      * @returns {*}
      */
-    findConnectionAndChangeMood = function (connectionId, currentMood) {
+    findConnectionAndChangeMood = function (connectionId, currentMood, callback) {
         connectionModel.findOne({connectionId: connectionId}, function (err, result) {
-            if (err){
+            if (err) {
                 console.log('no gadget connection found - unable to change mood!');
-            }else {
-                ModelHandler.changeMoodFinally(result.gadgetId, currentMood);
+            } else {
+                callback(result.gadgetId, currentMood);
             }
         });
     };
