@@ -24,12 +24,12 @@ const int LEDProjectB = 41;       // project color
 const int LEDMoodR = 39;          // mood color
 const int LEDMoodG = 37;          // mood color
 const int LEDMoodB = 35;          // mood color
-//const int LEDMoodR = 45;          // mood color
-//const int LEDMoodG = 43;          // mood color
-//const int LEDMoodB = 41;          // mood color
 
-const int ButtonLeftPin = A1;
-const int ButtonRightPin = A0;
+//const int ButtonLeftPin = A1;
+//const int ButtonRightPin = A0;
+const int ButtonRightPin = A5;
+const int ButtonLeftPin = A6;
+
 
 // Variables for the LEDs
 const int LED_BUTTON_LEFT         = 1;
@@ -40,7 +40,9 @@ unsigned int buttonLeftValue      = 0;
 unsigned int buttonRightValue     = 0;
 unsigned int buttonLeftValues[]   = {0, 0, 0, 0};
 unsigned int buttonRightValues[]  = {0, 0, 0, 0};
-unsigned int buttonActivateDiff   = 5;
+unsigned int buttonActivateDiff   = 3;
+//unsigned int buttonActivateDiffL   = 5;
+//unsigned int buttonActivateDiffR   = 3;
 unsigned int buttonDeactivateDiff = 1;
 int checkButtonInterval           = 60;
 unsigned long buttonLeftActive    = 0;
@@ -408,6 +410,33 @@ void showOnScreen(String m)
   }
 }
 
+void clearMainDisplay()
+{
+  tft.fillRect(50, 50, 220, 140, ILI9340_WHITE);
+}
+
+void showMenuCircle()
+{
+  clearMainDisplay();
+  tft.fillCircle(160, 120, 60, ILI9340_BLACK);
+}
+
+void showSubmenuCircles()
+{
+  /* submenus - grosse chreis 120x120px (76/60), chline chreis 64x64px (171/60) */
+  clearMainDisplay();
+  tft.fillCircle(136, 120, 60, ILI9340_BLACK);
+  tft.fillCircle(203, 92, 32, ILI9340_BLACK);
+}
+
+void showPollCircles()
+{
+  /* polls - beidi chreis 120x120 px (52/60) und (148/60) */
+  clearMainDisplay();
+  tft.fillCircle(112, 120, 60, ILI9340_BLACK);
+  tft.fillCircle(208, 120, 60, ILI9340_BLACK);
+}
+
 void showFullScreen(uint16_t color)
 {
   tft.fillRect(0, 0, displayWidth, displayHeight, color);
@@ -626,6 +655,11 @@ void checkButtons() {
     buttonRightValue = analogRead(ButtonRightPin);
     buttonValuesPush();
 
+    Serial.print("r: ");
+    Serial.print(buttonRightValue);
+    Serial.print(". l: ");
+    Serial.println(buttonLeftValue);
+
     if (loopIndex / checkButtonInterval > 5) {
 
       if (buttonLeftActive == 0 && buttonLeftValues[3] + buttonActivateDiff < buttonLeftValues[0] &&
@@ -672,6 +706,7 @@ void checkButtons() {
           client.send("arduinoButtonPushed", "buttons", "b");
         }
 
+        showMenuCircle();
         setColor(LED_BUTTON_RIGHT, 0, 200, 0);
         setColor(LED_BUTTON_LEFT, 0, 200, 0);
         delay(defaultDelay * 2);
@@ -689,6 +724,7 @@ void checkButtons() {
           client.send("arduinoButtonPushed", "buttons", "l");
         }
 
+        showSubmenuCircles();
         setColor(LED_BUTTON_LEFT, 0, 130, 0);
         delay(defaultDelay * 2);
         buttonLeftActive = 0;
@@ -702,6 +738,8 @@ void checkButtons() {
         } else {
           client.send("arduinoButtonPushed", "buttons", "r");
         }
+
+        showPollCircles();
         setColor(LED_BUTTON_RIGHT, 0, 130, 0);
         delay(defaultDelay * 2);
         buttonRightActive = 0;
