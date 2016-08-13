@@ -8,6 +8,7 @@ displayDrawer = function () {
     var showDisplay;
     var showMainDisplay;
     var showMenu;
+    var showMood;
     var showProject;
     var showTime;
     var showWorkTime;
@@ -21,6 +22,7 @@ displayDrawer = function () {
     // Variables
     var canvas = document.getElementById("display");
     var projectBox = document.getElementById("project-box");
+    var moodBox = document.getElementById("mood-box");
     var context;
 
     /**
@@ -310,9 +312,25 @@ displayDrawer = function () {
         context.fillRect(padding, start + lineHeight, lineWidth, lineHeight);
     };
 
+    showMood = function (data) {
+        log('showMood');
+        log(data);
+
+        if (data.color === undefined || data.color === null) {
+            moodBox.style.backgroundColor = 'transparent';
+        } else {
+            var dataSplit = data.color.split('|');
+            var r = dataSplit[0];
+            var g = dataSplit[1];
+            var b = dataSplit[2];
+            moodBox.style.backgroundColor = 'rgba(' + r + ',' + g + ',' + b + ', 1)';
+        }
+    };
+
     showProject = function (data) {
         log('showProject');
         log(data);
+
         if (data.color === undefined || data.color === null) {
             projectBox.style.backgroundColor = 'transparent';
         } else {
@@ -388,6 +406,7 @@ displayDrawer = function () {
         showDisplay:        showDisplay,
         showMainDisplay:    showMainDisplay,
         showMenu:           showMenu,
+        showMood:           showMood,
         showProject:        showProject,
         showTime:           showTime,
         showWorkTime:       showWorkTime,

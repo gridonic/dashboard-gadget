@@ -89,7 +89,7 @@ function socketHandler (Handler) {
         }
     };
 
-    showDisplay = function (workTime, updateTime, project, currentDisplay, menu) {
+    showDisplay = function (workTime, updateTime, project, mood, currentDisplay, menu) {
         var time = 50;
 
         setTimeout(function () {
@@ -108,6 +108,7 @@ function socketHandler (Handler) {
 
             if (updateTime && project !== null) {
                 console.log('send project to gadget');
+                console.log(project.color);
                 socket.emit('showProject', {color: project.color});
             } else if (updateTime) {
                 console.log('send null-project to gadget');
@@ -116,18 +117,29 @@ function socketHandler (Handler) {
         }, time * 2);
 
         setTimeout(function () {
+            if (updateTime && mood !== null) {
+                console.log('send mood to gadget');
+                console.log(mood);
+                socket.emit('showMood', {color: mood});
+            } else if (updateTime) {
+                console.log('send null-mood to gadget');
+                socket.emit('showMood', {color: null});
+            }
+        }, time * 3);
+
+        setTimeout(function () {
             if (currentDisplay !== null) {
                 // Display the current App, Poll or something else.
                 socket.emit('showMainDisplay', {draw: currentDisplay});
             }
-        }, time * 3);
+        }, time * 4);
 
         setTimeout(function () {
             if (menu !== null) {
                 // Display the menu on the display.
                 socket.emit('showMenu', {draw: Graphic.getMenu(menu)});
             }
-        }, time * 4);
+        }, time * 5);
     };
 
     onActivateApp = function (data) {
@@ -274,7 +286,9 @@ function socketHandler (Handler) {
     };
 
     onUpdateMood = function (data) {
-        Handler.changeMood(socket.id, data.currentMood);
+        Handler.changeMood(socket.id, data.currentMood, function () {
+            Handler.setupDisplayForArduino(socket.id, showDisplay);
+        });
     };
 
     onSaveUserSettings = function (data) {
