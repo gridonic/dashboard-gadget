@@ -553,6 +553,10 @@ socket.on('showProject', function (data) {
     DisplayDrawer.showProject(data);
 });
 
+socket.on('showMood', function (data) {
+    DisplayDrawer.showMood(data);
+});
+
 socket.on('showWorkTime', function (data) {
     DisplayDrawer.showWorkTime(data);
 });

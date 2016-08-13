@@ -20,7 +20,6 @@ function modelHandler () {
     var addSocketConnection;
     var addUserConnection;
     var changeMood;
-    var changeMoodFinally;
     var changeUserApp;
     var createModels;
     var createPoll;
@@ -75,6 +74,7 @@ function modelHandler () {
     this.activateGadget             = function (id) { return activateGadget(id); };
     this.addSocketConnection        = function (id) { return addSocketConnection(id); };
     this.addUserConnection          = function (connectionId, userId) { return addUserConnection(connectionId, userId); };
+    this.changeMood                 = function (connectionId, currentMood, callback) {return changeMood(connectionId,currentMood, callback);};
     this.changeUserApp              = function (mode, u, t, id, settings, c) { return changeUserApp(mode, u, t, id, settings, c); };
     this.createUser                 = function (username, password, callback) { return createUser(username, password, callback); };
     this.loginUser                  = function (username, password, gadget, socketId, callback) { return loginUser(username, password, gadget, socketId, callback); };
@@ -85,8 +85,6 @@ function modelHandler () {
 
     this.getUser = function (username, password, callback) { return getUser(username, password, callback); };
     this.createUserFinally = function (err, result, username, password, callback) { return createUserFinally(err, result, username, password, callback); };
-    this.changeMood = function (connectionId, currentMood) {return changeMood(connectionId,currentMood);};
-    this.changeMoodFinally = function (gadgetId, currentMood) {return changeMoodFinally(gadgetId, currentMood);};
     this.deactivateGadget = function (connectionId, gadgetId) {return deactivateGadget(connectionId, gadgetId);};
     this.linkGadgetToSocket = function (connectionId, gadgetId) {return linkGadgetToSocket(connectionId, gadgetId);};
     this.getGadgetArray = function (connectionId, type) {return getGadgetArray(connectionId, type);};
@@ -231,11 +229,13 @@ function modelHandler () {
      * Finds the gadgetId which is related to the connection the mood change request comes from.
      * @param connectionId: Id of the connection which the requesting gadget is using.
      * @param currentMood: New mood status the user wants to set via his gadget.
+     * @param callback: call to display the new mood.
      */
-    changeMood = function (connectionId, currentMood) {
+    changeMood = function (connectionId, currentMood, callback) {
         Connection.findConnectionAndChangeMood(connectionId, currentMood, function (gadgetId, currentMood) {
-            console.log(gadgetId + '------' + currentMood);
-            Mood.update(gadgetId, currentMood);
+            Mood.update(gadgetId, currentMood, function () {
+                callback();
+            });
         });
     };
 
@@ -379,7 +379,7 @@ function modelHandler () {
                         // todo: handleError
                     } else {
                         User.getUserByUsername(gadget.lastUserName, function (err, user) {
-                            startDisplayOnArduino(callback, user);
+                            startDisplayOnArduino(socketId, callback, user);
                         });
                     }
                 });
@@ -398,7 +398,7 @@ function modelHandler () {
      * @param currentDisplay    What do we show at the moment on the display?
      * @param menu              How many menu-points and which one is active
      */
-    showDisplayOnArduino = function (callback, user, updateTime, currentDisplay, menu) {
+    showDisplayOnArduino = function (callback, user, updateTime, currentDisplay, menu, mood) {
         var worktime = null;
         var project = null;
 
@@ -407,15 +407,16 @@ function modelHandler () {
             project = Harvest.getProject();
         }
 
-        callback(worktime, updateTime, project, currentDisplay, menu);
+        callback(worktime, updateTime, project, mood, currentDisplay, menu);
     };
 
     /**
      * Init the showing of the display here.
+     * @param socketId
      * @param callback
      * @param user
      */
-    startDisplayOnArduino = function (callback, user) {
+    startDisplayOnArduino = function (socketId, callback, user) {
 
         // todo: check if we have to show something else like a poll.
 
@@ -429,6 +430,7 @@ function modelHandler () {
         var intervalTiming = 500;
         var oneMinute = 60000 / intervalTiming;
         var currentDisplay = null;
+        var currentMood = null;
 
         var getCurrentDisplay = function (display, step, stepDuration) {
             if (display && display.app) {
@@ -448,6 +450,18 @@ function modelHandler () {
             } else {
                 return null;
             }
+        };
+
+        var updateMood = function () {
+            Connection.findConnectionById(socketId, function (err, conn) {
+                if (err) {
+                    // todo: handleError
+                } else {
+                    Mood.getMoodColor(conn.gadgetId, function (color) {
+                        currentMood = color;
+                    });
+                }
+            });
         };
 
         if (displayInterval) {
@@ -497,24 +511,31 @@ function modelHandler () {
             }
         }
 
+        updateMood();
         showDisplayOnArduino(
             callback,
             user,
             true,
             getCurrentDisplay(currentDisplay, i, intervalTiming),
-            getMenu(currentDisplay)
+            getMenu(currentDisplay),
+            currentMood
         );
         i++;
 
         displayInterval = setInterval(function () {
             var showTime = (i % oneMinute == 0);
 
+            if (showTime) {
+                updateMood();
+            }
+
             showDisplayOnArduino(
                 callback,
                 user,
                 showTime,
                 getCurrentDisplay(currentDisplay, i, intervalTiming),
-                getMenu(currentDisplay)
+                getMenu(currentDisplay),
+                currentMood
             );
 
             i++;
@@ -545,7 +566,7 @@ function modelHandler () {
 
                             User.setCurrentDisplay(user.username, JSON.stringify({ app: user.appActivated[newAppPosition] }));
                             user.currentDisplay = JSON.stringify({app: user.appActivated[newAppPosition]});
-                            startDisplayOnArduino(callback, user);
+                            startDisplayOnArduino(socketId, callback, user);
                         });
                     }
                 });
