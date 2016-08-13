@@ -270,6 +270,22 @@ displayDrawer = function () {
             context.arc(xCircle, yCircle, radCircle - 2, 0, 2 * Math.PI);
             context.closePath();
             context.fill();
+        } else if (drawData[0] === 'TXT') {
+
+            log("urlstates");
+            log(drawData[2]);
+
+            var textSize = 15;
+            var urlString = drawData[2];
+            var padding = drawData[1];
+
+            context.fillStyle = COLOR_WHITE;
+            context.fillRect(0, DISPLAY_HEIGHT - padding * 2 - textSize, DISPLAY_WIDTH, padding * 2 + textSize);
+
+            context.fillStyle = COLOR_BLACK;
+            context.font = textSize + "px Courier New";
+            context.fillText(urlString, padding, DISPLAY_HEIGHT - padding);
+
         }
     };
 

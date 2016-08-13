@@ -16,6 +16,7 @@ function appHandler () {
     var getDisplayAppTest;
     var checkHTTP;
     var checkHTTPS;
+    var sendServerStatus;
 
     // Variables
     var actualDisplay = null;
@@ -108,6 +109,8 @@ function appHandler () {
 
         return Graphic.getDisplayAtmung(size);
     };
+
+
     
     getDisplayAppServer = function (settings) {
         var noSpaces = settings.URL.replace(/\s/g,'');
@@ -124,26 +127,35 @@ function appHandler () {
                 checkHTTP(splittedURL[i]);
             }
         }
-    };
 
-    getDisplayAppTest = function () {
-        return Graphic.getDisplayTest();
-    };
+            checkHTTPS = function (url) {
+                https.get(url, function(res) {
+                    console.log("Got response of " + url + ": " + res.statusCode);
+                    sendServerStatus(url, res.statusCode);
+                }).on('error', function(e) {
+                    console.log("Got error: " + e.message + '  ' + url);
+                    return Graphic.getDisplayServer("Fehler bei URL " + url);
+                });
+            };
 
-    checkHTTPS = function (url) {
-        https.get(url, function(res) {
-            console.log("Got response of " + url + " : " + res.statusCode);
-        }).on('error', function(e) {
-            console.log("Got error: " + e.message + '  ' + url);
-        });
-    };
+            checkHTTP = function (url) {
+                http.get(url, function(res) {
+                    console.log("Got response of " + url + ": " + res.statusCode);
+                    sendServerStatus(url, res.statusCode);
+                }).on('error', function(e) {
+                    console.log("Got error: " + e.message + '  ' + url);
+                    return Graphic.getDisplayServer("Fehler bei URL " + url);
+                });
+            };
 
-    checkHTTP = function (url) {
-        http.get(url, function(res) {
-            console.log("Got response of " + url + " : " + res.statusCode);
-        }).on('error', function(e) {
-            console.log("Got error: " + e.message + '  ' + url);
-        });
+            sendServerStatus = function (url, statuscode) {
+                if (statuscode !== '200') {
+                    return Graphic.getDisplayServer(url + ": " + statuscode);
+                } else {
+                    return Graphic.getDisplayServer("Alle URLs auf: 200");
+                }
+            };
+
     };
 
 }

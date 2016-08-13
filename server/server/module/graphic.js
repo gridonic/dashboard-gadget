@@ -10,11 +10,13 @@ function graphic () {
     var generateLines;
     var generateMenu;
     var generateRectangle;
+    var generateText;
     var generateWorkTime;
     var getActualTimeDisplay;
     var getBlackDisplay;
     var getDefaultDisplay;
     var getDisplayAtmung;
+    var getDisplayServer;
     var getStartDisplay;
     var getWhiteDisplay;
     var getWorktimeDisplay;
@@ -50,6 +52,7 @@ function graphic () {
     this.getDefaultDisplay = function (time, workingPercent, icon) { return getDefaultDisplay(time, workingPercent, icon); };
     this.getDisplayTest = function () { return generateRectangle(100, 100, 120, 40, COLOR_BLACK, COLOR_WHITE); };
     this.getDisplayAtmung = function (size) { return getDisplayAtmung(size); };
+    this.getDisplayServer = function (string) { return getDisplayServer(string);};
     this.getMenu = function (menu) { return generateMenu(menu.counts, menu.active); };
     this.getStartDisplay = function () { return getStartDisplay(); };
     this.getWhiteDisplay = function () { return getWhiteDisplay(); };
@@ -161,6 +164,16 @@ function graphic () {
     };
 
     /**
+     * Returns a string to show in mainsection of display.
+     *
+     * @param text
+     * @returns {string}
+     */
+    generateText = function (text) {
+        return 'TXT' + '|' + text;
+    };
+
+    /**
      * Generate the working-time stati on top of the screen.
      *
      * @param percent
@@ -258,6 +271,10 @@ function graphic () {
 
         // return generateRectangle(displayMainLeft, displayMainTop, displayMainSize, displayMainSize, COLOR_BLACK, rectColor);
         return generateCircle(displayMainLeft + displayMainSize / 2, displayMainTop + displayMainSize / 2, circleSize, color, color);
+    };
+
+    getDisplayServer = function (string) {
+        return generateText(displayPadding + "|" + string);
     };
 
     /**
