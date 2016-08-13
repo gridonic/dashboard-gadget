@@ -20,6 +20,7 @@ function appHandler () {
 
     // Variables
     var actualDisplay = null;
+    var appServerText = {};
     var Graphic = new graphic();
 
     // Constants
@@ -40,6 +41,22 @@ function appHandler () {
     /* ======================================================================
      * Private functions
      * ====================================================================== */
+
+    checkHTTPS = function (url) {
+        https.get(url, function(res) {
+            appServerText[url] = res.statusCode;
+        }).on('error', function(e) {
+            console.log("Got error: " + e.message + '  ' + url);
+        });
+    };
+
+    checkHTTP = function (url) {
+        http.get(url, function(res) {
+            appServerText[url] = res.statusCode;
+        }).on('error', function(e) {
+            console.log("Got error: " + e.message + '  ' + url);
+        });
+    };
 
     getActualAppDisplay = function (step, stepDuration) {
         if (actualDisplay === null) {
@@ -110,13 +127,18 @@ function appHandler () {
         return Graphic.getDisplayAtmung(size);
     };
 
+    getDisplayAppTest = function () {
+        return Graphic.getDisplayTest();
+    };
 
-    
     getDisplayAppServer = function (settings) {
         var noSpaces = settings.URL.replace(/\s/g,'');
         var splittedURL = noSpaces.split(",");
+        var keys;
+        var i;
+        var serverResult = '';
 
-        for (var i = 0; i < splittedURL.length; i++) {
+        for (i = 0; i < splittedURL.length; i++) {
             if (splittedURL[i].substring(0, 5) === 'https') {
                 checkHTTPS(splittedURL[i]);
 
@@ -128,34 +150,20 @@ function appHandler () {
             }
         }
 
-            checkHTTPS = function (url) {
-                https.get(url, function(res) {
-                    console.log("Got response of " + url + ": " + res.statusCode);
-                    sendServerStatus(url, res.statusCode);
-                }).on('error', function(e) {
-                    console.log("Got error: " + e.message + '  ' + url);
-                    return Graphic.getDisplayServer("Fehler bei URL " + url);
-                });
-            };
+        keys = Object.keys(appServerText);
+        for (i in keys) {
+            if (i > 0) {
+                serverResult += '%';
+            }
 
-            checkHTTP = function (url) {
-                http.get(url, function(res) {
-                    console.log("Got response of " + url + ": " + res.statusCode);
-                    sendServerStatus(url, res.statusCode);
-                }).on('error', function(e) {
-                    console.log("Got error: " + e.message + '  ' + url);
-                    return Graphic.getDisplayServer("Fehler bei URL " + url);
-                });
-            };
+            serverResult += keys[i] + ': ' + appServerText[keys[i]];
+        }
 
-            sendServerStatus = function (url, statuscode) {
-                if (statuscode !== '200') {
-                    return Graphic.getDisplayServer(url + ": " + statuscode);
-                } else {
-                    return Graphic.getDisplayServer("Alle URLs auf: 200");
-                }
-            };
+        if (serverResult === "") {
+            serverResult = "No URLs checked.";
+        }
 
+        return Graphic.getDisplayServer(serverResult);
     };
 
 }

@@ -170,7 +170,7 @@ function graphic () {
      * @returns {string}
      */
     generateText = function (text) {
-        return 'TXT' + '|' + text;
+        return 'TXT' + '|' + displayPadding + '|' + text;
     };
 
     /**
@@ -274,7 +274,7 @@ function graphic () {
     };
 
     getDisplayServer = function (string) {
-        return generateText(displayPadding + "|" + string);
+        return generateText(string);
     };
 
     /**

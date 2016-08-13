@@ -110,7 +110,9 @@ function mood (DB) {
                 console.log('Failed changing the mood of ' + name);
             } else {
                 console.log('Gadget ' + name + ' is changed to mood ' + currentMood);
-                callback();
+                if (typeof callback === 'function') {
+                    callback();
+                }
             }
         });
 

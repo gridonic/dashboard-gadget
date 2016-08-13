@@ -274,20 +274,20 @@ displayDrawer = function () {
             context.fill();
         } else if (drawData[0] === 'TXT') {
 
-            log("urlstates");
-            log(drawData[2]);
-
             var textSize = 15;
             var urlString = drawData[2];
-            var padding = drawData[1];
+            var urlStrings = urlString.split('%');
+            var padding = parseInt(drawData[1]);
 
             context.fillStyle = COLOR_WHITE;
-            context.fillRect(0, DISPLAY_HEIGHT - padding * 2 - textSize, DISPLAY_WIDTH, padding * 2 + textSize);
+            context.fillRect(0, DISPLAY_HEIGHT / 2 - 60, DISPLAY_WIDTH, 120);
 
             context.fillStyle = COLOR_BLACK;
             context.font = textSize + "px Courier New";
-            context.fillText(urlString, padding, DISPLAY_HEIGHT - padding);
 
+            for (var i = 0; i < urlStrings.length; i++) {
+                context.fillText(urlStrings[i], padding, DISPLAY_HEIGHT / 2 - 60 + padding + (padding + textSize) * i);
+            }
         }
     };
 

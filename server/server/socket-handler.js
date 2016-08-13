@@ -128,6 +128,8 @@ function socketHandler (Handler) {
         }, time * 3);
 
         setTimeout(function () {
+            console.log('currentDisplay');
+            console.log(currentDisplay);
             if (currentDisplay !== null) {
                 // Display the current App, Poll or something else.
                 socket.emit('showMainDisplay', {draw: currentDisplay});
