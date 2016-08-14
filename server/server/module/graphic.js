@@ -17,6 +17,7 @@ function graphic () {
     var getDefaultDisplay;
     var getDisplayAtmung;
     var getDisplayServer;
+    var getIconBitwise;
     var getStartDisplay;
     var getWhiteDisplay;
     var getWorktimeDisplay;
@@ -39,6 +40,9 @@ function graphic () {
     var COLOR_BLACK = '1';
 
     // JSON-Files
+    this.iconMood84      = require('./../png-json/icon-mood-84.json');
+    this.iconRoom84      = require('./../png-json/icon-room-84.json');
+    this.iconSound84     = require('./../png-json/icon-sound-84.json');
     var workIconRaw     = require('./../png-json/work-icon.json');
     var startImageRaw   = require('./../png-json/start-image.json');
 
@@ -53,6 +57,7 @@ function graphic () {
     this.getDisplayTest = function () { return generateRectangle(100, 100, 120, 40, COLOR_BLACK, COLOR_WHITE); };
     this.getDisplayAtmung = function (size) { return getDisplayAtmung(size); };
     this.getDisplayServer = function (string) { return getDisplayServer(string);};
+    this.getIconBitwise = function (icon) { return getIconBitwise(icon); };
     this.getMenu = function (menu) { return generateMenu(menu.counts, menu.active); };
     this.getStartDisplay = function () { return getStartDisplay(); };
     this.getWhiteDisplay = function () { return getWhiteDisplay(); };
@@ -275,6 +280,11 @@ function graphic () {
 
     getDisplayServer = function (string) {
         return generateText(string);
+    };
+
+    getIconBitwise = function (icon) {
+        var iconString = readImage(icon);
+        return stringToBits(iconString);
     };
 
     /**

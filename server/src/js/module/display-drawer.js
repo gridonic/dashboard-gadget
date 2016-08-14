@@ -29,6 +29,11 @@ displayDrawer = function () {
     var moodBox = document.getElementById("mood-box");
     var context;
 
+    // Icons
+    var iconRoom84 = 'x51I-1Dx17O-3Px16M-3Dx16A-3Bx15O-5Px14O-5Hx14M-1Bx1I-1Dx14I-1Hx1M-1Dx14I-1Px1O-1Bx14IBx3ABx14ABx3IBx14ABx3IBx14ADx3IBx14ADx3IBx14ADx3IBx14ADx3IBx14ADx3IBx14ADx1Ax1IBx14ADO-1HIBx14ADO-1HIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DIBx14ADM-1DI-1Px12O-1DM-1DI-1Px12O-1DM-1DI-1Hx12M-1DM-1DI-1Dx12I-1DM-1DM-1Bx12A-1PM-1DO-1Bx12A-1PM-1Dx1A-1Px10O-1Bx1I-1Dx1I-1Px10O-1Dx1A-2PM-1Hx10M-1HO-3HM-1Hx10M-1HM-3DO-1Hx10M-1HM-3DO-1Dx10M-1PI-3BO-1Dx10I-1PI-3Bx1ADx10I-1PI-3Bx1ADx10I-1P-5P-1Dx10I-1PI-3Bx1ADx10I-1PI-3Bx1ADx10M-1PI-3BO-1Dx10M-1PI-3BO-1Dx10M-1HM-3DO-1Dx10M-1HM-3HO-1Hx10O-1HO-3HM-1Hx10O-1Dx1I-1Bx1M-1Hx10O-1Bx1O-1Dx1I-1Px11ABx5A-1Px11A-1Hx3O-1Bx12I-1Dx3M-1Bx12M-2Px2A-1Dx12O-2Dx1I-2Hx13A-6Px13I-5Bx14M-5Dx15A-4Px15M-3Dx17A-1Bx51';
+    var iconSound84 = 'x142IDx19ADx18M-1Dx18M-1Dx18A-1Dx18A-1Dx17M-2Dx17M-2Dx17A-2Dx17A-2Dx16M-3Dx16M-3Dx16A-3Dx15O-4Dx15O-4Dx15I-4Dx15I-4Dx14O-5Dx14O-5Dx8A-4DM-5Dx7M-5DM-5Dx7M-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7I-5DM-5Dx7M-5DM-5Dx7M-5DM-5Dx8A-4DM-5Dx14O-5Dx15A-4Dx15I-4Dx15M-4Dx15O-4Dx16A-3Dx16I-3Dx16M-3Dx16O-3Dx17A-2Dx17I-2Dx17M-2Dx17O-2Dx18A-1Dx18I-1Dx18M-1Dx18O-1Dx19ADx19IDx129';
+    var iconMood84 = 'x198M-1Dx17O-3Hx16I-3Bx16A-4Px14O-5Dx14M-5Bx14I-5Bx14A-6Px13A-6Hx12O-7Hx12M-7Dx12M-7Dx12M-7Dx12M-7Bx12I-7Bx12I-7Bx12I-7Bx12I-7Bx12I-7Bx12I-7Bx12M-7Bx12M-7Dx12M-7Dx12O-7Dx12O-7Hx13A-6Hx13A-6Px13I-5Bx14M-5Dx14O-5Dx15A-4Px15I-3Bx16I-4Hx14O-6Px13I-6Hx12O-7Bx12M-8Hx11I-8Dx11A-8Bx10O-10Px9M-10Hx9I-10Dx9A-10Dx9A-10Bx8O-12Px7M-12Px7M-12Hx7I-12Hx7I-12Dx7I-12Dx7A-12Dx7A-12Bx7A-12Bx7A-12Bx6O-13Bx6O-14Px5O-14Px5O-14Px5O-14Px5O-14Px5O-14Px5O-14Px5O-14Px5O-14Px5O-14Px212';
+
     /**
      * Generate an image out of a bitString.
      * @param bitString
@@ -296,11 +301,35 @@ displayDrawer = function () {
         } else if (drawData[0] === 'MEN') {
             if (drawData[1] === '1') {
                 showMainMenuCircle();
+                var icon = null;
 
                 context.fillStyle = COLOR_WHITE;
                 context.fillRect(118, 78, 84, 84);
 
-                console.log(drawData[2]);
+                if (drawData[2] === 'MOOD') {
+                    icon = iconMood84;
+                } else if (drawData[2] === 'SOUND') {
+                    icon = iconSound84;
+                } else if (drawData[2] === 'ROOM') {
+                    icon = iconRoom84;
+                }
+
+                if (icon !== null) {
+
+                   var imageString = bitToImage(icon);
+                    var draw = imageString.split("");
+
+                    context.fillStyle = COLOR_BLACK;
+                    var x = 0;
+                    for (var i = 78; i < 162; i++) {
+                        for (var j = 118; j < 202; j++) {
+                            if (draw[x] === '1') {
+                                context.fillRect(j, i, 1, 1);
+                            }
+                            x++;
+                        }
+                    }
+                }
             }
         }
     };

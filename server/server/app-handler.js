@@ -185,15 +185,18 @@ function appHandler () {
      * @returns {string}
      */
     getDisplayAppMood = function () {
-        return 'MEN|1|todo: information for mood menu to show in the circle.';
+        var icon = Graphic.getIconBitwise(Graphic.iconMood84);
+        return 'MEN|1|MOOD';
     };
 
     getDisplayAppPollRoom = function () {
-        return 'MEN|1|todo: info for poll room to show in the circle.';
+        var icon = Graphic.getIconBitwise(Graphic.iconRoom84);
+        return 'MEN|1|ROOM';
     };
 
     getDisplayAppPollSound = function () {
-        return 'MEN|1|todo: info for poll sound to show in the circle.';
+        var icon = Graphic.getIconBitwise(Graphic.iconSound84);
+        return 'MEN|1|SOUND';
     };
 
     getDisplayAppTest = function () {
