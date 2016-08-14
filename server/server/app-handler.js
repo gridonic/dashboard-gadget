@@ -15,6 +15,7 @@ function appHandler () {
     var prepareAppDisplay;
     var getDisplayAppAtmung;
     var getDisplayAppMood;
+    var getDisplayAppPoll;
     var getDisplayAppServer;
     var getDisplayAppTest;
     var checkHTTP;
@@ -75,6 +76,8 @@ function appHandler () {
             return getDisplayAppTest();
         } else if (actualDisplay.app && actualDisplay.app.name === APP_MOOD_NAME) {
             return getDisplayAppMood();
+        } else if (actualDisplay.app && actualDisplay.app.name === APP_POLL_NAME) {
+            return getDisplayAppPoll();
         }
 
         return null;
@@ -164,7 +167,11 @@ function appHandler () {
      * @returns {string}
      */
     getDisplayAppMood = function () {
-        return 'MEN|1|todo: information to show in the circle.';
+        return 'MEN|1|todo: information for mood menu to show in the circle.';
+    };
+
+    getDisplayAppPoll = function () {
+        return 'MEN|1|todo: info for poll menu to show in the circle.';
     };
 
     getDisplayAppTest = function () {
