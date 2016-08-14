@@ -457,9 +457,11 @@ function modelHandler () {
                 if (err) {
                     // todo: handleError
                 } else {
-                    Mood.getMoodColor(conn.gadgetId, function (color) {
-                        currentMood = color;
-                    });
+                    if (conn !== null) {
+                        Mood.getMoodColor(conn.gadgetId, function (color) {
+                            currentMood = color;
+                        });
+                    }
                 }
             });
         };
@@ -523,7 +525,7 @@ function modelHandler () {
         i++;
 
         displayInterval = setInterval(function () {
-            var showTime = (i % oneMinute == 0);
+            var showTime = ((i + 115) % oneMinute == 0);
 
             if (showTime) {
                 updateMood();
@@ -596,6 +598,8 @@ function modelHandler () {
 
         // Create all Apps
         App.create(AppHandler.getAppBreathing());
+        App.create(AppHandler.getAppMood());
+        App.create(AppHandler.getAppPoll());
         App.create(AppHandler.getAppServer());
         App.create(AppHandler.getAppTest());
     };

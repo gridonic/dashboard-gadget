@@ -8,6 +8,8 @@ function appHandler () {
     // Functions
     var getActualAppDisplay;
     var getAppAtmung;
+    var getAppMood;
+    var getAppPoll;
     var getAppServer;
     var getAppTest;
     var prepareAppDisplay;
@@ -16,7 +18,6 @@ function appHandler () {
     var getDisplayAppTest;
     var checkHTTP;
     var checkHTTPS;
-    var sendServerStatus;
 
     // Variables
     var actualDisplay = null;
@@ -25,6 +26,8 @@ function appHandler () {
 
     // Constants
     var APP_ATMUNG_NAME = 'Atmung';
+    var APP_MOOD_NAME = 'Mood-App';
+    var APP_POLL_NAME = 'Poll-App';
     var APP_TEST_NAME = 'Test-App';
     var APP_SERVERSTATUS_NAME = 'Serverstatus';
 
@@ -34,7 +37,9 @@ function appHandler () {
 
     this.getActualAppDisplay    = function (step, stepDuration) { return getActualAppDisplay(step, stepDuration); };
     this.getAppBreathing        = function () { return getAppAtmung(); };
-    this.getAppServer           = function () {return getAppServer(); };
+    this.getAppMood             = function () { return getAppMood(); };
+    this.getAppPoll             = function () { return getAppPoll(); };
+    this.getAppServer           = function () { return getAppServer(); };
     this.getAppTest             = function () { return getAppTest(); };
     this.prepareAppDisplay      = function (app, settings) { return prepareAppDisplay(app, settings); };
 
@@ -108,6 +113,26 @@ function appHandler () {
             description: 'Eine App, nur um die Apps zu testen.',
             settings: null
         };
+    };
+
+    getAppMood = function () {
+        return {
+            name: APP_MOOD_NAME,
+            description: 'Die Mood-App zum einstellen des Moods',
+            settings: {
+                activated: true
+            }
+        };
+    };
+
+    getAppPoll = function () {
+        return {
+            name: APP_POLL_NAME,
+            description: 'Die Poll-App für Umfragen',
+            settings: {
+                activated: true
+            }
+        }
     };
 
     prepareAppDisplay = function (app, settings) {

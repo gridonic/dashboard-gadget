@@ -124,12 +124,22 @@ dashboardUpdateContent = function () {
     }
 
     for (i = 0; i < apps.length; i++) {
+
+        var appSettings;
+
+        if (apps[i].settings !== 'null') {
+            appSettings = JSON.parse(apps[i].settings);
+            if (appSettings && appSettings.activated === true) {
+                continue;
+            }
+        }
+
         var buttonDataString = '';
         appContent += '<h6>' + apps[i]['name'] + '</h6>';
         appContent += '<p class="_text-italic">' + apps[i]['description'] + '</p>';
 
         if (apps[i].settings !== 'null') {
-            var appSettings = JSON.parse(apps[i].settings);
+            appSettings = JSON.parse(apps[i].settings);
             for (var key in appSettings) {
                 if (appSettings.hasOwnProperty(key)) {
                     var id;

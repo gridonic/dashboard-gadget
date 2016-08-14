@@ -2,11 +2,15 @@ displayDrawer = function () {
 
     // Functions
     var bitToImage;
+    var clearMainDisplay;
     var drawWorkingIcon;
     var init;
     var log;
     var showDisplay;
     var showMainDisplay;
+    var showMainMenuCircle;
+    var showSubmenuCircle;
+    var showPollCircles;
     var showMenu;
     var showMood;
     var showProject;
@@ -143,6 +147,11 @@ displayDrawer = function () {
         }
 
         return imageString;
+    };
+
+    clearMainDisplay = function () {
+        context.fillStyle = COLOR_BLACK;
+        context.fillRect(50, 50, 220, 140);
     };
 
     /**
@@ -289,6 +298,47 @@ displayDrawer = function () {
                 context.fillText(urlStrings[i], padding, DISPLAY_HEIGHT / 2 - 60 + padding + (padding + textSize) * i);
             }
         }
+    };
+
+    showMainMenuCircle = function () {
+        clearMainDisplay();
+        context.fillStyle = COLOR_BLACK;
+        context.beginPath();
+        context.arc(160, 120, 60, 0, 2 * Math.PI);
+        context.closePath();
+        context.fill();
+    };
+
+    showSubmenuCircle = function () {
+        clearMainDisplay();
+
+        context.fillStyle = COLOR_BLACK;
+
+        context.beginPath();
+        context.arc(136, 120, 60, 0, 2 * Math.PI);
+        context.closePath();
+        context.fill();
+
+        context.beginPath();
+        context.arc(203, 92, 32, 0, 2 * Math.PI);
+        context.closePath();
+        context.fill();
+    };
+
+    showPollCircles = function () {
+        clearMainDisplay();
+
+        context.fillStyle = COLOR_BLACK;
+
+        context.beginPath();
+        context.arc(112, 120, 60, 0, 2 * Math.PI);
+        context.closePath();
+        context.fill();
+
+        context.beginPath();
+        context.arc(208, 120, 60, 0, 2 * Math.PI);
+        context.closePath();
+        context.fill();
     };
 
     showMenu = function (data) {
