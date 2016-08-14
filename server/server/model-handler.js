@@ -546,7 +546,7 @@ function modelHandler () {
 
     switchUserApp = function (direction, socketId, callback) {
         Connection.findConnectionById(socketId, function (err, conn) {
-            if (err) {
+            if (err || conn === null) {
                 // todo: handleError
             } else {
                 Gadget.findGadgetById(parseInt(conn.gadgetId), function (err, gadget) {
