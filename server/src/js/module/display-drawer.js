@@ -151,7 +151,7 @@ displayDrawer = function () {
 
     clearMainDisplay = function () {
         context.fillStyle = COLOR_WHITE;
-        context.fillRect(0, 50, 230, 140);
+        context.fillRect(0, 50, 320, 140);
     };
 
     /**
