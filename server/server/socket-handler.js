@@ -92,7 +92,10 @@ function socketHandler (Handler) {
 
     showDisplay = function (workTime, updateTime, project, mood, currentDisplay, menu, app) {
         var time = 50;
-        currentApp = app;
+
+        if (app !== null) {
+            currentApp = app;
+        }
 
         setTimeout(function () {
             if (updateTime && workTime !== null) {
@@ -184,10 +187,14 @@ function socketHandler (Handler) {
             }
         } else {
             console.log('buttons pushed');
+
             if (data.left && data.right) {
                 console.log('both');
 
-                if (currentApp !== null) {
+                if (currentApp && currentApp.poll) {
+                    // todo beni: poll wird hier bestätigt vom gadget aus, muss jetzt noch im system gespeichert werden (falls nötig).
+                    Handler.activatedAppSelected(currentApp, socket.id, showDisplay);
+                } else if (currentApp !== null) {
                     Handler.activateApp(currentApp, socket.id, showDisplay);
                     console.log('do action of app ' + currentApp);
                 } else {
@@ -195,10 +202,20 @@ function socketHandler (Handler) {
                 }
             } else if (data.left) {
                 console.log('left');
-                Handler.switchApp('left', socket.id, showDisplay);
+
+                if (currentApp && currentApp.poll) {
+                    Handler.switchPoll('left', socket.id, showDisplay);
+                } else {
+                    Handler.switchApp('left', socket.id, showDisplay);
+                }
             } else if (data.right) {
                 console.log('right');
-                Handler.switchApp('right', socket.id, showDisplay);
+
+                if (currentApp && currentApp.poll) {
+                    Handler.switchPoll('right', socket.id, showDisplay);
+                } else {
+                    Handler.switchApp('right', socket.id, showDisplay);
+                }
             }
             // console.log(data);
 

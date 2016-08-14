@@ -14,14 +14,14 @@ function mood (DB) {
     var moodMongoose;
 
     var moodColors = {
-        '1':    0   + '|' + 0   + '|' + 128,    // navy
-        '2':    0   + '|' + 128 + '|' + 128,    // teal
-        '3':    0   + '|' + 255 + '|' + 0,      // lime
-        '4':    128 + '|' + 0   + '|' + 0,      // maroon
-        '5':    128 + '|' + 0   + '|' + 128,    // purple
-        '6':    128 + '|' + 128 + '|' + 128,    // gray
-        '7':    255 + '|' + 255 + '|' + 0,      // yellow
-        '8':    255 + '|' + 255 + '|' + 255,    // white
+        '0':    0   + '|' + 255 + '|' + 0,      // lime
+        '1':    0   + '|' + 128 + '|' + 128,    // teal
+        '2':    0   + '|' + 0   + '|' + 128,    // navy
+        '3':    128 + '|' + 0   + '|' + 0,      // maroon
+        '4':    128 + '|' + 0   + '|' + 128,    // purple
+        '5':    128 + '|' + 128 + '|' + 128,    // gray
+        '6':    255 + '|' + 255 + '|' + 0,      // yellow
+        '7':    255 + '|' + 255 + '|' + 255,    // white
     };
 
     this.construct      = function (mongoose) { return construct(mongoose); };
@@ -87,7 +87,7 @@ function mood (DB) {
      */
     getMoodColor = function (name, callback) {
         moodModel.findOne({name: name}, function (err, result) {
-            if (err) {
+            if (err || result === null) {
                 // todo: handle Error
             } else {
                 callback(moodColors[result.currentMood]);

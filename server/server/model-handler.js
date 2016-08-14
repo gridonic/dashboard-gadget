@@ -18,6 +18,7 @@ function modelHandler () {
     // Functions
     var activateGadget;
     var activateApp;
+    var activatedAppSelected;
     var addSocketConnection;
     var addUserConnection;
     var changeMood;
@@ -41,6 +42,7 @@ function modelHandler () {
     var showDisplayOnArduino;
     var startDisplayOnArduino;
     var startPoll;
+    var switchPollOnArduino;
     var switchUserApp;
     var updatePoll;
     
@@ -75,6 +77,7 @@ function modelHandler () {
 
     this.activateGadget             = function (id) { return activateGadget(id); };
     this.activateApp                = function (appId, socketId, callback) { return activateApp(appId, socketId, callback); };
+    this.activatedAppSelected       = function (currentAppSocket, socketId, callback) { return activatedAppSelected(currentAppSocket, socketId, callback); };
     this.addSocketConnection        = function (id) { return addSocketConnection(id); };
     this.addUserConnection          = function (connectionId, userId) { return addUserConnection(connectionId, userId); };
     this.changeMood                 = function (connectionId, currentMood, callback) {return changeMood(connectionId,currentMood, callback);};
@@ -85,6 +88,7 @@ function modelHandler () {
     this.saveUserSettings           = function (token, username, settings, callback) { return saveUserSettings(token, username, settings, callback); };
     this.setupDisplayForArduino     = function (socketId, callback) { return prepareDisplayForArduino(socketId, callback); };
     this.switchApp                  = function (direction, socketId, callback) { return switchUserApp(direction, socketId, callback); };
+    this.switchPoll                 = function (direction, socketId, callback) { return switchPollOnArduino(direction, socketId, callback); };
 
     this.getUser = function (username, password, callback) { return getUser(username, password, callback); };
     this.createUserFinally = function (err, result, username, password, callback) { return createUserFinally(err, result, username, password, callback); };
@@ -100,6 +104,12 @@ function modelHandler () {
      * Private functions
      * ===================================================================== */
 
+    /**
+     * Activate the app by its ID.
+     * @param appId
+     * @param socketId
+     * @param callback
+     */
     activateApp = function (appId, socketId, callback) {
         Connection.findConnectionById(socketId, function (err, conn) {
             if (err || conn === null) {
@@ -127,6 +137,51 @@ function modelHandler () {
                                     }
                                 }
                             });
+                        });
+                    }
+                });
+            }
+        });
+    };
+
+    /**
+     * An activated-App-Screen got selected.
+     * For example a poll-result was selected.
+     *
+     * @param app
+     * @param socketId
+     * @param callback
+     */
+    activatedAppSelected = function (app, socketId, callback) {
+        Connection.findConnectionById(socketId, function (err, conn) {
+            if (err || conn === null) {
+                // todo: handleError
+            } else {
+                Gadget.findGadgetById(parseInt(conn.gadgetId), function (err, gadget) {
+                    if (err) {
+                        // todo: handleError
+                    } else {
+                        User.getUserByUsername(gadget.lastUserName, function (err, user) {
+
+                            console.log('activatedAppSelected');
+                            if (app.type === AppHandler.POLL_TO_FILL) {
+                                if (app.app.name === AppHandler.APP_MOOD_NAME) {
+                                    console.log('activate mood ' + AppHandler.getAppMoodStep());
+
+                                    Connection.findConnectionAndChangeMood(socketId, AppHandler.getAppMoodStep(), function (gadgetId, currentMood) {
+                                        Mood.update(gadgetId, currentMood, function () {
+                                            showPollContent = null;
+                                            startDisplayOnArduino(socketId, callback, user);
+                                        });
+                                    });
+                                } else {
+                                    // handle other apps.
+                                }
+
+                            } else {
+                                console.log(app);
+                                startDisplayOnArduino(socketId, callback, user);
+                            }
                         });
                     }
                 });
@@ -321,7 +376,7 @@ function modelHandler () {
                 if (result !== null && result.gadgetId) {
                     console.log('deactivate gadget with id ' + result.gadgetId);
                     Gadget.deactivateGadget(result.gadgetId);
-                    Mood.update(result.gadgetId, 1);
+                    Mood.update(result.gadgetId, 0);
                 }
                 Connection.deleteConnection(connectionId);
             }
@@ -405,7 +460,6 @@ function modelHandler () {
      * Display the stuff on the arduino.
      */
     prepareDisplayForArduino = function (socketId, callback) {
-        console.log(socketId);
 
         Connection.findConnectionById(socketId, function (err, conn) {
             if (err) {
@@ -435,9 +489,9 @@ function modelHandler () {
      * @param currentDisplay    What do we show at the moment on the display?
      * @param menu              How many menu-points and which one is active
      * @param mood              the mood (color) we have to show
-     * @param currentApp        the currentApp of the display
+     * @param app               the currentApp of the display
      */
-    showDisplayOnArduino = function (callback, user, updateTime, currentDisplay, menu, mood, currentApp) {
+    showDisplayOnArduino = function (callback, user, updateTime, currentDisplay, menu, mood, app) {
         var worktime = null;
         var project = null;
 
@@ -446,7 +500,7 @@ function modelHandler () {
             project = Harvest.getProject();
         }
 
-        callback(worktime, updateTime, project, mood, currentDisplay, menu, currentApp);
+        callback(worktime, updateTime, project, mood, currentDisplay, menu, app);
     };
 
     /**
@@ -457,7 +511,7 @@ function modelHandler () {
      */
     startDisplayOnArduino = function (socketId, callback, user) {
 
-        // todo: check if we have to show something else like a poll.
+        // todo: check if we have to show something else, for example a poll.
 
         console.log(user);
 
@@ -493,8 +547,12 @@ function modelHandler () {
                     active: currentAppIndex
                 };
             } else {
-                currentApp = null;
-                currentAppIndex = -1;
+                if (currentApp.poll) {
+                    return AppHandler.getAppMenu(currentApp.app);
+                } else {
+                    currentApp = null;
+                    currentAppIndex = -1;
+                }
                 return null;
             }
         };
@@ -529,6 +587,11 @@ function modelHandler () {
 
         if (showPollContent !== null) {
             AppHandler.prepareAppDisplay(showPollContent.app, showPollContent.type);
+            currentApp = {
+                poll: true,
+                type: showPollContent.type,
+                app: showPollContent.app
+            };
         } else if (user && user.appActivated) {
 
             userApps = user.appActivated;
@@ -596,6 +659,25 @@ function modelHandler () {
 
             i++;
         }, 500);
+    };
+
+    switchPollOnArduino = function (direction, socketId, callback) {
+        Connection.findConnectionById(socketId, function (err, conn) {
+            if (err || conn == null) {
+                // todo: handle error.
+            } else {
+                Gadget.findGadgetById(parseInt(conn.gadgetId), function (err, gadget) {
+                    if (err) {
+                        // todo: handleError
+                    } else {
+                        User.getUserByUsername(gadget.lastUserName, function (err, user) {
+                            AppHandler.updatePollStep(direction === 'left' ? -1 : 1);
+                            startDisplayOnArduino(socketId, callback, user);
+                        });
+                    }
+                });
+            }
+        })
     };
 
     switchUserApp = function (direction, socketId, callback) {

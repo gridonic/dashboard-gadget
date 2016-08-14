@@ -8,7 +8,10 @@ function appHandler () {
     // Functions
     var getActualAppDisplay;
     var getAppAtmung;
+    var getAppMenu;
     var getAppMood;
+    var getAppMoodMenu;
+    var getAppMoodStep;
     var getAppPollRoom;
     var getAppPollSound;
     var getAppServer;
@@ -40,6 +43,7 @@ function appHandler () {
     var APP_SERVERSTATUS_NAME   = 'Serverstatus';
 
     this.POLL_TO_FILL           = 'poll-to-fill';
+    this.APP_MOOD_NAME          = APP_MOOD_NAME;
 
     /* ======================================================================
      * Public functions
@@ -47,12 +51,15 @@ function appHandler () {
 
     this.getActualAppDisplay    = function (step, stepDuration) { return getActualAppDisplay(step, stepDuration); };
     this.getAppBreathing        = function () { return getAppAtmung(); };
+    this.getAppMenu             = function (app) { return getAppMenu(app); };
     this.getAppMood             = function () { return getAppMood(); };
+    this.getAppMoodStep         = function () { return getAppMoodStep(); };
     this.getAppPollRoom         = function () { return getAppPollRoom(); };
     this.getAppPollSound        = function () { return getAppPollSound(); };
     this.getAppServer           = function () { return getAppServer(); };
     this.getAppTest             = function () { return getAppTest(); };
     this.prepareAppDisplay      = function (app, settings) { return prepareAppDisplay(app, settings); };
+    this.updatePollStep         = function (value) { actualPollStep = actualPollStep + value; console.log(value); };
 
     /* ======================================================================
      * Private functions
@@ -117,6 +124,14 @@ function appHandler () {
         }
     };
 
+    getAppMenu = function (app) {
+        if (app.name === APP_MOOD_NAME) {
+            return getAppMoodMenu();
+        }
+
+        return null;
+    };
+
     /**
      * Get structure of the app "Serverstatus"
      * @returns {{name: string, description: string, settings: Object}}
@@ -151,6 +166,17 @@ function appHandler () {
                 activated: true
             }
         };
+    };
+
+    getAppMoodMenu = function () {
+        return {
+            counts: 4,
+            active: actualPollStep % 4
+        }
+    };
+
+    getAppMoodStep = function () {
+        return actualPollStep % 4;
     };
 
     getAppPollRoom = function () {
@@ -189,7 +215,25 @@ function appHandler () {
     getDisplayAppActiveMood = function () {
         var step = actualPollStep % 4;
 
-        console.log('show MOOD-POLL step ' + step);
+        // 0: everything is okay
+        // 1: coffee
+        // 2: food
+        // 3: do not disturb
+
+        switch(step) {
+            case 0:
+                console.log('show mood poll everything ok');
+                break;
+            case 1:
+                console.log('show mood poll coffee');
+                break;
+            case 2:
+                console.log('show mood poll food');
+                break;
+            case 3:
+                console.log('show mood poll do not disturb');
+                break;
+        }
     };
 
     getDisplayAppAtmung = function (settings, step, stepDuration) {
