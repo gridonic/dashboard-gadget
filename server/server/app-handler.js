@@ -14,6 +14,7 @@ function appHandler () {
     var getAppServer;
     var getAppTest;
     var prepareAppDisplay;
+    var getDisplayAppActiveMood;
     var getDisplayAppAtmung;
     var getDisplayAppMood;
     var getDisplayAppPollRoom;
@@ -24,9 +25,11 @@ function appHandler () {
     var checkHTTPS;
 
     // Variables
-    var actualDisplay = null;
-    var appServerText = {};
-    var Graphic = new graphic();
+    var actualDisplay   = null;
+    var appServerText   = {};
+    var Graphic         = new graphic();
+    var self            = this;
+    var actualPollStep  = 0;
 
     // Constants
     var APP_ATMUNG_NAME         = 'Atmung';
@@ -35,6 +38,8 @@ function appHandler () {
     var APP_POLL_SOUND_NAME     = 'Poll-Sound-App';
     var APP_TEST_NAME           = 'Test-App';
     var APP_SERVERSTATUS_NAME   = 'Serverstatus';
+
+    this.POLL_TO_FILL           = 'poll-to-fill';
 
     /* ======================================================================
      * Public functions
@@ -85,6 +90,13 @@ function appHandler () {
                 return getDisplayAppPollRoom();
             } else if (actualDisplay.app.name === APP_POLL_SOUND_NAME) {
                 return getDisplayAppPollSound();
+            }
+        } else if (actualDisplay.poll) {
+            if (actualDisplay.poll.name === APP_MOOD_NAME) {
+                getDisplayAppActiveMood();
+            } else {
+                console.log('return Display of poll');
+                console.log(actualDisplay.poll);
             }
         }
 
@@ -162,10 +174,22 @@ function appHandler () {
     };
 
     prepareAppDisplay = function (app, settings) {
-        actualDisplay = {
-            app: app,
-            settings: settings
-        };
+        if (settings === self.POLL_TO_FILL) {
+            actualDisplay = {
+                poll: app
+            };
+        } else {
+            actualDisplay = {
+                app: app,
+                settings: settings
+            };
+        }
+    };
+
+    getDisplayAppActiveMood = function () {
+        var step = actualPollStep % 4;
+
+        console.log('show MOOD-POLL step ' + step);
     };
 
     getDisplayAppAtmung = function (settings, step, stepDuration) {

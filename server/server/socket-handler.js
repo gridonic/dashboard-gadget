@@ -31,6 +31,7 @@ function socketHandler (Handler) {
     var Graphic = new graphic();
     var socket = null;
     var helloed = false;
+    var currentApp = null;
 
     /* ======================================================================
      * Public functions
@@ -89,8 +90,9 @@ function socketHandler (Handler) {
         }
     };
 
-    showDisplay = function (workTime, updateTime, project, mood, currentDisplay, menu) {
+    showDisplay = function (workTime, updateTime, project, mood, currentDisplay, menu, app) {
         var time = 50;
+        currentApp = app;
 
         setTimeout(function () {
             if (updateTime && workTime !== null) {
@@ -184,7 +186,13 @@ function socketHandler (Handler) {
             console.log('buttons pushed');
             if (data.left && data.right) {
                 console.log('both');
-                console.log('go in to menu');
+
+                if (currentApp !== null) {
+                    Handler.activateApp(currentApp, socket.id, showDisplay);
+                    console.log('do action of app ' + currentApp);
+                } else {
+                    console.log('do something after both buttons was pushed.');
+                }
             } else if (data.left) {
                 console.log('left');
                 Handler.switchApp('left', socket.id, showDisplay);

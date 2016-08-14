@@ -17,6 +17,7 @@ function modelHandler () {
 
     // Functions
     var activateGadget;
+    var activateApp;
     var addSocketConnection;
     var addUserConnection;
     var changeMood;
@@ -49,6 +50,7 @@ function modelHandler () {
     var url         = 'mongodb://localhost:9999/dashboard-gadget';
     var self        = this;
     var displayInterval;
+    var showPollContent = null;
 
     // Models
     var App         = new app(this);
@@ -72,6 +74,7 @@ function modelHandler () {
      * ===================================================================== */
 
     this.activateGadget             = function (id) { return activateGadget(id); };
+    this.activateApp                = function (appId, socketId, callback) { return activateApp(appId, socketId, callback); };
     this.addSocketConnection        = function (id) { return addSocketConnection(id); };
     this.addUserConnection          = function (connectionId, userId) { return addUserConnection(connectionId, userId); };
     this.changeMood                 = function (connectionId, currentMood, callback) {return changeMood(connectionId,currentMood, callback);};
@@ -96,6 +99,40 @@ function modelHandler () {
     /* =====================================================================
      * Private functions
      * ===================================================================== */
+
+    activateApp = function (appId, socketId, callback) {
+        Connection.findConnectionById(socketId, function (err, conn) {
+            if (err || conn === null) {
+                // todo: handleError
+            } else {
+                Gadget.findGadgetById(parseInt(conn.gadgetId), function (err, gadget) {
+                    if (err) {
+                        // todo: handleError
+                    } else {
+                        User.getUserByUsername(gadget.lastUserName, function (err, user) {
+
+                            App.findById(appId, function (err, result) {
+                                if (err || result === null) {
+                                    console.log('todo: handle error on find app');
+                                } else {
+                                    var appSettings = JSON.parse(result.settings);
+                                    if (appSettings.activated === true) {
+                                        showPollContent = {
+                                            app: result,
+                                            type: AppHandler.POLL_TO_FILL
+                                        };
+                                        startDisplayOnArduino(socketId, callback, user);
+                                    } else {
+                                        console.log('this usecase is not handled yet.');
+                                    }
+                                }
+                            });
+                        });
+                    }
+                });
+            }
+        });
+    };
 
     addSocketConnection = function (id) {
         Connection.create(id, null, Connection.TYPE_UNDEFINED);
@@ -397,8 +434,10 @@ function modelHandler () {
      * @param updateTime        Should the time been update on the screen or not?
      * @param currentDisplay    What do we show at the moment on the display?
      * @param menu              How many menu-points and which one is active
+     * @param mood              the mood (color) we have to show
+     * @param currentApp        the currentApp of the display
      */
-    showDisplayOnArduino = function (callback, user, updateTime, currentDisplay, menu, mood) {
+    showDisplayOnArduino = function (callback, user, updateTime, currentDisplay, menu, mood, currentApp) {
         var worktime = null;
         var project = null;
 
@@ -407,7 +446,7 @@ function modelHandler () {
             project = Harvest.getProject();
         }
 
-        callback(worktime, updateTime, project, mood, currentDisplay, menu);
+        callback(worktime, updateTime, project, mood, currentDisplay, menu, currentApp);
     };
 
     /**
@@ -431,9 +470,13 @@ function modelHandler () {
         var oneMinute = 60000 / intervalTiming;
         var currentDisplay = null;
         var currentMood = null;
+        var currentApp = null;
+        var currentAppIndex = -1;
 
         var getCurrentDisplay = function (display, step, stepDuration) {
             if (display && display.app) {
+                return AppHandler.getActualAppDisplay(step, stepDuration);
+            } else if (showPollContent) {
                 return AppHandler.getActualAppDisplay(step, stepDuration);
             } else {
                 console.log('no display, no display.app');
@@ -443,11 +486,15 @@ function modelHandler () {
 
         var getMenu = function (display) {
             if (display && display.app) {
+                currentAppIndex = userApps.indexOf(display.app);
+                currentApp = userApps[currentAppIndex];
                 return {
                     counts: userApps.length,
-                    active: userApps.indexOf(display.app)
+                    active: currentAppIndex
                 };
             } else {
+                currentApp = null;
+                currentAppIndex = -1;
                 return null;
             }
         };
@@ -480,7 +527,9 @@ function modelHandler () {
             Harvest.setCredentials(harvestCredentials);
         }
 
-        if (user && user.appActivated) {
+        if (showPollContent !== null) {
+            AppHandler.prepareAppDisplay(showPollContent.app, showPollContent.type);
+        } else if (user && user.appActivated) {
 
             userApps = user.appActivated;
             userAppSettings = JSON.parse(user.appSettings);
@@ -490,6 +539,7 @@ function modelHandler () {
                 currentDisplay = {
                     app: userApps[0]
                 };
+
                 App.findById(currentDisplay.app, function (err, result) {
                     if (err || result == null) {
                         // todo: handle error.
@@ -497,7 +547,9 @@ function modelHandler () {
                         AppHandler.prepareAppDisplay(result, userAppSettings[currentDisplay.app]);
                     }
                 });
+
                 User.setCurrentDisplay(user.username, JSON.stringify(currentDisplay));
+
             } else if (user.currentDisplay) {
                 currentDisplay = JSON.parse(user.currentDisplay);
 
@@ -520,12 +572,13 @@ function modelHandler () {
             true,
             getCurrentDisplay(currentDisplay, i, intervalTiming),
             getMenu(currentDisplay),
-            currentMood
+            currentMood,
+            currentApp
         );
         i++;
 
         displayInterval = setInterval(function () {
-            var showTime = ((i + 118) % oneMinute == 0);
+            var showTime = ((i + 118) % oneMinute == 0); // show time not after a minute, show it after 1 second (2*500ms)
 
             if (showTime) {
                 updateMood();
@@ -537,7 +590,8 @@ function modelHandler () {
                 showTime,
                 getCurrentDisplay(currentDisplay, i, intervalTiming),
                 getMenu(currentDisplay),
-                currentMood
+                currentMood,
+                currentApp
             );
 
             i++;
