@@ -222,7 +222,7 @@ function appHandler () {
 
         switch(step) {
             case 0:
-                return 'MEN|2|MOOD|OK|'; // + Graphic.getIconBitwise(Graphic.iconOk84);
+                return 'MEN|2|MOOD|OK|' + Graphic.getIconBitwise(Graphic.iconMood44); // + Graphic.getIconBitwise(Graphic.iconOk84);
                 break;
             case 1:
                 return 'MEN|2|MOOD|COFFEE|'; // + Graphic.getIconBitwise(Graphic.iconCoffee84);

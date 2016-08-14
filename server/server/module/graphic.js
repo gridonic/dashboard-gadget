@@ -41,6 +41,7 @@ function graphic () {
 
     // JSON-Files
     this.iconMood84      = require('./../png-json/icon-mood-84.json');
+    this.iconMood44      = require('./../png-json/icon-mood-44.json');
     this.iconRoom84      = require('./../png-json/icon-room-84.json');
     this.iconSound84     = require('./../png-json/icon-sound-84.json');
     this.iconCoffee84    = require('./../png-json/icon-mood-coffee-84.json');
