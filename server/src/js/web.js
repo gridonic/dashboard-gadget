@@ -474,7 +474,7 @@ handleUpdateMood = function () {
 
     updateMood.onclick = function () {
         var mood = parseInt(document.getElementById('mood-select').value);
-        console.log('Poll: ' + mood);
+        console.log('Mood: ' + mood);
         socket.emit('updateMood', {'currentMood': mood});
 
     };
