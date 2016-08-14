@@ -599,7 +599,8 @@ function modelHandler () {
         // Create all Apps
         App.create(AppHandler.getAppBreathing());
         App.create(AppHandler.getAppMood());
-        App.create(AppHandler.getAppPoll());
+        App.create(AppHandler.getAppPollRoom());
+        App.create(AppHandler.getAppPollSound());
         App.create(AppHandler.getAppServer());
         App.create(AppHandler.getAppTest());
     };

@@ -9,13 +9,15 @@ function appHandler () {
     var getActualAppDisplay;
     var getAppAtmung;
     var getAppMood;
-    var getAppPoll;
+    var getAppPollRoom;
+    var getAppPollSound;
     var getAppServer;
     var getAppTest;
     var prepareAppDisplay;
     var getDisplayAppAtmung;
     var getDisplayAppMood;
-    var getDisplayAppPoll;
+    var getDisplayAppPollRoom;
+    var getDisplayAppPollSound;
     var getDisplayAppServer;
     var getDisplayAppTest;
     var checkHTTP;
@@ -27,11 +29,12 @@ function appHandler () {
     var Graphic = new graphic();
 
     // Constants
-    var APP_ATMUNG_NAME = 'Atmung';
-    var APP_MOOD_NAME = 'Mood-App';
-    var APP_POLL_NAME = 'Poll-App';
-    var APP_TEST_NAME = 'Test-App';
-    var APP_SERVERSTATUS_NAME = 'Serverstatus';
+    var APP_ATMUNG_NAME         = 'Atmung';
+    var APP_MOOD_NAME           = 'Mood-App';
+    var APP_POLL_ROOM_NAME      = 'Poll-Room-App';
+    var APP_POLL_SOUND_NAME     = 'Poll-Sound-App';
+    var APP_TEST_NAME           = 'Test-App';
+    var APP_SERVERSTATUS_NAME   = 'Serverstatus';
 
     /* ======================================================================
      * Public functions
@@ -40,7 +43,8 @@ function appHandler () {
     this.getActualAppDisplay    = function (step, stepDuration) { return getActualAppDisplay(step, stepDuration); };
     this.getAppBreathing        = function () { return getAppAtmung(); };
     this.getAppMood             = function () { return getAppMood(); };
-    this.getAppPoll             = function () { return getAppPoll(); };
+    this.getAppPollRoom         = function () { return getAppPollRoom(); };
+    this.getAppPollSound        = function () { return getAppPollSound(); };
     this.getAppServer           = function () { return getAppServer(); };
     this.getAppTest             = function () { return getAppTest(); };
     this.prepareAppDisplay      = function (app, settings) { return prepareAppDisplay(app, settings); };
@@ -68,16 +72,20 @@ function appHandler () {
     getActualAppDisplay = function (step, stepDuration) {
         if (actualDisplay === null) {
             return null;
-        } else if (actualDisplay.app && actualDisplay.app.name === APP_ATMUNG_NAME) {
-            return getDisplayAppAtmung(actualDisplay.settings, step, stepDuration);
-        } else if (actualDisplay.app && actualDisplay.app.name === APP_SERVERSTATUS_NAME) {
-            return getDisplayAppServer(actualDisplay.settings);
-        } else if (actualDisplay.app && actualDisplay.app.name === APP_TEST_NAME) {
-            return getDisplayAppTest();
-        } else if (actualDisplay.app && actualDisplay.app.name === APP_MOOD_NAME) {
-            return getDisplayAppMood();
-        } else if (actualDisplay.app && actualDisplay.app.name === APP_POLL_NAME) {
-            return getDisplayAppPoll();
+        } else if (actualDisplay.app) {
+            if (actualDisplay.app.name === APP_ATMUNG_NAME) {
+                return getDisplayAppAtmung(actualDisplay.settings, step, stepDuration);
+            } else if (actualDisplay.app.name === APP_SERVERSTATUS_NAME) {
+                return getDisplayAppServer(actualDisplay.settings);
+            } else if (actualDisplay.app.name === APP_TEST_NAME) {
+                return getDisplayAppTest();
+            } else if (actualDisplay.app.name === APP_MOOD_NAME) {
+                return getDisplayAppMood();
+            } else if (actualDisplay.app.name === APP_POLL_ROOM_NAME) {
+                return getDisplayAppPollRoom();
+            } else if (actualDisplay.app.name === APP_POLL_SOUND_NAME) {
+                return getDisplayAppPollSound();
+            }
         }
 
         return null;
@@ -133,10 +141,20 @@ function appHandler () {
         };
     };
 
-    getAppPoll = function () {
+    getAppPollRoom = function () {
         return {
-            name: APP_POLL_NAME,
-            description: 'Die Poll-App für Umfragen',
+            name: APP_POLL_ROOM_NAME,
+            description: 'Die Poll-App für Temperatur-Umfragen',
+            settings: {
+                activated: true
+            }
+        }
+    };
+
+    getAppPollSound = function () {
+        return {
+            name: APP_POLL_SOUND_NAME,
+            description: 'Die Poll-App für Lautstärke-Umfragen',
             settings: {
                 activated: true
             }
@@ -170,8 +188,12 @@ function appHandler () {
         return 'MEN|1|todo: information for mood menu to show in the circle.';
     };
 
-    getDisplayAppPoll = function () {
-        return 'MEN|1|todo: info for poll menu to show in the circle.';
+    getDisplayAppPollRoom = function () {
+        return 'MEN|1|todo: info for poll room to show in the circle.';
+    };
+
+    getDisplayAppPollSound = function () {
+        return 'MEN|1|todo: info for poll sound to show in the circle.';
     };
 
     getDisplayAppTest = function () {

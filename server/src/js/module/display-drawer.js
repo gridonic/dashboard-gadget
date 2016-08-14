@@ -297,6 +297,9 @@ displayDrawer = function () {
             if (drawData[1] === '1') {
                 showMainMenuCircle();
 
+                context.fillStyle = COLOR_WHITE;
+                context.fillRect(118, 78, 84, 84);
+
                 console.log(drawData[2]);
             }
         }
