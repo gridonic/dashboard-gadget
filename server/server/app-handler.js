@@ -14,6 +14,7 @@ function appHandler () {
     var getAppTest;
     var prepareAppDisplay;
     var getDisplayAppAtmung;
+    var getDisplayAppMood;
     var getDisplayAppServer;
     var getDisplayAppTest;
     var checkHTTP;
@@ -72,6 +73,8 @@ function appHandler () {
             return getDisplayAppServer(actualDisplay.settings);
         } else if (actualDisplay.app && actualDisplay.app.name === APP_TEST_NAME) {
             return getDisplayAppTest();
+        } else if (actualDisplay.app && actualDisplay.app.name === APP_MOOD_NAME) {
+            return getDisplayAppMood();
         }
 
         return null;
@@ -152,6 +155,16 @@ function appHandler () {
         }
 
         return Graphic.getDisplayAtmung(size);
+    };
+
+    /**
+     * Return the display-string.
+     *  MEN: show menu with circle
+     *  1: show Big circle in the middle
+     * @returns {string}
+     */
+    getDisplayAppMood = function () {
+        return 'MEN|1|todo: information to show in the circle.';
     };
 
     getDisplayAppTest = function () {

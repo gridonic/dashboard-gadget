@@ -286,12 +286,18 @@ displayDrawer = function () {
             var urlString = drawData[2];
             var urlStrings = urlString.split('%');
             var padding = parseInt(drawData[1]);
-            
+
             context.fillStyle = COLOR_BLACK;
             context.font = textSize + "px Courier New";
 
             for (var i = 0; i < urlStrings.length; i++) {
                 context.fillText(urlStrings[i], padding, DISPLAY_HEIGHT / 2 - 60 + padding + (padding + textSize) * i);
+            }
+        } else if (drawData[0] === 'MEN') {
+            if (drawData[1] === '1') {
+                showMainMenuCircle();
+
+                console.log(drawData[2]);
             }
         }
     };
