@@ -100,7 +100,7 @@ function appHandler () {
             }
         } else if (actualDisplay.poll) {
             if (actualDisplay.poll.name === APP_MOOD_NAME) {
-                getDisplayAppActiveMood();
+                return getDisplayAppActiveMood();
             } else {
                 console.log('return Display of poll');
                 console.log(actualDisplay.poll);
@@ -218,20 +218,20 @@ function appHandler () {
         // 0: everything is okay
         // 1: coffee
         // 2: food
-        // 3: do not disturb
+        // 3: focus
 
         switch(step) {
             case 0:
-                console.log('show mood poll everything ok');
+                return 'MEN|2|MOOD|OK|'; // + Graphic.getIconBitwise(Graphic.iconOk84);
                 break;
             case 1:
-                console.log('show mood poll coffee');
+                return 'MEN|2|MOOD|COFFEE|'; // + Graphic.getIconBitwise(Graphic.iconCoffee84);
                 break;
             case 2:
-                console.log('show mood poll food');
+                return 'MEN|2|MOOD|FOOD|'; // + Graphic.getIconBitwise(Graphic.iconFood84);
                 break;
             case 3:
-                console.log('show mood poll do not disturb');
+                return 'MEN|2|MOOD|FOCUS|'; // + Graphic.getIconBitwise(Graphic.iconFocused84);
                 break;
         }
     };

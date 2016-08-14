@@ -43,8 +43,12 @@ function graphic () {
     this.iconMood84      = require('./../png-json/icon-mood-84.json');
     this.iconRoom84      = require('./../png-json/icon-room-84.json');
     this.iconSound84     = require('./../png-json/icon-sound-84.json');
-    var workIconRaw     = require('./../png-json/work-icon.json');
-    var startImageRaw   = require('./../png-json/start-image.json');
+    this.iconCoffee84    = require('./../png-json/icon-mood-coffee-84.json');
+    this.iconFocused84   = require('./../png-json/icon-mood-focused-84.json');
+    this.iconFood84      = require('./../png-json/icon-mood-food-84.json');
+    this.iconOk84        = require('./../png-json/icon-mood-ok-84.json');
+    var workIconRaw      = require('./../png-json/work-icon.json');
+    var startImageRaw    = require('./../png-json/start-image.json');
 
 
     /* ======================================================================
