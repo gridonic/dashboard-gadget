@@ -73,6 +73,8 @@ function appHandler () {
         } else if (actualDisplay.app && actualDisplay.app.name === APP_TEST_NAME) {
             return getDisplayAppTest();
         }
+
+        return null;
     };
 
     /**

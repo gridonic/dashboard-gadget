@@ -525,7 +525,7 @@ function modelHandler () {
         i++;
 
         displayInterval = setInterval(function () {
-            var showTime = ((i + 115) % oneMinute == 0);
+            var showTime = ((i + 118) % oneMinute == 0);
 
             if (showTime) {
                 updateMood();

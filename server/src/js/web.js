@@ -130,6 +130,17 @@ dashboardUpdateContent = function () {
         if (apps[i].settings !== 'null') {
             appSettings = JSON.parse(apps[i].settings);
             if (appSettings && appSettings.activated === true) {
+
+                if (userApps.indexOf(apps[i]._id) < 0) {
+                    console.log('save app ' + apps[i].name + ' on the server.');
+                    socket.emit('activateApp', {
+                        user: StorageHandler.getUser(),
+                        token: StorageHandler.getToken(),
+                        appId: apps[i]._id,
+                        appSettings: null,
+                    });
+                }
+
                 continue;
             }
         }

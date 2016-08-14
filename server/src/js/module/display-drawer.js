@@ -150,8 +150,8 @@ displayDrawer = function () {
     };
 
     clearMainDisplay = function () {
-        context.fillStyle = COLOR_BLACK;
-        context.fillRect(50, 50, 220, 140);
+        context.fillStyle = COLOR_WHITE;
+        context.fillRect(0, 50, 230, 140);
     };
 
     /**
@@ -245,6 +245,8 @@ displayDrawer = function () {
     showMainDisplay = function (data) {
         var drawData = data.draw.split('|');
 
+        clearMainDisplay();
+
         if (drawData[0] === 'RECT') {
 
             var x = parseInt(drawData[1]);
@@ -267,9 +269,6 @@ displayDrawer = function () {
             var borderColorCircle   = drawData[4] === "1" ? COLOR_BLACK : COLOR_WHITE;
             var circleColor         = drawData[5] === "1" ? COLOR_BLACK : COLOR_WHITE;
 
-            context.fillStyle = COLOR_WHITE;
-            context.fillRect(xCircle - DISPLAY_HEIGHT / 4, yCircle - DISPLAY_HEIGHT / 4, DISPLAY_HEIGHT / 2, DISPLAY_HEIGHT / 2);
-
             context.fillStyle = borderColorCircle;
             context.beginPath();
             context.arc(xCircle, yCircle, radCircle, 0, 2 * Math.PI);
@@ -287,10 +286,7 @@ displayDrawer = function () {
             var urlString = drawData[2];
             var urlStrings = urlString.split('%');
             var padding = parseInt(drawData[1]);
-
-            context.fillStyle = COLOR_WHITE;
-            context.fillRect(0, DISPLAY_HEIGHT / 2 - 60, DISPLAY_WIDTH, 120);
-
+            
             context.fillStyle = COLOR_BLACK;
             context.font = textSize + "px Courier New";
 
