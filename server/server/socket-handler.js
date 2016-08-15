@@ -193,6 +193,7 @@ function socketHandler (Handler) {
 
                 if (currentApp && currentApp.poll) {
                     // todo beni: poll wird hier bestätigt vom gadget aus, muss jetzt noch im system gespeichert werden (falls nötig).
+                    // todo beni: ob eine neue poll gestartet werden soll, ist im model-handler vorbereitet.
                     Handler.activatedAppSelected(currentApp, socket.id, showDisplay);
                 } else if (currentApp !== null) {
                     Handler.activateApp(currentApp, socket.id, showDisplay);
