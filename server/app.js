@@ -130,6 +130,10 @@ io.on('connection', function (socket) {
         SocketHandler.onSuccess(data);
         Connection.delete(socket.id);
     });
+
+    socket.on('ownheartbeat', function (data) {
+        console.log('heartbeat');
+    });
 });
 
 http.listen(3000, function() {

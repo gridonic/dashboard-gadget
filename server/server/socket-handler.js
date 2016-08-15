@@ -91,7 +91,7 @@ function socketHandler (Handler) {
     };
 
     showDisplay = function (workTime, updateTime, project, mood, currentDisplay, menu, app) {
-        var time = 300;
+        var time = 250;
 
         if (app !== null) {
             currentApp = app;
@@ -156,6 +156,8 @@ function socketHandler (Handler) {
 
     onArduinoButtonsPushed = function (data) {
         var newData = {};
+
+        Handler.stopDisplaying();
 
         if (data.buttons === 'r') {
             newData.right = true;

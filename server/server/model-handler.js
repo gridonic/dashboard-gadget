@@ -42,6 +42,7 @@ function modelHandler () {
     var showDisplayOnArduino;
     var startDisplayOnArduino;
     var startPoll;
+    var stopDisplaying;
     var switchPollOnArduino;
     var switchUserApp;
     var updatePoll;
@@ -87,6 +88,7 @@ function modelHandler () {
     this.removeConnection           = function (connectionId) { return removeConnection(connectionId); };
     this.saveUserSettings           = function (token, username, settings, callback) { return saveUserSettings(token, username, settings, callback); };
     this.setupDisplayForArduino     = function (socketId, callback) { return prepareDisplayForArduino(socketId, callback); };
+    this.stopDisplaying             = function () { return stopDisplaying(); };
     this.switchApp                  = function (direction, socketId, callback) { return switchUserApp(direction, socketId, callback); };
     this.switchPoll                 = function (direction, socketId, callback) { return switchPollOnArduino(direction, socketId, callback); };
 
@@ -401,6 +403,7 @@ function modelHandler () {
                     console.log('deactivate gadget with id ' + result.gadgetId);
                     Gadget.deactivateGadget(result.gadgetId);
                     Mood.update(result.gadgetId, 0);
+                    stopDisplaying();
                 }
                 Connection.deleteConnection(connectionId);
             }
@@ -544,7 +547,7 @@ function modelHandler () {
         var userApps;
         var userAppSettings;
         var i = 0;
-        var intervalTiming = 10000;
+        var intervalTiming = 5000;
         var oneMinute = 60000 / intervalTiming;
         var currentDisplay = null;
         var currentMood = null;
@@ -665,7 +668,7 @@ function modelHandler () {
         i++;
 
         displayInterval = setInterval(function () {
-            var showTime = ((i + 5) % oneMinute == 0); // show time not after a minute, show it after 1 second (2*500ms)
+            var showTime = ((i + 10) % oneMinute == 0); // show time not after a minute, show it after 1 second (2*500ms)
 
             if (showTime) {
                 updateMood();
@@ -682,7 +685,11 @@ function modelHandler () {
             );
 
             i++;
-        }, 500);
+        }, intervalTiming);
+    };
+
+    stopDisplaying = function () {
+        clearInterval(displayInterval);
     };
 
     switchPollOnArduino = function (direction, socketId, callback) {

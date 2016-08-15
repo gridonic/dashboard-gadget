@@ -56,6 +56,7 @@ unsigned int lastBigIcon = 0;
 unsigned int lastSmallIcon = 0;
 unsigned int lastIconLeft = 0;
 unsigned int lastIconRight = 0;
+unsigned int lastMainDisplay = 0;
 
 unsigned int ICON_COFFEE = 1;
 unsigned int ICON_COLD = 2;
@@ -68,6 +69,12 @@ unsigned int ICON_OK = 8;
 unsigned int ICON_POLL = 9;
 unsigned int ICON_ROOM = 10;
 unsigned int ICON_SOUND = 11;
+unsigned int DISPLAY_RECT = 1;
+unsigned int DISPLAY_CIRC = 2;
+unsigned int DISPLAY_TXT = 3;
+unsigned int DISPLAY_MEN1 = 4;
+unsigned int DISPLAY_MEN2 = 5;
+unsigned int DISPLAY_MEN3 = 6;
 
 // Variables for the ethernet-module
 SocketIOClient client;
@@ -145,6 +152,7 @@ void resetIconVariables() {
   lastSmallIcon = 0;
   lastIconLeft = 0;
   lastIconRight = 0;
+  lastMainDisplay = 0;
 }
 
 void initButtons() {
@@ -296,7 +304,8 @@ bool tryConnection()
 void connectClient()
 {
   logger("connecting...");
-    
+
+  resetIconVariables();
   loggedIn = false;
   helloed = false;
   while (!tryConnection()) {
@@ -353,7 +362,7 @@ String splitString(String data, char separator, int index)
 }
 
 void clearMainDisplay() {
-  tft.drawRect(0, 50, 320, 140, ILI9340_WHITE);
+  tft.fillRect(0, 50, 320, 140, ILI9340_WHITE);
 }
 
 /**
@@ -482,21 +491,14 @@ void showOnScreen(String m, long startX, long startY, long width)
   }
 }
 
-//void clearMainDisplay()
-//{
-//  tft.fillRect(50, 50, 220, 140, ILI9340_WHITE);
-//}
-
 void showMenuCircle()
 {
-  clearMainDisplay();
   tft.fillCircle(160, 120, 60, ILI9340_BLACK);
 }
 
 void showSubmenuCircles()
 {
   /* submenus - grosse chreis 120x120px (76/60), chline chreis 64x64px (171/60) */
-  clearMainDisplay();
   tft.fillCircle(136, 120, 60, ILI9340_BLACK);
   tft.fillCircle(203, 92, 32, ILI9340_BLACK);
 }
@@ -504,13 +506,13 @@ void showSubmenuCircles()
 void showPollCircles()
 {
   /* polls - beidi chreis 120x120 px (52/60) und (148/60) */
-  clearMainDisplay();
   tft.fillCircle(112, 120, 60, ILI9340_BLACK);
   tft.fillCircle(208, 120, 60, ILI9340_BLACK);
 }
 
 void showFullScreen(uint16_t color)
 {
+  resetIconVariables();
   tft.fillRect(0, 0, displayWidth, displayHeight, color);
 }
 
@@ -521,7 +523,7 @@ void drawWorkingIcon(unsigned int x, unsigned int y)
   tft.drawPixel(x + 2, y + 2, ILI9340_BLACK);  tft.drawPixel(x + 9, y + 2, ILI9340_BLACK);
   tft.drawPixel(x + 3, y + 3, ILI9340_BLACK);  tft.drawPixel(x + 8, y + 3, ILI9340_BLACK);
   tft.drawPixel(x + 4, y + 4, ILI9340_BLACK);  tft.drawPixel(x + 7, y + 4, ILI9340_BLACK);
-  tft.drawRect(x + 5, y + 5, 2, 2, ILI9340_BLACK);
+  tft.fillRect(x + 5, y + 5, 2, 2, ILI9340_BLACK);
   tft.drawPixel(x + 4, y + 7, ILI9340_BLACK);  tft.drawPixel(x + 7, y + 7, ILI9340_BLACK);
   tft.drawPixel(x + 3, y + 8, ILI9340_BLACK);  tft.drawPixel(x + 8, y + 8, ILI9340_BLACK);
   tft.drawPixel(x + 2, y + 9, ILI9340_BLACK);  tft.drawPixel(x + 9, y + 9, ILI9340_BLACK);
@@ -589,7 +591,6 @@ void showTimeOnScreen(String m)
 void showMainDisplayOnScreen(String m)
 {
   String splitString0 = splitString(m, '|', 0);
-
   unsigned int x;
   unsigned int y;
   unsigned int rad;
@@ -598,9 +599,19 @@ void showMainDisplayOnScreen(String m)
   unsigned int borderColor;
   unsigned int color;
 
-  clearMainDisplay();
+//  if (splitString0 == "MEN" && lastMainDisplay < DISPLAY_MEN1) {
+//    clearMainDisplay
+//  } else if (splitString0 == "MEN" && lastMainDisplay == 
+//
+//  clearMainDisplay();
 
   if (splitString0 == "RECT") {
+    if (lastMainDisplay != DISPLAY_RECT) {
+      clearMainDisplay();
+      delay(miniDelay);
+      lastMainDisplay = DISPLAY_RECT;
+    }
+    
     x           = splitString(m, '|', 1).toInt();
     y           = splitString(m, '|', 2).toInt();
     w           = splitString(m, '|', 3).toInt();
@@ -612,6 +623,12 @@ void showMainDisplayOnScreen(String m)
     tft.fillRect(x + 2, y + 2, w - 4, h - 4, color);
     
   } else if (splitString0 == "CIRC") {
+    if (lastMainDisplay != DISPLAY_CIRC) {
+      clearMainDisplay();
+      delay(miniDelay);
+      lastMainDisplay = DISPLAY_CIRC;
+    }
+    
     x           = splitString(m, '|', 1).toInt();
     y           = splitString(m, '|', 2).toInt();
     rad         = splitString(m, '|', 3).toInt();
@@ -623,6 +640,12 @@ void showMainDisplayOnScreen(String m)
     tft.fillCircle(x, y, rad - 2, color);
     
   } else if (splitString0 == "TXT") {
+    if (lastMainDisplay != DISPLAY_TXT) {
+      clearMainDisplay();
+      delay(miniDelay);
+      lastMainDisplay = DISPLAY_TXT;
+    }
+    
     int textSize      = 15;
     String urlString  = splitString(m, '|', 2);
     int padding       = splitString(m, '|', 1).toInt();
@@ -639,10 +662,16 @@ void showMainDisplayOnScreen(String m)
   } else if (splitString0 == "MEN") {
     // One big circle
     if (splitString(m, '|', 1) == "1") {
-      showMenuCircle();
+      if (lastMainDisplay != DISPLAY_MEN1) {
+        clearMainDisplay();
+        delay(miniDelay);
+        showMenuCircle();
+        delay(miniDelay);
+        lastMainDisplay = DISPLAY_MEN1;
+      }
+      
       String icon = "";
       String iconData = splitString(m, '|', 2);
-//      tft.fillRect(118, 78, 84, 84, ILI9340_WHITE);
       
       if (iconData == "MOOD" && lastBigIcon != ICON_MOOD) {
         icon = getIconMood84();
@@ -662,7 +691,14 @@ void showMainDisplayOnScreen(String m)
 
     // Big circle and a small one
     else if (splitString(m, '|', 1) == "2") {
-      showSubmenuCircles();
+      if (lastMainDisplay != DISPLAY_MEN2) {
+        clearMainDisplay();
+        delay(miniDelay);
+        showSubmenuCircles();
+        delay(miniDelay);
+        lastMainDisplay = DISPLAY_MEN2;
+      }
+      
       String iconBig = "";
       String iconSmall = "";
       String iconData = splitString(m, '|', 3);
@@ -902,7 +938,9 @@ void checkButtons() {
         buttonRightActive = 0;
         setColor(LED_BUTTON_LEFT, 0, 0, 255);
         setColor(LED_BUTTON_RIGHT, 0, 0, 255);
-        resetIconVariables();       
+        resetIconVariables();
+        clearMainDisplay();
+        delay(defaultDelay);
       } else if (buttonLeftActive > 0 && buttonLeftActive < loopIndex - 30 * checkButtonInterval) {
         logger("Left button active");
 
@@ -918,6 +956,8 @@ void checkButtons() {
         buttonLeftActive = 0;
         setColor(LED_BUTTON_LEFT, 0, 0, 255);
         resetIconVariables();
+        clearMainDisplay();
+        delay(defaultDelay);
       } else if (buttonRightActive > 0 && buttonRightActive < loopIndex - 30 * checkButtonInterval) {
         logger("Right button active");
 
@@ -933,6 +973,8 @@ void checkButtons() {
         buttonRightActive = 0;
         setColor(LED_BUTTON_RIGHT, 0, 0, 255);
         resetIconVariables();
+        clearMainDisplay();
+        delay(defaultDelay);
       }
     }
   }
@@ -974,6 +1016,7 @@ void loop() {
           // hold connection by sending heartbeat from time to time.
           logger("send heartbeat");
           client.heartbeat(0);
+          client.send("ownheartbeat", "", "");
         }
       }
     }
