@@ -40,14 +40,21 @@ function graphic () {
     var COLOR_BLACK = '1';
 
     // JSON-Files
-    this.iconMood84      = require('./../png-json/icon-mood-84.json');
-    this.iconMood44      = require('./../png-json/icon-mood-44.json');
-    this.iconRoom84      = require('./../png-json/icon-room-84.json');
-    this.iconSound84     = require('./../png-json/icon-sound-84.json');
     this.iconCoffee84    = require('./../png-json/icon-mood-coffee-84.json');
+    this.iconCold84      = require('./../png-json/icon-cold-84.json');
     this.iconFocused84   = require('./../png-json/icon-mood-focused-84.json');
     this.iconFood84      = require('./../png-json/icon-mood-food-84.json');
+    this.iconHot84       = require('./../png-json/icon-hot-84.json');
+    this.iconLoud84      = require('./../png-json/icon-sound-loud-84.json');
+    this.iconMood84      = require('./../png-json/icon-mood-84.json');
+    this.iconMood44      = require('./../png-json/icon-mood-44.json');
     this.iconOk84        = require('./../png-json/icon-mood-ok-84.json');
+    this.iconPoll84      = require('./../png-json/icon-poll-84.json');
+    this.iconRoom44      = require('./../png-json/icon-room-44.json');
+    this.iconRoom84      = require('./../png-json/icon-room-84.json');
+    this.iconSound44     = require('./../png-json/icon-sound-44.json');
+    this.iconSound84     = require('./../png-json/icon-sound-84.json');
+
     var workIconRaw      = require('./../png-json/work-icon.json');
     var startImageRaw    = require('./../png-json/start-image.json');
 

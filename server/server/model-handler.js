@@ -163,10 +163,15 @@ function modelHandler () {
                     } else {
                         User.getUserByUsername(gadget.lastUserName, function (err, user) {
 
-                            console.log('activatedAppSelected');
                             if (app.type === AppHandler.POLL_TO_FILL) {
                                 if (app.app.name === AppHandler.APP_MOOD_NAME) {
-                                    console.log('activate mood ' + AppHandler.getAppMoodStep());
+
+                                    if (AppHandler.getAppMoodStep() === 2 || AppHandler.getAppMoodStep() === 1) {
+                                        // TODO beni
+                                        console.log('----------------------------------------------------------');
+                                        console.log('ask user if he wants to start a poll about a break');
+                                        console.log('----------------------------------------------------------');
+                                    }
 
                                     Connection.findConnectionAndChangeMood(socketId, AppHandler.getAppMoodStep(), function (gadgetId, currentMood) {
                                         Mood.update(gadgetId, currentMood, function () {
@@ -176,6 +181,25 @@ function modelHandler () {
                                     });
                                 } else {
                                     // handle other apps.
+
+                                    if (app.app.name === AppHandler.APP_POLL_ROOM_NAME) {
+                                        if (AppHandler.getAppPollRoomStep() === 2 || AppHandler.getAppPollRoomStep() === 1) {
+                                            // TODO beni
+                                            console.log('----------------------------------------------------------');
+                                            console.log('ask user if he wants to start a poll about room temperature');
+                                            console.log('----------------------------------------------------------');
+                                        }
+                                    } else if (app.app.name === AppHandler.APP_POLL_SOUND_NAME) {
+                                        if (AppHandler.getAppPollSoundStep() === 1) {
+                                            // TODO beni
+                                            console.log('----------------------------------------------------------');
+                                            console.log('ask user if he wants to start a poll about room sound');
+                                            console.log('----------------------------------------------------------');
+                                        }
+                                    }
+
+                                    showPollContent = null;
+                                    startDisplayOnArduino(socketId, callback, user);
                                 }
 
                             } else {
@@ -641,7 +665,7 @@ function modelHandler () {
         i++;
 
         displayInterval = setInterval(function () {
-            var showTime = ((i + 118) % oneMinute == 0); // show time not after a minute, show it after 1 second (2*500ms)
+            var showTime = ((i + 119) % oneMinute == 0); // show time not after a minute, show it after 1 second (2*500ms)
 
             if (showTime) {
                 updateMood();

@@ -13,11 +13,17 @@ function appHandler () {
     var getAppMoodMenu;
     var getAppMoodStep;
     var getAppPollRoom;
+    var getAppPollRoomMenu;
+    var getAppPollRoomStep;
     var getAppPollSound;
+    var getAppPollSoundMenu;
+    var getAppPollSoundStep;
     var getAppServer;
     var getAppTest;
     var prepareAppDisplay;
     var getDisplayAppActiveMood;
+    var getDisplayAppActivePollRoom;
+    var getDisplayAppActivePollSound;
     var getDisplayAppAtmung;
     var getDisplayAppMood;
     var getDisplayAppPollRoom;
@@ -44,6 +50,8 @@ function appHandler () {
 
     this.POLL_TO_FILL           = 'poll-to-fill';
     this.APP_MOOD_NAME          = APP_MOOD_NAME;
+    this.APP_POLL_ROOM_NAME     = APP_POLL_ROOM_NAME;
+    this.APP_POLL_SOUND_NAME    = APP_POLL_SOUND_NAME;
 
     /* ======================================================================
      * Public functions
@@ -55,7 +63,9 @@ function appHandler () {
     this.getAppMood             = function () { return getAppMood(); };
     this.getAppMoodStep         = function () { return getAppMoodStep(); };
     this.getAppPollRoom         = function () { return getAppPollRoom(); };
+    this.getAppPollRoomStep     = function () { return getAppPollRoomStep(); };
     this.getAppPollSound        = function () { return getAppPollSound(); };
+    this.getAppPollSoundStep    = function () { return getAppPollSoundStep(); };
     this.getAppServer           = function () { return getAppServer(); };
     this.getAppTest             = function () { return getAppTest(); };
     this.prepareAppDisplay      = function (app, settings) { return prepareAppDisplay(app, settings); };
@@ -101,6 +111,10 @@ function appHandler () {
         } else if (actualDisplay.poll) {
             if (actualDisplay.poll.name === APP_MOOD_NAME) {
                 return getDisplayAppActiveMood();
+            } else if (actualDisplay.poll.name === APP_POLL_ROOM_NAME) {
+                return getDisplayAppActivePollRoom();
+            } else if (actualDisplay.poll.name === APP_POLL_SOUND_NAME) {
+                return getDisplayAppActivePollSound();
             } else {
                 console.log('return Display of poll');
                 console.log(actualDisplay.poll);
@@ -127,6 +141,10 @@ function appHandler () {
     getAppMenu = function (app) {
         if (app.name === APP_MOOD_NAME) {
             return getAppMoodMenu();
+        } else if (app.name === APP_POLL_ROOM_NAME) {
+            return getAppPollRoomMenu();
+        } else if (app.name === APP_POLL_SOUND_NAME) {
+            return getAppPollSoundMenu();
         }
 
         return null;
@@ -171,7 +189,7 @@ function appHandler () {
     getAppMoodMenu = function () {
         return {
             counts: 4,
-            active: actualPollStep % 4
+            active: getAppMoodStep()
         }
     };
 
@@ -189,6 +207,37 @@ function appHandler () {
         }
     };
 
+    getAppPollRoomStep = function () {
+        return actualPollStep % 3;
+    };
+
+    getAppPollRoomMenu = function () {
+        return {
+            counts: 3,
+            active: getAppPollRoomStep()
+        };
+    };
+
+    getDisplayAppActivePollRoom = function () {
+        var step = getAppPollRoomStep();
+
+        // 0: everything is okay
+        // 1: too cold
+        // 2: too hot
+
+        switch (step) {
+            case 0:
+                return 'MEN|2|ROOM|OK';
+                break;
+            case 1:
+                return 'MEN|2|ROOM|COLD';
+                break;
+            case 2:
+                return 'MEN|2|ROOM|HOT';
+                break;
+        }
+    };
+
     getAppPollSound = function () {
         return {
             name: APP_POLL_SOUND_NAME,
@@ -196,6 +245,33 @@ function appHandler () {
             settings: {
                 activated: true
             }
+        }
+    };
+
+    getAppPollSoundMenu = function () {
+        return {
+            counts: 2,
+            active: getAppPollSoundStep()
+        };
+    };
+
+    getAppPollSoundStep = function () {
+        return actualPollStep % 2;
+    };
+
+    getDisplayAppActivePollSound = function () {
+        var step = getAppPollSoundStep();
+
+        // 0: everything is okay
+        // 1: too loud
+
+        switch (step) {
+            case 0:
+                return 'MEN|2|SOUND|OK';
+                break;
+            case 1:
+                return 'MEN|2|SOUND|LOUD';
+                break;
         }
     };
 
@@ -213,25 +289,25 @@ function appHandler () {
     };
 
     getDisplayAppActiveMood = function () {
-        var step = actualPollStep % 4;
+        var step = getAppMoodStep();
 
         // 0: everything is okay
         // 1: coffee
         // 2: food
         // 3: focus
 
-        switch(step) {
+        switch (step) {
             case 0:
-                return 'MEN|2|MOOD|OK|' + Graphic.getIconBitwise(Graphic.iconMood44); // + Graphic.getIconBitwise(Graphic.iconOk84);
+                return 'MEN|2|MOOD|OK'; // + '|' + Graphic.getIconBitwise(Graphic.iconOk84);
                 break;
             case 1:
-                return 'MEN|2|MOOD|COFFEE|'; // + Graphic.getIconBitwise(Graphic.iconCoffee84);
+                return 'MEN|2|MOOD|COFFEE'; // + '|' + Graphic.getIconBitwise(Graphic.iconCoffee84);
                 break;
             case 2:
-                return 'MEN|2|MOOD|FOOD|'; // + Graphic.getIconBitwise(Graphic.iconFood84);
+                return 'MEN|2|MOOD|FOOD'; // + '|' + Graphic.getIconBitwise(Graphic.iconFood84);
                 break;
             case 3:
-                return 'MEN|2|MOOD|FOCUS|'; // + Graphic.getIconBitwise(Graphic.iconFocused84);
+                return 'MEN|2|MOOD|FOCUS'; // + '|' + Graphic.getIconBitwise(Graphic.iconFocused84);
                 break;
         }
     };
