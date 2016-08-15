@@ -544,7 +544,7 @@ function modelHandler () {
         var userApps;
         var userAppSettings;
         var i = 0;
-        var intervalTiming = 500;
+        var intervalTiming = 10000;
         var oneMinute = 60000 / intervalTiming;
         var currentDisplay = null;
         var currentMood = null;
@@ -665,7 +665,7 @@ function modelHandler () {
         i++;
 
         displayInterval = setInterval(function () {
-            var showTime = ((i + 119) % oneMinute == 0); // show time not after a minute, show it after 1 second (2*500ms)
+            var showTime = ((i + 5) % oneMinute == 0); // show time not after a minute, show it after 1 second (2*500ms)
 
             if (showTime) {
                 updateMood();

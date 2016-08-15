@@ -415,7 +415,6 @@ displayDrawer = function () {
                 }
 
             }
-
         }
     };
 

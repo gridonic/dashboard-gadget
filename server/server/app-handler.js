@@ -372,7 +372,7 @@ function appHandler () {
                 serverResult += '%';
             }
 
-            serverResult += keys[i] + ': ' + appServerText[keys[i]];
+            serverResult += (keys[i] + ': ' + appServerText[keys[i]]).replace('http://', '').replace('https://', '');
         }
 
         if (serverResult === "") {

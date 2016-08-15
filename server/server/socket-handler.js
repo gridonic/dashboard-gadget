@@ -91,7 +91,7 @@ function socketHandler (Handler) {
     };
 
     showDisplay = function (workTime, updateTime, project, mood, currentDisplay, menu, app) {
-        var time = 50;
+        var time = 300;
 
         if (app !== null) {
             currentApp = app;
