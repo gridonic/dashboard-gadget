@@ -91,7 +91,7 @@ extern String Rcontent;
 unsigned long loopIndex     = 0;
 unsigned long msPrev        = 0;
 unsigned long msCurrent     = 0;
-long          interval      = 1000;
+long          interval      = 5000;
 const int     debug         = true;
 const int     internet      = true;
 int           gadgetID      = 2;

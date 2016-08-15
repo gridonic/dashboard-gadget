@@ -15,6 +15,7 @@ function socketHandler (Handler) {
     var onDeactivateApp;
     var onDisconnect;
     var onError;
+    var onHeartbeat;
     var onHello;
     var onLoginGadget;
     var onLoginUser;
@@ -50,6 +51,7 @@ function socketHandler (Handler) {
     this.onDeactivateApp = function (data) { return onDeactivateApp(data); };
     this.onDisconnect = function (data) { return onDisconnect(data); };
     this.onError = function (data) { return onError(data); };
+    this.onHeartbeat = function () { return onHeartbeat(); };
     this.onHello = function (data) { return onHello(data); };
     this.onLoginGadget = function (data) { return onLoginGadget(data); };
     this.onLoginUser = function (data) { return onLoginUser(data); };
@@ -231,6 +233,12 @@ function socketHandler (Handler) {
         console.log(data);
 
         Handler.changeUserApp(Handler.APP_DEACTIVATE, data.user, data.token, data.appId, null, handleNewUserApps);
+    };
+
+    onHeartbeat = function () {
+        if (Handler.isDisplayPaused()) {
+            Handler.setupDisplayForArduino(socket.id, showDisplay);
+        }
     };
 
     onHello = function (data) {

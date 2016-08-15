@@ -52,7 +52,7 @@ function modelHandler () {
     var connected   = false;
     var url         = 'mongodb://localhost:9999/dashboard-gadget';
     var self        = this;
-    var displayInterval;
+    var displayInterval = null;
     var showPollContent = null;
 
     // Models
@@ -84,6 +84,7 @@ function modelHandler () {
     this.changeMood                 = function (connectionId, currentMood, callback) {return changeMood(connectionId,currentMood, callback);};
     this.changeUserApp              = function (mode, u, t, id, settings, c) { return changeUserApp(mode, u, t, id, settings, c); };
     this.createUser                 = function (username, password, callback) { return createUser(username, password, callback); };
+    this.isDisplayPaused            = function () { return displayInterval == null; };
     this.loginUser                  = function (username, password, gadget, socketId, callback) { return loginUser(username, password, gadget, socketId, callback); };
     this.removeConnection           = function (connectionId) { return removeConnection(connectionId); };
     this.saveUserSettings           = function (token, username, settings, callback) { return saveUserSettings(token, username, settings, callback); };
@@ -402,7 +403,7 @@ function modelHandler () {
                 if (result !== null && result.gadgetId) {
                     console.log('deactivate gadget with id ' + result.gadgetId);
                     Gadget.deactivateGadget(result.gadgetId);
-                    Mood.update(result.gadgetId, 0);
+                    // Mood.update(result.gadgetId, 0); // do not update the mood, because from time to time, the connection breaks.
                     stopDisplaying();
                 }
                 Connection.deleteConnection(connectionId);
@@ -600,6 +601,7 @@ function modelHandler () {
 
         if (displayInterval) {
             clearInterval(displayInterval);
+            displayInterval = null;
         }
 
         if (user && user.userSettings) {
@@ -690,6 +692,7 @@ function modelHandler () {
 
     stopDisplaying = function () {
         clearInterval(displayInterval);
+        displayInterval = null;
     };
 
     switchPollOnArduino = function (direction, socketId, callback) {

@@ -132,7 +132,7 @@ io.on('connection', function (socket) {
     });
 
     socket.on('ownheartbeat', function (data) {
-        console.log('heartbeat');
+        SocketHandler.onHeartbeat();
     });
 });
 
