@@ -54,6 +54,7 @@ function modelHandler () {
     var self        = this;
     var displayInterval = null;
     var showPollContent = null;
+    var showPollDecision = null;
 
     // Models
     var App         = new app(this);
@@ -170,7 +171,7 @@ function modelHandler () {
                                 if (app.app.name === AppHandler.APP_MOOD_NAME) {
 
                                     if (AppHandler.getAppMoodStep() === 2 || AppHandler.getAppMoodStep() === 1) {
-                                        // TODO beni
+                                        showPollDecision = 'POLL_COFFEE';
                                         console.log('----------------------------------------------------------');
                                         console.log('ask user if he wants to start a poll about a break');
                                         console.log('----------------------------------------------------------');
@@ -187,14 +188,14 @@ function modelHandler () {
 
                                     if (app.app.name === AppHandler.APP_POLL_ROOM_NAME) {
                                         if (AppHandler.getAppPollRoomStep() === 2 || AppHandler.getAppPollRoomStep() === 1) {
-                                            // TODO beni
+                                            showPollDecision = true;
                                             console.log('----------------------------------------------------------');
                                             console.log('ask user if he wants to start a poll about room temperature');
                                             console.log('----------------------------------------------------------');
                                         }
                                     } else if (app.app.name === AppHandler.APP_POLL_SOUND_NAME) {
                                         if (AppHandler.getAppPollSoundStep() === 1) {
-                                            // TODO beni
+                                            showPollDecision = true;
                                             console.log('----------------------------------------------------------');
                                             console.log('ask user if he wants to start a poll about room sound');
                                             console.log('----------------------------------------------------------');
@@ -556,7 +557,9 @@ function modelHandler () {
         var currentAppIndex = -1;
 
         var getCurrentDisplay = function (display, step, stepDuration) {
-            if (display && display.app) {
+            if (showPollDecision !== null) {
+                return AppHandler.getPollDecisionDisplay(showPollDecision);
+            } else if (display && display.app) {
                 return AppHandler.getActualAppDisplay(step, stepDuration);
             } else if (showPollContent) {
                 return AppHandler.getActualAppDisplay(step, stepDuration);

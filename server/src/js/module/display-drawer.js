@@ -3,6 +3,7 @@ displayDrawer = function () {
     // Functions
     var bitToImage;
     var clearMainDisplay;
+    var clearDisplayForPoll;
     var drawWorkingIcon;
     var init;
     var log;
@@ -171,6 +172,11 @@ displayDrawer = function () {
         context.fillRect(0, 50, 320, 140);
     };
 
+    clearDisplayForPoll = function () {
+        context.fillStyle = COLOR_WHITE;
+        context.fillRect(0, 50, 320, 240);
+    };
+
     /**
      * Draw the working icon.
      * @param x
@@ -247,7 +253,7 @@ displayDrawer = function () {
             for (var i = 0; i < DISPLAY_HEIGHT; i++) {
                 for (var j = 0; j < DISPLAY_WIDTH; j++) {
                     if (draw[x] === '1') {
-                        context.fillRect(j, i, 1, 1);
+                        context.fillRect(130, 120, 1, 1);
                     }
                     x++;
                 }
@@ -414,6 +420,63 @@ displayDrawer = function () {
                     }
                 }
 
+            //draw two Circles for poll
+            } else if(drawData[1] === '3') {
+                showPollCircles();
+                var iconLeft = iconPoll84;
+                var iconRight;
+                var imageString;
+                var draw;
+                var x;
+                var i;
+                var j;
+              
+
+                context.fillStyle = COLOR_WHITE;
+                context.fillRect(70, 78, 84, 84);
+                context.fillRect(165, 78, 84, 84);
+
+                if (drawData[2] === 'BREAK') {
+                    iconRight = iconCoffee84;
+                } else if (drawData[2] === 'HOT') {
+                    iconRight = iconHot84;
+                } else if (drawData[2] === 'COLD') {
+                    iconRight = iconCold84;
+                } else if (drawData[2] === 'LOUD') {
+                    iconRight = iconLoud84;
+                }
+
+                if (iconLeft !== null) {
+                    imageString = bitToImage(iconLeft);
+                    draw = imageString.split("");
+                    x = 0;
+
+                    context.fillStyle = COLOR_BLACK;
+                    for (i = 78; i < 162; i++) {
+                        for (j = 70; j < 154; j++) {
+                            if (draw[x] === '1') {
+                                context.fillRect(j, i, 1, 1);
+                            }
+                            x++;
+                        }
+                    }
+                }
+
+                if (iconRight !== null) {
+                    imageString = bitToImage(iconRight);
+                    draw = imageString.split("");
+                    x = 0;
+
+                    context.fillStyle = COLOR_BLACK;
+                    for (i = 78; i < 162; i++) {
+                        for (j = 165; j < 249; j++) {
+                            if (draw[x] === '1') {
+                                context.fillRect(j, i, 1, 1);
+                            }
+                            x++;
+                        }
+                    }
+                }
             }
         }
     };
@@ -444,7 +507,7 @@ displayDrawer = function () {
     };
 
     showPollCircles = function () {
-        clearMainDisplay();
+        clearDisplayForPoll();
 
         context.fillStyle = COLOR_BLACK;
 

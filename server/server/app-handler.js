@@ -7,6 +7,7 @@ function appHandler () {
 
     // Functions
     var getActualAppDisplay;
+    var getPollDecisionDisplay;
     var getAppAtmung;
     var getAppMenu;
     var getAppMood;
@@ -28,6 +29,10 @@ function appHandler () {
     var getDisplayAppMood;
     var getDisplayAppPollRoom;
     var getDisplayAppPollSound;
+    var getDisplayDecisionPollBreak;
+    var getDisplayDecisionPollCold;
+    var getDisplayDecisionPollHot;
+    var getDisplayDecisionPollLoud;
     var getDisplayAppServer;
     var getDisplayAppTest;
     var checkHTTP;
@@ -58,6 +63,7 @@ function appHandler () {
      * ====================================================================== */
 
     this.getActualAppDisplay    = function (step, stepDuration) { return getActualAppDisplay(step, stepDuration); };
+    this.getPollDecisionDisplay = function (decisionData) { return getPollDecisionDisplay(decisionData);};
     this.getAppBreathing        = function () { return getAppAtmung(); };
     this.getAppMenu             = function (app) { return getAppMenu(app); };
     this.getAppMood             = function () { return getAppMood(); };
@@ -74,10 +80,6 @@ function appHandler () {
     /* ======================================================================
      * Private functions
      * ====================================================================== */
-
-    function mod(n, m) {
-        return ((n % m) + m) % m;
-    }
 
     checkHTTPS = function (url) {
         https.get(url, function(res) {
@@ -126,6 +128,21 @@ function appHandler () {
         }
 
         return null;
+    };
+
+    getPollDecisionDisplay = function (decisionData){
+        if(decisionData === 'POLL_COFFEE') {
+            return getDisplayDecisionPollBreak();
+        } else if (decisionData === 'POLL_HOT') {
+            return getDisplayDecisionPollHot();
+        } else if (decisionData === 'POLL_COLD') {
+            return getDisplayDecisionPollCold();
+        } else if (decisionData === 'POLL_LOUD') {
+            return getDisplayDecisionPollLoud();
+        } else {
+            console.log('No Poll choosen!');
+        }
+
     };
 
     /**
@@ -198,7 +215,7 @@ function appHandler () {
     };
 
     getAppMoodStep = function () {
-        return mod(actualPollStep, 4);
+        return actualPollStep % 4;
     };
 
     getAppPollRoom = function () {
@@ -212,7 +229,7 @@ function appHandler () {
     };
 
     getAppPollRoomStep = function () {
-        return mod(actualPollStep, 3);
+        return actualPollStep % 3;
     };
 
     getAppPollRoomMenu = function () {
@@ -260,7 +277,7 @@ function appHandler () {
     };
 
     getAppPollSoundStep = function () {
-        return mod(actualPollStep, 2);
+        return actualPollStep % 2;
     };
 
     getDisplayAppActivePollSound = function () {
@@ -345,6 +362,32 @@ function appHandler () {
     getDisplayAppPollSound = function () {
         var icon = Graphic.getIconBitwise(Graphic.iconSound84);
         return 'MEN|1|SOUND';
+    };
+
+    /**
+     * Return the display-string.
+     *  MEN: show menu with circle
+     *  3: show two big circles in the middle
+     * @returns {string}
+     */
+    getDisplayDecisionPollBreak = function() {
+        var icon = Graphic.getIconBitwise(Graphic.iconCoffee84);
+        return 'MEN|3|BREAK';
+    };
+
+    getDisplayDecisionPollCold = function() {
+        var icon = Graphic.getIconBitwise(Graphic.iconCold84);
+        return 'MEN|3|COLD';
+    };
+
+    getDisplayDecisionPollHot = function() {
+        var icon = Graphic.getIconBitwise(Graphic.iconHot84);
+        return 'MEN|3|HOT';
+    };
+
+    getDisplayDecisionPollLoud = function() {
+        var icon = Graphic.getIconBitwise(Graphic.iconLoud84);
+        return 'MEN|3|LOUD';
     };
 
     getDisplayAppTest = function () {
