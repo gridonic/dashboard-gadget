@@ -49,14 +49,15 @@ unsigned long buttonLeftActive    = 0;
 unsigned long buttonRightActive   = 0;
 
 // Variables for display
-Adafruit_ILI9340 tft        = Adafruit_ILI9340(_cs, _dc, _rst);
-unsigned int displayWidth   = 320;
-unsigned int displayHeight  = 240;
-unsigned int lastBigIcon = 0;
-unsigned int lastSmallIcon = 0;
-unsigned int lastIconLeft = 0;
-unsigned int lastIconRight = 0;
-unsigned int lastMainDisplay = 0;
+Adafruit_ILI9340 tft          = Adafruit_ILI9340(_cs, _dc, _rst);
+unsigned int displayWidth     = 320;
+unsigned int displayHeight    = 240;
+unsigned int lastBigIcon      = 0;
+unsigned int lastSmallIcon    = 0;
+unsigned int lastIconLeft     = 0;
+unsigned int lastIconRight    = 0;
+unsigned int lastMainDisplay  = 0;
+bool showOnDisplay            = true;
 
 unsigned int ICON_COFFEE = 1;
 unsigned int ICON_COLD = 2;
@@ -99,6 +100,8 @@ int           miniDelay     = 250;
 int           defaultDelay  = 500;
 int           longDelay     = 1000;
 bool          pollIsActive  = false;
+unsigned int heartbeatNumber = 1;
+unsigned int lastHeartbeat = 0;
 
 // Functions
 void logger(String message);
@@ -807,49 +810,60 @@ void handleResponse()
     showFullScreen(ILI9340_WHITE);
   }
 
-  else if (RID == "showWorkTime")
-  {
-    logger("showWorkTime " + Rcontent);
-    showWorktimeOnScreen(Rcontent);
+  else if (RID == "showDisplay") {
+    showOnDisplay = true;
   }
 
-  else if (RID == "showTime")
-  {
-    logger("showTime " + Rcontent);
-    showTimeOnScreen(Rcontent);
+  else if (RID == "heartbeatAnswer") {
+    heartbeatNumber = Rcontent.toInt();
   }
 
-  else if (RID == "showProject")
-  {
-    logger("showProject " + Rcontent);
-    setProjectColor(Rcontent);
-  }
+  else {
 
-  else if (RID == "showMood")
-  {
-    logger("showMood " + Rcontent);
-    setMoodColor(Rcontent);
-  }
-
-  else if (RID == "showMenu")
-  {
-    showMenuOnScreen(Rcontent);
-  }
-
-  else if (RID == "showMainDisplay")
-  {
-    showMainDisplayOnScreen(Rcontent);
-  }
-
-  else
-  {
-    logger("monitor");
-    logger("RID: ");
-    logger(RID);
-    logger("Rname: ");
-    logger(Rname);
-    logger("Rcontent: ");
-    logger(Rcontent);
+    if (showOnDisplay) {
+      
+      if (RID == "showWorkTime")
+      {
+        logger("showWorkTime " + Rcontent);
+        showWorktimeOnScreen(Rcontent);
+      }
+    
+      else if (RID == "showTime")
+      {
+        logger("showTime " + Rcontent);
+        showTimeOnScreen(Rcontent);
+      }
+    
+      else if (RID == "showProject")
+      {
+        logger("showProject " + Rcontent);
+        setProjectColor(Rcontent);
+      }
+    
+      else if (RID == "showMood")
+      {
+        logger("showMood " + Rcontent);
+        setMoodColor(Rcontent);
+      }
+    
+      else if (RID == "showMenu")
+      {
+        showMenuOnScreen(Rcontent);
+      }
+    
+      else if (RID == "showMainDisplay")
+      {
+        showMainDisplayOnScreen(Rcontent);
+      }
+    } else {
+      logger("monitor");
+      logger("RID: ");
+      logger(RID);
+      logger("Rname: ");
+      logger(Rname);
+      logger("Rcontent: ");
+      logger(Rcontent);
+    }
   }
 }
 
@@ -933,14 +947,14 @@ void checkButtons() {
 
         setColor(LED_BUTTON_RIGHT, 0, 200, 0);
         setColor(LED_BUTTON_LEFT, 0, 200, 0);
+        resetIconVariables();
+        clearMainDisplay();
+        showOnDisplay = false;
         delay(defaultDelay * 2);
         buttonLeftActive = 0;
         buttonRightActive = 0;
         setColor(LED_BUTTON_LEFT, 0, 0, 255);
         setColor(LED_BUTTON_RIGHT, 0, 0, 255);
-        resetIconVariables();
-        clearMainDisplay();
-        delay(defaultDelay);
       } else if (buttonLeftActive > 0 && buttonLeftActive < loopIndex - 30 * checkButtonInterval) {
         logger("Left button active");
 
@@ -952,12 +966,12 @@ void checkButtons() {
         }
 
         setColor(LED_BUTTON_LEFT, 0, 130, 0);
+        resetIconVariables();
+        clearMainDisplay();
+        showOnDisplay = false;
         delay(defaultDelay * 2);
         buttonLeftActive = 0;
         setColor(LED_BUTTON_LEFT, 0, 0, 255);
-        resetIconVariables();
-        clearMainDisplay();
-        delay(defaultDelay);
       } else if (buttonRightActive > 0 && buttonRightActive < loopIndex - 30 * checkButtonInterval) {
         logger("Right button active");
 
@@ -969,12 +983,12 @@ void checkButtons() {
         }
 
         setColor(LED_BUTTON_RIGHT, 0, 130, 0);
+        resetIconVariables();
+        clearMainDisplay();
+        showOnDisplay = false;
         delay(defaultDelay * 2);
         buttonRightActive = 0;
         setColor(LED_BUTTON_RIGHT, 0, 0, 255);
-        resetIconVariables();
-        clearMainDisplay();
-        delay(defaultDelay);
       }
     }
   }
@@ -1013,10 +1027,27 @@ void loop() {
         }
   
         if (loggedIn && helloed) {
+//          logger("send heartbeat");
+//          client.heartbeat(0);
+
+          if (lastHeartbeat == 60000) {
+            lastHeartbeat = 0;
+            heartbeatNumber = 1;
+          }
+          
           // hold connection by sending heartbeat from time to time.
-          logger("send heartbeat");
-          client.heartbeat(0);
-          client.send("ownheartbeat", "", "");
+          if (lastHeartbeat + 1 == heartbeatNumber) {
+            client.send("ownheartbeat", "number", (String) heartbeatNumber);
+            lastHeartbeat = heartbeatNumber;
+          } else {
+            logger("heartbeat lost. Rebuild connection.");
+            helloed = false;
+            loggedIn = false;
+            lastHeartbeat = 0;
+            heartbeatNumber = 1;
+            tft.fillScreen(ILI9340_WHITE);
+            connectClient();
+          }
         }
       }
     }

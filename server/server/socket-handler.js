@@ -51,7 +51,7 @@ function socketHandler (Handler) {
     this.onDeactivateApp = function (data) { return onDeactivateApp(data); };
     this.onDisconnect = function (data) { return onDisconnect(data); };
     this.onError = function (data) { return onError(data); };
-    this.onHeartbeat = function () { return onHeartbeat(); };
+    this.onHeartbeat = function (data) { return onHeartbeat(data); };
     this.onHello = function (data) { return onHello(data); };
     this.onLoginGadget = function (data) { return onLoginGadget(data); };
     this.onLoginUser = function (data) { return onLoginUser(data); };
@@ -93,17 +93,18 @@ function socketHandler (Handler) {
     };
 
     showDisplay = function (workTime, updateTime, project, mood, currentDisplay, menu, app) {
-        var time = 250;
+        var time = 150;
 
         if (app !== null) {
             currentApp = app;
         }
+        socket.emit('showDisplay', {});
 
         setTimeout(function () {
             if (updateTime && workTime !== null) {
                 socket.emit('showWorkTime', {draw: Graphic.getWorktimeDisplay(workTime)});
             }
-        }, 0);
+        }, time / 2);
 
         setTimeout(function () {
             if (updateTime) {
@@ -235,7 +236,10 @@ function socketHandler (Handler) {
         Handler.changeUserApp(Handler.APP_DEACTIVATE, data.user, data.token, data.appId, null, handleNewUserApps);
     };
 
-    onHeartbeat = function () {
+    onHeartbeat = function (data) {
+        console.log('heartbeat ' + data.number);
+        socket.emit('heartbeatAnswer', {number: (parseInt(data.number) + 1).toString()});
+
         if (Handler.isDisplayPaused()) {
             Handler.setupDisplayForArduino(socket.id, showDisplay);
         }
