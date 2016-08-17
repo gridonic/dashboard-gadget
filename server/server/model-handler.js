@@ -572,8 +572,6 @@ function modelHandler () {
                 return AppHandler.getActualAppDisplay(step, stepDuration);
             } else if (showPollContent) {
                 return AppHandler.getActualAppDisplay(step, stepDuration);
-            } else if (showPollDecision) {
-                // todo beni: jetzt die Anzeige im AppHandler holen.
             } else {
                 console.log('no display, no display.app');
                 return null;
