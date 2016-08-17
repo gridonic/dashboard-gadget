@@ -63,6 +63,7 @@ var elementUsername = document.getElementById('element-username');
 var actualWaiting = WAITING_DEFAULT;
 var actualScreen = SCREEN_DEFAULT;
 var actualPollType;
+var helloed = false;
 
 var StorageHandler = storageHandler();
 var DisplayDrawer = displayDrawer();
@@ -622,6 +623,14 @@ socket.on('newPoll', function (data) {
 
 socket.on('updateUserData', function (data) {
     handleDashboardUserUpdated(data);
+});
+
+socket.on('showWhite', function (data) {
+
+    if (!helloed) {
+        socket.emit('hello', {'message': 'full graphic'});
+        helloed = true;
+    }
 });
 
 // Start modules

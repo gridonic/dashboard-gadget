@@ -4,31 +4,31 @@
 #include "SocketIOClient.h"
 
 // Ports for the display
-#define _sclak          52
-#define _miso           50
-#define _mosi           51
-#define _cs             47
-#define _rst            3 // 9
-#define _dc             2 // 8
+#define _sclk               52
+#define _miso               50
+#define _mosi               51
+#define _cs                 47
+#define _rst                3 // 9 // 3
+#define _dc                 2 // 8 // 2
 
 // Pins for the LEDs
-const int LEDButtonRightR = 27;   // button right
-const int LEDButtonRightG = 25;   // button right
-const int LEDButtonRightB = 23;   // button right
-const int LEDButtonLeftR = 29;    // button left
-const int LEDButtonLeftG = 31;    // button left
-const int LEDButtonLeftB = 33;    // button left
-const int LEDProjectR = 45;       // project color
-const int LEDProjectG = 43;       // project color
-const int LEDProjectB = 41;       // project color
-const int LEDMoodR = 39;          // mood color
-const int LEDMoodG = 37;          // mood color
-const int LEDMoodB = 35;          // mood color
+const int LEDButtonRightR   = 27;   // button right
+const int LEDButtonRightG   = 25;   // button right
+const int LEDButtonRightB   = 23;   // button right
+const int LEDButtonLeftR    = 29;   // button left
+const int LEDButtonLeftG    = 31;   // button left
+const int LEDButtonLeftB    = 33;   // button left
+const int LEDProjectR       = 45;   // project color
+const int LEDProjectG       = 43;   // project color
+const int LEDProjectB       = 41;   // project color
+const int LEDMoodR          = 39;   // mood color
+const int LEDMoodG          = 37;   // mood color
+const int LEDMoodB          = 35;   // mood color
 
-//const int ButtonLeftPin = A1;
-//const int ButtonRightPin = A0;
-const int ButtonRightPin = A5;
-const int ButtonLeftPin = A6;
+//const int ButtonLeftPin     = A1;
+//const int ButtonRightPin    = A0;
+const int ButtonRightPin    = A5;
+const int ButtonLeftPin     = A6;
 
 
 // Variables for the LEDs
@@ -50,58 +50,59 @@ unsigned long buttonRightActive   = 0;
 
 // Variables for display
 Adafruit_ILI9340 tft          = Adafruit_ILI9340(_cs, _dc, _rst);
-unsigned int displayWidth     = 320;
-unsigned int displayHeight    = 240;
-unsigned int lastBigIcon      = 0;
-unsigned int lastSmallIcon    = 0;
-unsigned int lastIconLeft     = 0;
-unsigned int lastIconRight    = 0;
-unsigned int lastMainDisplay  = 0;
-bool showOnDisplay            = true;
+unsigned int  displayWidth     = 320;
+unsigned int  displayHeight    = 240;
+unsigned int  lastBigIcon      = 0;
+unsigned int  lastSmallIcon    = 0;
+unsigned int  lastIconLeft     = 0;
+unsigned int  lastIconRight    = 0;
+unsigned int  lastMainDisplay  = 0;
+bool          showOnDisplay    = true;
 
-unsigned int ICON_COFFEE = 1;
-unsigned int ICON_COLD = 2;
-unsigned int ICON_FOCUS = 3;
-unsigned int ICON_FOOD = 4;
-unsigned int ICON_HOT = 5;
-unsigned int ICON_LOUD = 6;
-unsigned int ICON_MOOD = 7;
-unsigned int ICON_OK = 8;
-unsigned int ICON_POLL = 9;
-unsigned int ICON_ROOM = 10;
-unsigned int ICON_SOUND = 11;
+unsigned int ICON_COFFEE  = 1;
+unsigned int ICON_COLD    = 2;
+unsigned int ICON_FOCUS   = 3;
+unsigned int ICON_FOOD    = 4;
+unsigned int ICON_HOT     = 5;
+unsigned int ICON_LOUD    = 6;
+unsigned int ICON_MOOD    = 7;
+unsigned int ICON_OK      = 8;
+unsigned int ICON_POLL    = 9;
+unsigned int ICON_ROOM    = 10;
+unsigned int ICON_SOUND   = 11;
+
 unsigned int DISPLAY_RECT = 1;
 unsigned int DISPLAY_CIRC = 2;
-unsigned int DISPLAY_TXT = 3;
+unsigned int DISPLAY_TXT  = 3;
 unsigned int DISPLAY_MEN1 = 4;
 unsigned int DISPLAY_MEN2 = 5;
 unsigned int DISPLAY_MEN3 = 6;
 
 // Variables for the ethernet-module
 SocketIOClient client;
-byte mac[]                  = { 0x20, 0x67, 0x89, 0x4F, 0x60, 0x75 }; // generated here: http://www.miniwebtool.com/mac-address-generator/
-char hostname[]             = "192.168.2.98"; // "192.168.43.231";
-int port                    = 3000;
-bool loggedIn               = false;
-bool helloed                = false;
+byte          mac[]       = { 0x20, 0x67, 0x89, 0x4F, 0x60, 0x75 }; // generated here: http://www.miniwebtool.com/mac-address-generator/
+char          hostname[]  = "192.168.2.98"; // "192.168.43.231";
+int           port        = 3000;
+bool          loggedIn    = false;
+bool          helloed     = false;
 extern String RID;
 extern String Rname;
 extern String Rcontent;
 
 // Variables for global setting
-unsigned long loopIndex     = 0;
-unsigned long msPrev        = 0;
-unsigned long msCurrent     = 0;
-long          interval      = 5000;
-const int     debug         = true;
-const int     internet      = true;
-int           gadgetID      = 2;
-int           miniDelay     = 250;
-int           defaultDelay  = 500;
-int           longDelay     = 1000;
-bool          pollIsActive  = false;
-unsigned int heartbeatNumber = 1;
-unsigned int lastHeartbeat = 0;
+unsigned long loopIndex       = 0;
+unsigned long msPrev          = 0;
+unsigned long msCurrent       = 0;
+long          interval        = 5000;
+const int     debug           = true;
+const int     internet        = true;
+int           gadgetID        = 2;
+int           miniDelay       = 250;
+int           defaultDelay    = 500;
+int           longDelay       = 1000;
+bool          pollIsActive    = false;
+unsigned int  heartbeatNumber = 1;
+unsigned int  lastHeartbeat   = 0;
 
 // Functions
 void logger(String message);
@@ -644,10 +645,11 @@ void showMainDisplayOnScreen(String m)
     
   } else if (splitString0 == "TXT") {
     if (lastMainDisplay != DISPLAY_TXT) {
-      clearMainDisplay();
-      delay(miniDelay);
       lastMainDisplay = DISPLAY_TXT;
     }
+
+    clearMainDisplay();
+    delay(miniDelay);
     
     int textSize      = 15;
     String urlString  = splitString(m, '|', 2);
@@ -805,65 +807,80 @@ void handleResponse()
 
   else if (RID == "showWhite")
   {
-    helloed = true;
     logger("showWhite");
     showFullScreen(ILI9340_WHITE);
+
+    if (!helloed) {
+      sayHello();
+      helloed = true;
+    }
   }
 
-  else if (RID == "showDisplay") {
+  else if (RID == "showDisplay")
+  {
     showOnDisplay = true;
   }
 
-  else if (RID == "heartbeatAnswer") {
+  else if (RID == "heartbeatAnswer")
+  {
     heartbeatNumber = Rcontent.toInt();
   }
 
-  else {
-
+  else if (RID == "showWorkTime")
+  {
     if (showOnDisplay) {
-      
-      if (RID == "showWorkTime")
-      {
-        logger("showWorkTime " + Rcontent);
-        showWorktimeOnScreen(Rcontent);
-      }
-    
-      else if (RID == "showTime")
-      {
-        logger("showTime " + Rcontent);
-        showTimeOnScreen(Rcontent);
-      }
-    
-      else if (RID == "showProject")
-      {
-        logger("showProject " + Rcontent);
-        setProjectColor(Rcontent);
-      }
-    
-      else if (RID == "showMood")
-      {
-        logger("showMood " + Rcontent);
-        setMoodColor(Rcontent);
-      }
-    
-      else if (RID == "showMenu")
-      {
-        showMenuOnScreen(Rcontent);
-      }
-    
-      else if (RID == "showMainDisplay")
-      {
-        showMainDisplayOnScreen(Rcontent);
-      }
-    } else {
-      logger("monitor");
-      logger("RID: ");
-      logger(RID);
-      logger("Rname: ");
-      logger(Rname);
-      logger("Rcontent: ");
-      logger(Rcontent);
+      logger("showWorkTime " + Rcontent);
+      showWorktimeOnScreen(Rcontent);
     }
+  }
+  
+  else if (RID == "showTime")
+  {
+    if (showOnDisplay) {
+      logger("showTime " + Rcontent);
+      showTimeOnScreen(Rcontent);
+    }
+  }
+    
+  else if (RID == "showProject")
+  {
+    if (showOnDisplay) {
+      logger("showProject " + Rcontent);
+      setProjectColor(Rcontent);
+    }
+  }
+    
+  else if (RID == "showMood")
+  {
+    if (showOnDisplay) {
+      logger("showMood " + Rcontent);
+      setMoodColor(Rcontent);
+    }
+  }
+ 
+  else if (RID == "showMenu")
+  {
+    if (showOnDisplay) {
+      logger("showMenu " + Rcontent);
+      showMenuOnScreen(Rcontent);
+    }
+  }
+    
+  else if (RID == "showMainDisplay")
+  {
+    if (showOnDisplay) {
+      showMainDisplayOnScreen(Rcontent);
+    }
+  }
+   
+  else {
+    logger("monitor");
+    logger("RID: ");
+    logger(RID);
+    logger("Rname: ");
+    logger(Rname);
+    logger("Rcontent: ");
+    logger(Rcontent);
   }
 }
 
@@ -950,11 +967,12 @@ void checkButtons() {
         resetIconVariables();
         clearMainDisplay();
         showOnDisplay = false;
-        delay(defaultDelay * 2);
-        buttonLeftActive = 0;
-        buttonRightActive = 0;
+        delay(longDelay);
         setColor(LED_BUTTON_LEFT, 0, 0, 255);
         setColor(LED_BUTTON_RIGHT, 0, 0, 255);
+        delay(defaultDelay);
+        buttonLeftActive = 0;
+        buttonRightActive = 0;
       } else if (buttonLeftActive > 0 && buttonLeftActive < loopIndex - 30 * checkButtonInterval) {
         logger("Left button active");
 
@@ -969,9 +987,10 @@ void checkButtons() {
         resetIconVariables();
         clearMainDisplay();
         showOnDisplay = false;
-        delay(defaultDelay * 2);
-        buttonLeftActive = 0;
+        delay(longDelay);
         setColor(LED_BUTTON_LEFT, 0, 0, 255);
+        delay(defaultDelay);
+        buttonLeftActive = 0;
       } else if (buttonRightActive > 0 && buttonRightActive < loopIndex - 30 * checkButtonInterval) {
         logger("Right button active");
 
@@ -986,9 +1005,10 @@ void checkButtons() {
         resetIconVariables();
         clearMainDisplay();
         showOnDisplay = false;
-        delay(defaultDelay * 2);
-        buttonRightActive = 0;
+        delay(longDelay);
         setColor(LED_BUTTON_RIGHT, 0, 0, 255);
+        delay(defaultDelay);
+        buttonRightActive = 0;
       }
     }
   }
@@ -1003,7 +1023,9 @@ void loop() {
   msCurrent = millis();
 
   // check buttons
-  checkButtons();
+  if (helloed && loggedIn) {
+    checkButtons();
+  }
 
   // check if client is connected
   if (msCurrent - msPrev > interval) {
@@ -1026,11 +1048,11 @@ void loop() {
           sayHello();
         }
   
-        if (loggedIn && helloed) {
+        if (loggedIn && helloed && loopIndex % 3 == 0) {
 //          logger("send heartbeat");
 //          client.heartbeat(0);
 
-          if (lastHeartbeat == 60000) {
+          if (lastHeartbeat == 2000) {
             lastHeartbeat = 0;
             heartbeatNumber = 1;
           }
@@ -1040,7 +1062,7 @@ void loop() {
             client.send("ownheartbeat", "number", (String) heartbeatNumber);
             lastHeartbeat = heartbeatNumber;
           } else {
-            logger("heartbeat lost. Rebuild connection.");
+            logger("heartbeat lost. Rebuild connection. heartbeat: " + (String) heartbeatNumber + ", lastHeartbeat: " + (String) lastHeartbeat);
             helloed = false;
             loggedIn = false;
             lastHeartbeat = 0;

@@ -101,28 +101,30 @@ function socketHandler (Handler) {
         socket.emit('showDisplay', {});
 
         setTimeout(function () {
+            if (menu !== null) {
+                // Display the menu on the display.
+                socket.emit('showMenu', {draw: Graphic.getMenu(menu)});
+            }
+        }, time);
+
+        setTimeout(function () {
+            if (currentDisplay !== null) {
+                // Display the current App, Poll or something else.
+                socket.emit('showMainDisplay', {draw: currentDisplay});
+            }
+        }, time * 2);
+
+        setTimeout(function () {
             if (updateTime && workTime !== null) {
                 socket.emit('showWorkTime', {draw: Graphic.getWorktimeDisplay(workTime)});
             }
-        }, time / 2);
+        }, time * 3);
 
         setTimeout(function () {
             if (updateTime) {
                 socket.emit('showTime', {draw: Graphic.getActualTimeDisplay()});
             }
-        }, time);
-
-        setTimeout(function () {
-
-            if (updateTime && project !== null) {
-                console.log('send project to gadget');
-                console.log(project.color);
-                socket.emit('showProject', {color: project.color});
-            } else if (updateTime) {
-                console.log('send null-project to gadget');
-                socket.emit('showProject', {color: null});
-            }
-        }, time * 2);
+        }, time * 4);
 
         setTimeout(function () {
             if (updateTime && mood !== null) {
@@ -130,24 +132,21 @@ function socketHandler (Handler) {
                 console.log(mood);
                 socket.emit('showMood', {color: mood});
             } else if (updateTime) {
-                console.log('send null-mood to gadget');
-                socket.emit('showMood', {color: null});
-            }
-        }, time * 3);
-
-        setTimeout(function () {
-            if (currentDisplay !== null) {
-                // Display the current App, Poll or something else.
-                socket.emit('showMainDisplay', {draw: currentDisplay});
-            }
-        }, time * 4);
-
-        setTimeout(function () {
-            if (menu !== null) {
-                // Display the menu on the display.
-                socket.emit('showMenu', {draw: Graphic.getMenu(menu)});
+                // console.log('send null-mood to gadget');
+                // socket.emit('showMood', {color: null});
             }
         }, time * 5);
+
+        setTimeout(function () {
+            if (updateTime && project !== null) {
+                console.log('send project to gadget');
+                console.log(project.color);
+                socket.emit('showProject', {color: project.color});
+            } else if (updateTime) {
+                // console.log('send null-project to gadget');
+                // socket.emit('showProject', {color: null});
+            }
+        }, time * 6);
     };
 
     onActivateApp = function (data) {
@@ -252,10 +251,14 @@ function socketHandler (Handler) {
         socket.emit('showWhite', {data: null});
         // var i = 0;
 
-        if (!helloed) {
-            helloed = true;
+        if (helloed) {
+            console.log('--------------------------------');
+            console.log('start the display now.');
+            console.log('--------------------------------');
             Handler.setupDisplayForArduino(socket.id, showDisplay);
         }
+
+        helloed = true;
     };
 
     onLoginGadget = function (data) {
@@ -351,6 +354,7 @@ function socketHandler (Handler) {
     };
 
     onDisconnect = function (data) {
+        helloed = false;
         console.log('socketDISCONNECT');
         console.log('disconnect client');
 

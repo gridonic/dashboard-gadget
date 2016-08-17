@@ -671,7 +671,7 @@ function modelHandler () {
 
         if (showPollContent) {
             showTime = false;
-            currentMood = null;
+            // currentMood = null;
             console.log('prevent showing time / worktime & mood because we are showing the inside of an app.');
         }
 
