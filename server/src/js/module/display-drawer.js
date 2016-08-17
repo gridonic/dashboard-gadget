@@ -430,7 +430,7 @@ displayDrawer = function () {
                 var x;
                 var i;
                 var j;
-              
+
 
                 context.fillStyle = COLOR_WHITE;
                 context.fillRect(70, 78, 84, 84);
@@ -477,6 +477,19 @@ displayDrawer = function () {
                         }
                     }
                 }
+
+                var textLeft = 'NO';
+                var textRight = 'YES';
+                var textSize = 15;
+                var padding = 10;
+
+                context.fillStyle = COLOR_WHITE;
+                context.fillRect(0, DISPLAY_HEIGHT - padding * 2 - textSize, DISPLAY_WIDTH, padding * 2 + textSize);
+
+                context.fillStyle = COLOR_BLACK;
+                context.font = textSize + "px Courier New";
+                context.fillText(textLeft, padding, DISPLAY_HEIGHT - padding);
+                context.fillText(textRight, padding+(DISPLAY_WIDTH-4.5*padding), DISPLAY_HEIGHT-padding);
             }
         }
     };
