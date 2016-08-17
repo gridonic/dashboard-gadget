@@ -96,7 +96,7 @@ unsigned long msCurrent       = 0;
 long          interval        = 5000;
 const int     debug           = true;
 const int     internet        = true;
-int           gadgetID        = 2;
+int           gadgetID        = 1;
 int           miniDelay       = 250;
 int           defaultDelay    = 500;
 int           longDelay       = 1000;
@@ -752,7 +752,7 @@ void showMainDisplayOnScreen(String m)
       }
       
       if (iconSmall != "") {
-        showOnScreen(iconSmall, 181, 70, 44);
+        showOnScreen(iconSmall, 181, 72, 44);
       }
     }
   }
@@ -869,6 +869,7 @@ void handleResponse()
   else if (RID == "showMainDisplay")
   {
     if (showOnDisplay) {
+      logger("showMainDisplay " + Rcontent);
       showMainDisplayOnScreen(Rcontent);
     }
   }

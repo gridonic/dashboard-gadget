@@ -691,7 +691,7 @@ function modelHandler () {
             var showTime = ((i + 10) % oneMinute == 0); // show time not after a minute, show it after 1 second (2*500ms)
 
             if (showPollContent) {
-                showTime = false;
+                // showTime = false;
                 currentMood = null;
             }
 

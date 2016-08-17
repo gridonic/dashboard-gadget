@@ -82,6 +82,11 @@ function appHandler () {
      * Private functions
      * ====================================================================== */
 
+    function mod(n, m) {
+        return ((n % m) + m) % m;
+    }
+
+
     checkHTTPS = function (url) {
         https.get(url, function(res) {
             appServerText[url] = res.statusCode;
@@ -218,7 +223,7 @@ function appHandler () {
     };
 
     getAppMoodStep = function () {
-        return actualPollStep % 4;
+        return mod(actualPollStep, 4);
     };
 
     getAppPollRoom = function () {
@@ -232,7 +237,7 @@ function appHandler () {
     };
 
     getAppPollRoomStep = function () {
-        return actualPollStep % 3;
+        return mod(actualPollStep, 3);
     };
 
     getAppPollRoomMenu = function () {
@@ -280,7 +285,7 @@ function appHandler () {
     };
 
     getAppPollSoundStep = function () {
-        return actualPollStep % 2;
+        return mod(actualPollStep, 2);
     };
 
     getDisplayAppActivePollSound = function () {

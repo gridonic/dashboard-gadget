@@ -101,22 +101,22 @@ function socketHandler (Handler) {
         socket.emit('showDisplay', {});
 
         setTimeout(function () {
+            if (updateTime && workTime !== null) {
+                socket.emit('showWorkTime', {draw: Graphic.getWorktimeDisplay(workTime)});
+            }
+        }, time);
+
+        setTimeout(function () {
             if (menu !== null) {
                 // Display the menu on the display.
                 socket.emit('showMenu', {draw: Graphic.getMenu(menu)});
             }
-        }, time);
+        }, time * 2);
 
         setTimeout(function () {
             if (currentDisplay !== null) {
                 // Display the current App, Poll or something else.
                 socket.emit('showMainDisplay', {draw: currentDisplay});
-            }
-        }, time * 2);
-
-        setTimeout(function () {
-            if (updateTime && workTime !== null) {
-                socket.emit('showWorkTime', {draw: Graphic.getWorktimeDisplay(workTime)});
             }
         }, time * 3);
 
