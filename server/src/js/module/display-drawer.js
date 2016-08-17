@@ -434,7 +434,7 @@ displayDrawer = function () {
 
                 context.fillStyle = COLOR_WHITE;
                 context.fillRect(70, 78, 84, 84);
-                context.fillRect(165, 78, 84, 84);
+                context.fillRect(167, 78, 84, 84);
 
                 if (drawData[2] === 'BREAK') {
                     iconRight = iconCoffee84;
@@ -469,7 +469,7 @@ displayDrawer = function () {
 
                     context.fillStyle = COLOR_BLACK;
                     for (i = 78; i < 162; i++) {
-                        for (j = 165; j < 249; j++) {
+                        for (j = 167; j < 251; j++) {
                             if (draw[x] === '1') {
                                 context.fillRect(j, i, 1, 1);
                             }
