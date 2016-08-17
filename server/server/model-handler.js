@@ -572,6 +572,8 @@ function modelHandler () {
                 return AppHandler.getActualAppDisplay(step, stepDuration);
             } else if (showPollContent) {
                 return AppHandler.getActualAppDisplay(step, stepDuration);
+            } else if (showPollDecision) {
+                // todo beni: jetzt die Anzeige im AppHandler holen.
             } else {
                 console.log('no display, no display.app');
                 return null;
@@ -626,7 +628,15 @@ function modelHandler () {
             Harvest.setCredentials(harvestCredentials);
         }
 
-        if (showPollContent !== null) {
+        if (showPollDecision) {
+            // todo beni: AppHandler.prepareAppDisplay(xxxxxxxx);
+            // da wird das display vorbereitet
+            // todo beni: currentApp mit pollDecision versehen, diese variable wird an den socketHandler geschickt und dort gespeichert.
+            // zum beispiel so:
+            currentApp = {
+                decision: showPollDecision
+            };
+        } else if (showPollContent !== null) {
             AppHandler.prepareAppDisplay(showPollContent.app, showPollContent.type);
             currentApp = {
                 poll: true,
