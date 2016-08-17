@@ -438,6 +438,8 @@ displayDrawer = function () {
 
                 if (drawData[2] === 'BREAK') {
                     iconRight = iconCoffee84;
+                } else if (drawData[2] === 'LUNCH') {
+                    iconRight = iconFood84;
                 } else if (drawData[2] === 'HOT') {
                     iconRight = iconHot84;
                 } else if (drawData[2] === 'COLD') {

@@ -30,6 +30,7 @@ function appHandler () {
     var getDisplayAppPollRoom;
     var getDisplayAppPollSound;
     var getDisplayDecisionPollBreak;
+    var getDisplayDecisionPollLunch;
     var getDisplayDecisionPollCold;
     var getDisplayDecisionPollHot;
     var getDisplayDecisionPollLoud;
@@ -133,6 +134,8 @@ function appHandler () {
     getPollDecisionDisplay = function (decisionData){
         if(decisionData === 'POLL_COFFEE') {
             return getDisplayDecisionPollBreak();
+        } else if (decisionData === 'POLL_LUNCH') {
+            return getDisplayDecisionPollLunch();
         } else if (decisionData === 'POLL_HOT') {
             return getDisplayDecisionPollHot();
         } else if (decisionData === 'POLL_COLD') {
@@ -373,6 +376,11 @@ function appHandler () {
     getDisplayDecisionPollBreak = function() {
         var icon = Graphic.getIconBitwise(Graphic.iconCoffee84);
         return 'MEN|3|BREAK';
+    };
+
+    getDisplayDecisionPollLunch = function() {
+        var icon = Graphic.getIconBitwise(Graphic.iconFood84);
+        return 'MEN|3|LUNCH';
     };
 
     getDisplayDecisionPollCold = function() {

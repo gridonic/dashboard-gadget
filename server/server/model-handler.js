@@ -170,10 +170,15 @@ function modelHandler () {
                             if (app.type === AppHandler.POLL_TO_FILL) {
                                 if (app.app.name === AppHandler.APP_MOOD_NAME) {
 
-                                    if (AppHandler.getAppMoodStep() === 2 || AppHandler.getAppMoodStep() === 1) {
+                                    if (AppHandler.getAppMoodStep() === 1) {
                                         showPollDecision = 'POLL_COFFEE';
                                         console.log('----------------------------------------------------------');
                                         console.log('ask user if he wants to start a poll about a break');
+                                        console.log('----------------------------------------------------------');
+                                    } else if (AppHandler.getAppMoodStep() === 2) {
+                                        showPollDecision = 'POLL_LUNCH';
+                                        console.log('----------------------------------------------------------');
+                                        console.log('ask user if he wants to start a poll about going for lunch');
                                         console.log('----------------------------------------------------------');
                                     }
 
@@ -187,10 +192,15 @@ function modelHandler () {
                                     // handle other apps.
 
                                     if (app.app.name === AppHandler.APP_POLL_ROOM_NAME) {
-                                        if (AppHandler.getAppPollRoomStep() === 2 || AppHandler.getAppPollRoomStep() === 1) {
-                                            showPollDecision = true;
+                                        if (AppHandler.getAppPollRoomStep() === 1) {
+                                            showPollDecision = 'POLL_COLD';
                                             console.log('----------------------------------------------------------');
-                                            console.log('ask user if he wants to start a poll about room temperature');
+                                            console.log('ask user if he wants to start a poll because it is too cold');
+                                            console.log('----------------------------------------------------------');
+                                        } else if (AppHandler.getAppPollRoomStep() === 2) {
+                                            showPollDecision = 'POLL_HOT';
+                                            console.log('----------------------------------------------------------');
+                                            console.log('ask user if he wants to start a poll because it is too hot');
                                             console.log('----------------------------------------------------------');
                                         }
                                     } else if (app.app.name === AppHandler.APP_POLL_SOUND_NAME) {
