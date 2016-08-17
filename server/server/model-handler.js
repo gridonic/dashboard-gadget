@@ -542,8 +542,6 @@ function modelHandler () {
 
         // todo: check if we have to show something else, for example a poll.
 
-        console.log(user);
-
         var harvestCredentials = {};
         var userSettings;
         var userApps;
@@ -555,6 +553,7 @@ function modelHandler () {
         var currentMood = null;
         var currentApp = null;
         var currentAppIndex = -1;
+        var showTime = true;
 
         var getCurrentDisplay = function (display, step, stepDuration) {
             if (showPollDecision !== null) {
@@ -660,11 +659,17 @@ function modelHandler () {
             }
         }
 
+        if (showPollContent) {
+            showTime = false;
+            currentMood = null;
+            console.log('prevent showing time / worktime & mood because we are showing the inside of an app.');
+        }
+
         updateMood();
         showDisplayOnArduino(
             callback,
             user,
-            true,
+            showTime,
             getCurrentDisplay(currentDisplay, i, intervalTiming),
             getMenu(currentDisplay),
             currentMood,
@@ -674,6 +679,11 @@ function modelHandler () {
 
         displayInterval = setInterval(function () {
             var showTime = ((i + 10) % oneMinute == 0); // show time not after a minute, show it after 1 second (2*500ms)
+
+            if (showPollContent) {
+                showTime = false;
+                currentMood = null;
+            }
 
             if (showTime) {
                 updateMood();
