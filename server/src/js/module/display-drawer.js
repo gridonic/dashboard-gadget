@@ -19,15 +19,15 @@ displayDrawer = function () {
     var showWorkTime;
 
     // Constants
-    var DISPLAY_WIDTH = 320;
-    var DISPLAY_HEIGHT = 240;
-    var COLOR_WHITE = '#ffffff';
-    var COLOR_BLACK = '#000000';
+    var DISPLAY_WIDTH   = 320;
+    var DISPLAY_HEIGHT  = 240;
+    var COLOR_WHITE     = '#ffffff';
+    var COLOR_BLACK     = '#000000';
 
     // Variables
-    var canvas = document.getElementById("display");
-    var projectBox = document.getElementById("project-box");
-    var moodBox = document.getElementById("mood-box");
+    var canvas          = document.getElementById("display");
+    var projectBox      = document.getElementById("project-box");
+    var moodBox         = document.getElementById("mood-box");
     var context;
 
     // Icons

@@ -6,6 +6,8 @@ var https = require('https');
 function appHandler () {
 
     // Functions
+    var checkHTTP;
+    var checkHTTPS;
     var getActualAppDisplay;
     var getPollDecisionDisplay;
     var getAppAtmung;
@@ -36,15 +38,14 @@ function appHandler () {
     var getDisplayDecisionPollLoud;
     var getDisplayAppServer;
     var getDisplayAppTest;
-    var checkHTTP;
-    var checkHTTPS;
+    var mod;
 
     // Variables
-    var actualDisplay   = null;
-    var appServerText   = {};
-    var Graphic         = new graphic();
-    var self            = this;
-    var actualPollStep  = 0;
+    var actualDisplay           = null;
+    var appServerText           = {};
+    var Graphic                 = new graphic();
+    var self                    = this;
+    var actualPollStep          = 0;
 
     // Constants
     var APP_ATMUNG_NAME         = 'Atmung';
@@ -81,11 +82,6 @@ function appHandler () {
     /* ======================================================================
      * Private functions
      * ====================================================================== */
-
-    function mod(n, m) {
-        return ((n % m) + m) % m;
-    }
-
 
     checkHTTPS = function (url) {
         https.get(url, function(res) {
@@ -440,6 +436,10 @@ function appHandler () {
         }
 
         return Graphic.getDisplayServer(serverResult);
+    };
+
+    mod = function (n, m) {
+        return ((n % m) + m) % m;
     };
 
 }

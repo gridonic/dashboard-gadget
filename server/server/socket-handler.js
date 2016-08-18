@@ -6,6 +6,7 @@ function socketHandler (Handler) {
     // Functions
     var loadUser;
     var handleNewUserApps;
+    var showDisplay;
 
     // On-functions
     var onActivateApp;
@@ -23,10 +24,9 @@ function socketHandler (Handler) {
     var onLogoutUser;
     var onSaveUserSettings;
     var onSuccess;
-    var onUpdateMood;
-    var onStartPoll;
     var onSendPoll;
-    var showDisplay;
+    var onStartPoll;
+    var onUpdateMood;
 
     // Variables
     var Graphic = new graphic();
@@ -43,24 +43,24 @@ function socketHandler (Handler) {
         socket = s;
     };
 
-    this.onActivateApp = function (data) { return onActivateApp(data); };
-    this.onArduinoButtonsPushed = function (data) { return onArduinoButtonsPushed(data); };
-    this.onArduinoLogout = function (data) { return onLogoutGadget(data); };
-    this.onButtonsPushed = function (data) { return onButtonsPushed(data); };
-    this.onCreateUser = function (data) { return onCreateUser(data); };
-    this.onDeactivateApp = function (data) { return onDeactivateApp(data); };
-    this.onDisconnect = function (data) { return onDisconnect(data); };
-    this.onError = function (data) { return onError(data); };
-    this.onHeartbeat = function (data) { return onHeartbeat(data); };
-    this.onHello = function (data) { return onHello(data); };
-    this.onLoginGadget = function (data) { return onLoginGadget(data); };
-    this.onLoginUser = function (data) { return onLoginUser(data); };
-    this.onLogoutUser = function() { return onLogoutUser();};
-    this.onSaveUserSettings = function (data) { return onSaveUserSettings(data); };
-    this.onSuccess = function (data) { return onSuccess(data); };
-    this.onUpdateMood = function (data) { return onUpdateMood(data);};
-    this.onStartPoll = function (data) { return onStartPoll(data);};
-    this.onSendPoll = function (data) { return onSendPoll(data);};
+    this.onActivateApp              = function (data) { return onActivateApp(data); };
+    this.onArduinoButtonsPushed     = function (data) { return onArduinoButtonsPushed(data); };
+    this.onArduinoLogout            = function (data) { return onLogoutGadget(data); };
+    this.onButtonsPushed            = function (data) { return onButtonsPushed(data); };
+    this.onCreateUser               = function (data) { return onCreateUser(data); };
+    this.onDeactivateApp            = function (data) { return onDeactivateApp(data); };
+    this.onDisconnect               = function (data) { return onDisconnect(data); };
+    this.onError                    = function (data) { return onError(data); };
+    this.onHeartbeat                = function (data) { return onHeartbeat(data); };
+    this.onHello                    = function (data) { return onHello(data); };
+    this.onLoginGadget              = function (data) { return onLoginGadget(data); };
+    this.onLoginUser                = function (data) { return onLoginUser(data); };
+    this.onLogoutUser               = function() { return onLogoutUser();};
+    this.onSaveUserSettings         = function (data) { return onSaveUserSettings(data); };
+    this.onSendPoll                 = function (data) { return onSendPoll(data);};
+    this.onStartPoll                = function (data) { return onStartPoll(data);};
+    this.onSuccess                  = function (data) { return onSuccess(data); };
+    this.onUpdateMood               = function (data) { return onUpdateMood(data);};
 
     /* ======================================================================
      * Private functions
@@ -148,6 +148,10 @@ function socketHandler (Handler) {
             }
         }, time * 6);
     };
+
+    /* ======================================================================
+     * Private on-functions
+     * ====================================================================== */
 
     onActivateApp = function (data) {
         console.log('onActivateApp');
@@ -239,11 +243,40 @@ function socketHandler (Handler) {
 
     };
 
+    onCreateUser = function (data) {
+        console.log('socketCreateUser');
+        console.log(data);
+
+        Handler.createUser(data.username, data.password, function (created) {
+            if (created) {
+                console.log('user created');
+                loadUser(data);
+            } else {
+                console.log('username found! - return false!');
+                socket.emit('sendError', {'message': 'The username "' + data.username + '" already exists!'});
+            }
+        });
+    };
+
     onDeactivateApp = function (data) {
         console.log('onDeactivateApp');
         console.log(data);
 
         Handler.changeUserApp(Handler.APP_DEACTIVATE, data.user, data.token, data.appId, null, handleNewUserApps);
+    };
+
+    onDisconnect = function (data) {
+        helloed = false;
+        console.log('socketDISCONNECT');
+        console.log('disconnect client');
+
+        Handler.removeConnection(socket.id);
+        console.log(socket.id);
+    };
+
+    onError = function (data) {
+        console.log("error on socket.");
+        console.log(data.message);
     };
 
     onHeartbeat = function (data) {
@@ -301,21 +334,6 @@ function socketHandler (Handler) {
             });
         }
     };
-
-    onCreateUser = function (data) {
-        console.log('socketCreateUser');
-        console.log(data);
-
-        Handler.createUser(data.username, data.password, function (created) {
-            if (created) {
-                console.log('user created');
-                loadUser(data);
-            } else {
-                console.log('username found! - return false!');
-                socket.emit('sendError', {'message': 'The username "' + data.username + '" already exists!'});
-            }
-        });
-    };
     
     onLoginUser = function (data) {
         Handler.loginUser(data.username, data.password, data.gadget, socket.id, function (loggedIn, result) {
@@ -354,28 +372,14 @@ function socketHandler (Handler) {
             }
         });
     };
-    
-    onStartPoll = function (data) {
-        Handler.createPoll(socket.id, data.type, socket);
 
-    };
-    
     onSendPoll = function (data) {
         
     };
 
-    onDisconnect = function (data) {
-        helloed = false;
-        console.log('socketDISCONNECT');
-        console.log('disconnect client');
+    onStartPoll = function (data) {
+        Handler.createPoll(socket.id, data.type, socket);
 
-        Handler.removeConnection(socket.id);
-        console.log(socket.id);
-    };
-
-    onError = function (data) {
-        console.log("error on socket.");
-        console.log(data.message);
     };
 
     onSuccess = function (data) {

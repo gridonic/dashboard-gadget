@@ -49,16 +49,6 @@ app.get('/assets/*', function (req, res){
     res.sendFile(__dirname + '/web/' + file);
 });
 
-// app.get('*', function (req, res) {
-//     console.log('connection on "/*"');
-//     res.send("a * request.");
-// });
-//
-// app.all('*', function (req, res) {
-//     console.log('connection on ALL "/*".');
-//     res.send("a */* request.");
-// });
-
 io.on('connection', function (socket) {
 
     var SocketHandler = new socketHandler(Handler);
@@ -78,44 +68,16 @@ io.on('connection', function (socket) {
         SocketHandler.onButtonsPushed(data);
     });
 
+    socket.on('createPoll', function (data){
+        SocketHandler.onStartPoll(data);
+    });
+
     socket.on('createUser', function (data) {
         SocketHandler.onCreateUser(data);
     });
 
     socket.on('deactivateApp', function (data) {
         SocketHandler.onDeactivateApp(data);
-    });
-
-    socket.on('hello', function (message) {
-        SocketHandler.onHello(message);
-    });
-
-    socket.on('loginGadget', function (data) {
-        SocketHandler.onLoginGadget(data);
-    });
-
-    socket.on('logout', function (data) {
-        SocketHandler.onArduinoLogout(data);
-    });
-
-    socket.on('loginUser', function (data) {
-        SocketHandler.onLoginUser(data);
-    });
-
-    socket.on('logoutUser', function () {
-        SocketHandler.onLogoutUser();
-    });
-
-    socket.on('saveUserSettings', function (data) {
-        SocketHandler.onSaveUserSettings(data);
-    });
-    
-    socket.on('updateMood', function (data){
-        SocketHandler.onUpdateMood(data);
-    });
-    
-    socket.on('createPoll', function (data){
-        SocketHandler.onStartPoll(data);
     });
 
     socket.on('disconnect', function() {
@@ -126,13 +88,41 @@ io.on('connection', function (socket) {
         SocketHandler.onError(error);
     });
 
+    socket.on('hello', function (message) {
+        SocketHandler.onHello(message);
+    });
+
+    socket.on('loginGadget', function (data) {
+        SocketHandler.onLoginGadget(data);
+    });
+
+    socket.on('loginUser', function (data) {
+        SocketHandler.onLoginUser(data);
+    });
+
+    socket.on('logout', function (data) {
+        SocketHandler.onArduinoLogout(data);
+    });
+
+    socket.on('logoutUser', function () {
+        SocketHandler.onLogoutUser();
+    });
+
+    socket.on('ownheartbeat', function (data) {
+        SocketHandler.onHeartbeat(data);
+    });
+
+    socket.on('saveUserSettings', function (data) {
+        SocketHandler.onSaveUserSettings(data);
+    });
+
     socket.on('success', function (data) {
         SocketHandler.onSuccess(data);
         Connection.delete(socket.id);
     });
 
-    socket.on('ownheartbeat', function (data) {
-        SocketHandler.onHeartbeat(data);
+    socket.on('updateMood', function (data){
+        SocketHandler.onUpdateMood(data);
     });
 });
 
