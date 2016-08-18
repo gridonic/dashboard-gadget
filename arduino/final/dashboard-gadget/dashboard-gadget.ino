@@ -80,7 +80,6 @@ unsigned int DISPLAY_MEN3 = 6;
 
 // Variables for the ethernet-module
 SocketIOClient client;
-byte          mac[]       = { 0x20, 0x67, 0x89, 0x4F, 0x60, 0x75 }; // generated here: http://www.miniwebtool.com/mac-address-generator/
 char          hostname[]  = "192.168.2.98"; // "192.168.43.231";
 int           port        = 3000;
 bool          loggedIn    = false;
@@ -94,15 +93,22 @@ unsigned long loopIndex       = 0;
 unsigned long msPrev          = 0;
 unsigned long msCurrent       = 0;
 long          interval        = 5000;
-const int     debug           = true;
+const int     debug           = false;
 const int     internet        = true;
-int           gadgetID        = 1;
 int           miniDelay       = 250;
 int           defaultDelay    = 500;
 int           longDelay       = 1000;
 bool          pollIsActive    = false;
 unsigned int  heartbeatNumber = 1;
 unsigned int  lastHeartbeat   = 0;
+
+// Variables Gadget 1
+//int           gadgetID        = 1;
+//byte          mac[]           = { 0x20, 0x67, 0x89, 0x4F, 0x60, 0x75 }; // generated here: http://www.miniwebtool.com/mac-address-generator/
+
+// Variables Gadget 2
+int           gadgetID        = 2;
+byte          mac[]           = { 0x90, 0x29, 0x42, 0x89, 0x63, 0x8F }; // generated here: http://www.miniwebtool.com/mac-address-generator/
 
 // Functions
 void logger(String message);
