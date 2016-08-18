@@ -33,7 +33,8 @@ String RID = "";
 String Rname = "";
 String Rcontent = "";
 
-bool SocketIOClient::connect(char thehostname[], int theport) {
+bool SocketIOClient::connect(char thehostname[], int theport)
+{
 	if (!client.connect(thehostname, theport)) return false;
 	hostname = thehostname;
 	port = theport;
@@ -41,7 +42,8 @@ bool SocketIOClient::connect(char thehostname[], int theport) {
 	return readHandshake();
 }
 
-bool SocketIOClient::connectHTTP(char thehostname[], int theport) {
+bool SocketIOClient::connectHTTP(char thehostname[], int theport)
+{
 	if (!client.connect(thehostname, theport)) return false;
 	hostname = thehostname;
 	port = theport;
@@ -162,7 +164,7 @@ bool SocketIOClient::monitor() {
 			parser(index2);
 		}
 	}
-    
+
     return 1;
 }
 
@@ -216,7 +218,7 @@ bool SocketIOClient::readHandshake() {
 
 	/* ---------------------------------------------------------------------
 	 * from here: btemperli, 29.6.2016
-	 * saves 40 bytes of saving and 4 bytes of dynamic ram.
+	 * saves 40 bytes of saving and 4 of dynamic ram.
 	 * --------------------------------------------------------------------- */
 
 	int i = 0;
