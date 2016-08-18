@@ -344,7 +344,8 @@ function appHandler () {
             size = 2 - size;
         }
 
-        return Graphic.getDisplayAtmung(size);
+        // return Graphic.getDisplayAtmung(size);
+        return 'APP|ATM|' + settings.Geschwindigkeit;
     };
 
     /**

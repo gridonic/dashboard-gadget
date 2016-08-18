@@ -27,6 +27,7 @@ displayDrawer = function () {
     var canvas          = document.getElementById("display");
     var projectBox      = document.getElementById("project-box");
     var moodBox         = document.getElementById("mood-box");
+    var appAtmungInterval = null;
     var context;
 
     // Icons
@@ -263,6 +264,9 @@ displayDrawer = function () {
         log('showMainDisplay');
 
         clearMainDisplay();
+        if (appAtmungInterval && drawData[0] !== 'APP' && drawData[1] !== 'ATM') {
+            clearInterval(appAtmungInterval);
+        }
 
         if (drawData[0] === 'RECT') {
 
@@ -473,19 +477,33 @@ displayDrawer = function () {
                         }
                     }
                 }
-                //
-                // var textLeft = 'NO';
-                // var textRight = 'YES';
-                // var textSize = 15;
-                // var padding = 10;
-                //
-                // context.fillStyle = COLOR_WHITE;
-                // context.fillRect(0, DISPLAY_HEIGHT - padding * 2 - textSize, DISPLAY_WIDTH, padding * 2 + textSize);
-                //
-                // context.fillStyle = COLOR_BLACK;
-                // context.font = textSize + "px Courier New";
-                // context.fillText(textLeft, padding, DISPLAY_HEIGHT - padding);
-                // context.fillText(textRight, padding+(DISPLAY_WIDTH-4.5*padding), DISPLAY_HEIGHT-padding);
+            }
+        } else if (drawData[0] === "APP") {
+            if (drawData[1] === "ATM" && appAtmungInterval === null) {
+                var speed = parseInt(drawData[2]);
+                var size = 0;
+                var i = 0;
+                var circleSize = DISPLAY_HEIGHT / 4;
+                var timer = 250;
+
+                appAtmungInterval = setInterval(function () {
+                    size = (i * timer / speed) % 2;
+
+                    if (size > 1) {
+                        size = 2 - size;
+                        context.fillStyle = COLOR_WHITE;
+                        context.fillRect(DISPLAY_WIDTH / 2 - circleSize, DISPLAY_HEIGHT / 2 - circleSize, circleSize * 2, circleSize * 2);
+                    }
+
+                    context.fillStyle = COLOR_BLACK;
+                    context.beginPath();
+                    context.arc(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2, circleSize * size, 0, 2 * Math.PI);
+                    context.closePath();
+                    context.fill();
+
+                    i++;
+                }, timer);
+
             }
         }
     };
