@@ -6,6 +6,7 @@ function socketHandler (Handler) {
     // Functions
     var loadUser;
     var handleNewUserApps;
+    var showDisplay;
 
     // On-functions
     var onActivateApp;
@@ -23,10 +24,9 @@ function socketHandler (Handler) {
     var onLogoutUser;
     var onSaveUserSettings;
     var onSuccess;
-    var onUpdateMood;
-    var onStartPoll;
     var onSendPoll;
-    var showDisplay;
+    var onStartPoll;
+    var onUpdateMood;
 
     // Variables
     var Graphic = new graphic();
@@ -43,24 +43,24 @@ function socketHandler (Handler) {
         socket = s;
     };
 
-    this.onActivateApp = function (data) { return onActivateApp(data); };
-    this.onArduinoButtonsPushed = function (data) { return onArduinoButtonsPushed(data); };
-    this.onArduinoLogout = function (data) { return onLogoutGadget(data); };
-    this.onButtonsPushed = function (data) { return onButtonsPushed(data); };
-    this.onCreateUser = function (data) { return onCreateUser(data); };
-    this.onDeactivateApp = function (data) { return onDeactivateApp(data); };
-    this.onDisconnect = function (data) { return onDisconnect(data); };
-    this.onError = function (data) { return onError(data); };
-    this.onHeartbeat = function (data) { return onHeartbeat(data); };
-    this.onHello = function (data) { return onHello(data); };
-    this.onLoginGadget = function (data) { return onLoginGadget(data); };
-    this.onLoginUser = function (data) { return onLoginUser(data); };
-    this.onLogoutUser = function() { return onLogoutUser();};
-    this.onSaveUserSettings = function (data) { return onSaveUserSettings(data); };
-    this.onSuccess = function (data) { return onSuccess(data); };
-    this.onUpdateMood = function (data) { return onUpdateMood(data);};
-    this.onStartPoll = function (data) { return onStartPoll(data);};
-    this.onSendPoll = function (data) { return onSendPoll(data);};
+    this.onActivateApp              = function (data) { return onActivateApp(data); };
+    this.onArduinoButtonsPushed     = function (data) { return onArduinoButtonsPushed(data); };
+    this.onArduinoLogout            = function (data) { return onLogoutGadget(data); };
+    this.onButtonsPushed            = function (data) { return onButtonsPushed(data); };
+    this.onCreateUser               = function (data) { return onCreateUser(data); };
+    this.onDeactivateApp            = function (data) { return onDeactivateApp(data); };
+    this.onDisconnect               = function (data) { return onDisconnect(data); };
+    this.onError                    = function (data) { return onError(data); };
+    this.onHeartbeat                = function (data) { return onHeartbeat(data); };
+    this.onHello                    = function (data) { return onHello(data); };
+    this.onLoginGadget              = function (data) { return onLoginGadget(data); };
+    this.onLoginUser                = function (data) { return onLoginUser(data); };
+    this.onLogoutUser               = function() { return onLogoutUser();};
+    this.onSaveUserSettings         = function (data) { return onSaveUserSettings(data); };
+    this.onSendPoll                 = function (data) { return onSendPoll(data);};
+    this.onStartPoll                = function (data) { return onStartPoll(data);};
+    this.onSuccess                  = function (data) { return onSuccess(data); };
+    this.onUpdateMood               = function (data) { return onUpdateMood(data);};
 
     /* ======================================================================
      * Private functions
@@ -107,29 +107,31 @@ function socketHandler (Handler) {
         }, time);
 
         setTimeout(function () {
+            if (currentApp.decision) {
+                socket.emit('showTime', {draw: Graphic.getDecisionDisplay()});
+            } else if (updateTime) {
+                socket.emit('showTime', {draw: Graphic.getActualTimeDisplay()});
+            }
+        }, time * 2);
+
+        setTimeout(function () {
             if (menu !== null) {
                 // Display the menu on the display.
                 socket.emit('showMenu', {draw: Graphic.getMenu(menu)});
             }
-        }, time * 2);
+        }, time * 3);
 
         setTimeout(function () {
             if (currentDisplay !== null) {
                 // Display the current App, Poll or something else.
                 socket.emit('showMainDisplay', {draw: currentDisplay});
             }
-        }, time * 3);
-
-        setTimeout(function () {
-            if (updateTime) {
-                socket.emit('showTime', {draw: Graphic.getActualTimeDisplay()});
-            }
         }, time * 4);
 
         setTimeout(function () {
             if (updateTime && mood !== null) {
-                console.log('send mood to gadget');
-                console.log(mood);
+                // console.log('send mood to gadget');
+                // console.log(mood);
                 socket.emit('showMood', {color: mood});
             } else if (updateTime) {
                 // console.log('send null-mood to gadget');
@@ -139,8 +141,8 @@ function socketHandler (Handler) {
 
         setTimeout(function () {
             if (updateTime && project !== null) {
-                console.log('send project to gadget');
-                console.log(project.color);
+                // console.log('send project to gadget');
+                // console.log(project.color);
                 socket.emit('showProject', {color: project.color});
             } else if (updateTime) {
                 // console.log('send null-project to gadget');
@@ -148,6 +150,10 @@ function socketHandler (Handler) {
             }
         }, time * 6);
     };
+
+    /* ======================================================================
+     * Private on-functions
+     * ====================================================================== */
 
     onActivateApp = function (data) {
         console.log('onActivateApp');
@@ -181,22 +187,23 @@ function socketHandler (Handler) {
 
     onButtonsPushed = function (data) {
 
-        if (data.screen === 'pollToAnswer') {
-            if (data.right) {
-                Handler.updatePoll(socket, socket.id, data.type, true);
-                console.log(socket.id + ' answered with YES');
-            } else {
-                Handler.updatePoll(socket, socket.id, data.type, false);
-                console.log(socket.id + ' answered with NO');
-            }
-        } else {
-            console.log('buttons pushed');
+        Handler.stopDisplaying();
+
+        // if (data.screen === 'pollToAnswer') {
+        //     if (data.right) {
+        //         Handler.updatePoll(socket, socket.id, data.type, true);
+        //         console.log(socket.id + ' answered with YES');
+        //     } else {
+        //         Handler.updatePoll(socket, socket.id, data.type, false);
+        //         console.log(socket.id + ' answered with NO');
+        //     }
+        // } else {
+        console.log('buttons pushed');
 
             if (data.left && data.right) {
                 console.log('both');
 
                 if (currentApp && currentApp.poll) {
-                    // todo beni: poll wird hier bestätigt vom gadget aus, muss jetzt noch im system gespeichert werden (falls nötig).
                     Handler.activatedAppSelected(currentApp, socket.id, showDisplay);
                 } else if (currentApp !== null) {
                     Handler.activateApp(currentApp, socket.id, showDisplay);
@@ -210,7 +217,8 @@ function socketHandler (Handler) {
                 if (currentApp && currentApp.poll) {
                     Handler.switchPoll('left', socket.id, showDisplay);
                 } else if (currentApp && currentApp.decision) {
-                    // todo beni: hier kommt das resultat von der decision rein.
+                    Handler.resetPoll();
+                    Handler.setupDisplayForArduino(socket.id, showDisplay);
                 } else {
                     Handler.switchApp('left', socket.id, showDisplay);
                 }
@@ -220,15 +228,36 @@ function socketHandler (Handler) {
                 if (currentApp && currentApp.poll) {
                     Handler.switchPoll('right', socket.id, showDisplay);
                 } else if (currentApp && currentApp.decision) {
-                    // todo beni: hier kommt das resultat von der poll-decision rein.
+                    // todo beni: hier muss die poll an die weiteren gadgets geschickt werden.
+                    console.log('-----------------------------------------------------');
+                    console.log('beni: hier poll an weitere gadgets schicken.');
+                    console.log(currentApp.type);
+                    console.log('-----------------------------------------------------');
+                    Handler.resetPoll();
+                    Handler.setupDisplayForArduino(socket.id, showDisplay);
                 } else {
                     Handler.switchApp('right', socket.id, showDisplay);
                 }
             }
             // console.log(data);
 
-        }
+        // }
 
+    };
+
+    onCreateUser = function (data) {
+        console.log('socketCreateUser');
+        console.log(data);
+
+        Handler.createUser(data.username, data.password, function (created) {
+            if (created) {
+                console.log('user created');
+                loadUser(data);
+            } else {
+                console.log('username found! - return false!');
+                socket.emit('sendError', {'message': 'The username "' + data.username + '" already exists!'});
+            }
+        });
     };
 
     onDeactivateApp = function (data) {
@@ -236,6 +265,20 @@ function socketHandler (Handler) {
         console.log(data);
 
         Handler.changeUserApp(Handler.APP_DEACTIVATE, data.user, data.token, data.appId, null, handleNewUserApps);
+    };
+
+    onDisconnect = function (data) {
+        helloed = false;
+        console.log('socketDISCONNECT');
+        console.log('disconnect client');
+
+        Handler.removeConnection(socket.id);
+        console.log(socket.id);
+    };
+
+    onError = function (data) {
+        console.log("error on socket.");
+        console.log(data.message);
     };
 
     onHeartbeat = function (data) {
@@ -293,21 +336,6 @@ function socketHandler (Handler) {
             });
         }
     };
-
-    onCreateUser = function (data) {
-        console.log('socketCreateUser');
-        console.log(data);
-
-        Handler.createUser(data.username, data.password, function (created) {
-            if (created) {
-                console.log('user created');
-                loadUser(data);
-            } else {
-                console.log('username found! - return false!');
-                socket.emit('sendError', {'message': 'The username "' + data.username + '" already exists!'});
-            }
-        });
-    };
     
     onLoginUser = function (data) {
         Handler.loginUser(data.username, data.password, data.gadget, socket.id, function (loggedIn, result) {
@@ -346,28 +374,14 @@ function socketHandler (Handler) {
             }
         });
     };
-    
-    onStartPoll = function (data) {
-        Handler.createPoll(socket.id, data.type, socket);
 
-    };
-    
     onSendPoll = function (data) {
         
     };
 
-    onDisconnect = function (data) {
-        helloed = false;
-        console.log('socketDISCONNECT');
-        console.log('disconnect client');
+    onStartPoll = function (data) {
+        Handler.createPoll(socket.id, data.type, socket);
 
-        Handler.removeConnection(socket.id);
-        console.log(socket.id);
-    };
-
-    onError = function (data) {
-        console.log("error on socket.");
-        console.log(data.message);
     };
 
     onSuccess = function (data) {

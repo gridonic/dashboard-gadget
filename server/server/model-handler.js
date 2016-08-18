@@ -1,16 +1,16 @@
 'use strict';
 
-var app = require('./model/app.js');
-var appHandler = require('./app-handler.js');
-var connection = require('./model/connection.js');
-var gadget = require('./model/gadget.js');
-var harvest = require('./module/harvest.js');
-var mongodb = require('mongodb');
-var mongoose = require('mongoose');
-var mood = require('./model/mood.js');
-var poll = require('./model/poll.js');
-var token = require('./model/token.js');
-var user = require('./model/user.js');
+var app         = require('./model/app.js');
+var appHandler  = require('./app-handler.js');
+var connection  = require('./model/connection.js');
+var gadget      = require('./model/gadget.js');
+var harvest     = require('./module/harvest.js');
+var mongodb     = require('mongodb');
+var mongoose    = require('mongoose');
+var mood        = require('./model/mood.js');
+var poll        = require('./model/poll.js');
+var token       = require('./model/token.js');
+var user        = require('./model/user.js');
 
 
 function modelHandler () {
@@ -37,6 +37,7 @@ function modelHandler () {
     var loginUser;
     var prepareDisplayForArduino;
     var removeConnection;
+    var resetPoll;
     var saveUserSettings;
     var setupSchema;
     var showDisplayOnArduino;
@@ -49,29 +50,29 @@ function modelHandler () {
     
 
     // Variables
-    var connected   = false;
-    var url         = 'mongodb://localhost:9999/dashboard-gadget';
-    var self        = this;
-    var displayInterval = null;
-    var showPollContent = null;
-    var showPollDecision = null;
+    var connected           = false;
+    var url                 = 'mongodb://localhost:9999/dashboard-gadget';
+    var self                = this;
+    var displayInterval     = null;
+    var showPollContent     = null;
+    var showPollDecision    = null;
 
     // Models
-    var App         = new app(this);
-    var AppHandler  = new appHandler(this);
-    var Connection  = new connection(this);
-    var Gadget      = new gadget(this);
-    var Harvest     = new harvest();
-    var Mood        = new mood(this);
-    var Poll        = new poll(this);
-    var Token       = new token(this);
-    var User        = new user(this);
+    var App                 = new app(this);
+    var AppHandler          = new appHandler(this);
+    var Connection          = new connection(this);
+    var Gadget              = new gadget(this);
+    var Harvest             = new harvest();
+    var Mood                = new mood(this);
+    var Poll                = new poll(this);
+    var Token               = new token(this);
+    var User                = new user(this);
 
     // Constants
-    const NAME_GADGET1 = '1';
-    const NAME_GADGET2 = '2';
-    this.APP_ACTIVATE = '1';
-    this.APP_DEACTIVATE = '2';
+    const NAME_GADGET1      = '1';
+    const NAME_GADGET2      = '2';
+    this.APP_ACTIVATE       = '1';
+    this.APP_DEACTIVATE     = '2';
 
     /* =====================================================================
      * Public functions
@@ -84,25 +85,25 @@ function modelHandler () {
     this.addUserConnection          = function (connectionId, userId) { return addUserConnection(connectionId, userId); };
     this.changeMood                 = function (connectionId, currentMood, callback) {return changeMood(connectionId,currentMood, callback);};
     this.changeUserApp              = function (mode, u, t, id, settings, c) { return changeUserApp(mode, u, t, id, settings, c); };
+    this.createPoll                 = function (connectionId, type, socket) {return createPoll(connectionId, type, socket);};
+    this.createPollFinally          = function (sockets, type, connectionId, socket) {return createPollFinally(sockets, type, connectionId, socket);};
     this.createUser                 = function (username, password, callback) { return createUser(username, password, callback); };
+    this.createUserFinally          = function (err, result, username, password, callback) { return createUserFinally(err, result, username, password, callback); };
+    this.deactivateGadget           = function (connectionId, gadgetId) {return deactivateGadget(connectionId, gadgetId);};
+    this.getGadgetArray             = function (connectionId, type) {return getGadgetArray(connectionId, type);};
+    this.getUser                    = function (username, password, callback) { return getUser(username, password, callback); };
     this.isDisplayPaused            = function () { return displayInterval == null; };
+    this.linkGadgetToSocket         = function (connectionId, gadgetId) {return linkGadgetToSocket(connectionId, gadgetId);};
     this.loginUser                  = function (username, password, gadget, socketId, callback) { return loginUser(username, password, gadget, socketId, callback); };
     this.removeConnection           = function (connectionId) { return removeConnection(connectionId); };
+    this.resetPoll                  = function () { return resetPoll(); };
     this.saveUserSettings           = function (token, username, settings, callback) { return saveUserSettings(token, username, settings, callback); };
     this.setupDisplayForArduino     = function (socketId, callback) { return prepareDisplayForArduino(socketId, callback); };
+    this.startPoll                  = function (sockets, type, connectionId, socket) {return startPoll(sockets, type, connectionId, socket);};
     this.stopDisplaying             = function () { return stopDisplaying(); };
     this.switchApp                  = function (direction, socketId, callback) { return switchUserApp(direction, socketId, callback); };
     this.switchPoll                 = function (direction, socketId, callback) { return switchPollOnArduino(direction, socketId, callback); };
-
-    this.getUser = function (username, password, callback) { return getUser(username, password, callback); };
-    this.createUserFinally = function (err, result, username, password, callback) { return createUserFinally(err, result, username, password, callback); };
-    this.deactivateGadget = function (connectionId, gadgetId) {return deactivateGadget(connectionId, gadgetId);};
-    this.linkGadgetToSocket = function (connectionId, gadgetId) {return linkGadgetToSocket(connectionId, gadgetId);};
-    this.getGadgetArray = function (connectionId, type) {return getGadgetArray(connectionId, type);};
-    this.createPoll = function (connectionId, type, socket) {return createPoll(connectionId, type, socket);};
-    this.createPollFinally = function (sockets, type, connectionId, socket) {return createPollFinally(sockets, type, connectionId, socket);};
-    this.startPoll = function (sockets, type, connectionId, socket) {return startPoll(sockets, type, connectionId, socket);};
-    this.updatePoll = function (socket, connectionId, type, answer) {return updatePoll(socket, connectionId, type, answer);};
+    this.updatePoll                 = function (socket, connectionId, type, answer) {return updatePoll(socket, connectionId, type, answer);};
 
     /* =====================================================================
      * Private functions
@@ -171,15 +172,17 @@ function modelHandler () {
                                 if (app.app.name === AppHandler.APP_MOOD_NAME) {
 
                                     if (AppHandler.getAppMoodStep() === 1) {
-                                        showPollDecision = 'POLL_COFFEE';
-                                        console.log('----------------------------------------------------------');
-                                        console.log('ask user if he wants to start a poll about a break');
-                                        console.log('----------------------------------------------------------');
+                                        showPollDecision = {
+                                            decision: true,
+                                            type: 'POLL_COFFEE',
+                                            app: app
+                                        };
                                     } else if (AppHandler.getAppMoodStep() === 2) {
-                                        showPollDecision = 'POLL_LUNCH';
-                                        console.log('----------------------------------------------------------');
-                                        console.log('ask user if he wants to start a poll about going for lunch');
-                                        console.log('----------------------------------------------------------');
+                                        showPollDecision = {
+                                            decision: true,
+                                            type: 'POLL_LUNCH',
+                                            app: app.app
+                                        };
                                     }
 
                                     Connection.findConnectionAndChangeMood(socketId, AppHandler.getAppMoodStep(), function (gadgetId, currentMood) {
@@ -193,22 +196,25 @@ function modelHandler () {
 
                                     if (app.app.name === AppHandler.APP_POLL_ROOM_NAME) {
                                         if (AppHandler.getAppPollRoomStep() === 1) {
-                                            showPollDecision = 'POLL_COLD';
-                                            console.log('----------------------------------------------------------');
-                                            console.log('ask user if he wants to start a poll because it is too cold');
-                                            console.log('----------------------------------------------------------');
+                                            showPollDecision = {
+                                                decision: true,
+                                                type: 'POLL_COLD',
+                                                app: app.app
+                                            };
                                         } else if (AppHandler.getAppPollRoomStep() === 2) {
-                                            showPollDecision = 'POLL_HOT';
-                                            console.log('----------------------------------------------------------');
-                                            console.log('ask user if he wants to start a poll because it is too hot');
-                                            console.log('----------------------------------------------------------');
+                                            showPollDecision = {
+                                                decision: true,
+                                                type: 'POLL_HOT',
+                                                app: app.app
+                                            };
                                         }
                                     } else if (app.app.name === AppHandler.APP_POLL_SOUND_NAME) {
                                         if (AppHandler.getAppPollSoundStep() === 1) {
-                                            showPollDecision = true;
-                                            console.log('----------------------------------------------------------');
-                                            console.log('ask user if he wants to start a poll about room sound');
-                                            console.log('----------------------------------------------------------');
+                                            showPollDecision = {
+                                                decision: true,
+                                                type: 'POLL_SOUND',
+                                                app: app.app
+                                            };
                                         }
                                     }
 
@@ -227,12 +233,34 @@ function modelHandler () {
         });
     };
 
+    /**
+     * Changes the status of a Gadget to active.
+     * @param id: name of the gadget the request comes from.
+     */
+    activateGadget = function (id) {
+        Gadget.activateGadget(id);
+    };
+
     addSocketConnection = function (id) {
         Connection.create(id, null, Connection.TYPE_UNDEFINED);
     };
 
     addUserConnection = function (connectionId, userId) {
         Connection.update(connectionId, userId, Connection.TYPE_USER);
+    };
+
+    /**
+     * Finds the gadgetId which is related to the connection the mood change request comes from.
+     * @param connectionId: Id of the connection which the requesting gadget is using.
+     * @param currentMood: New mood status the user wants to set via his gadget.
+     * @param callback: call to display the new mood.
+     */
+    changeMood = function (connectionId, currentMood, callback) {
+        Connection.findConnectionAndChangeMood(connectionId, currentMood, function (gadgetId, currentMood) {
+            Mood.update(gadgetId, currentMood, function () {
+                callback();
+            });
+        });
     };
 
     changeUserApp = function (mode, user, token, appId, appSettings, callback) {
@@ -243,6 +271,44 @@ function modelHandler () {
                 User.removeAppFromUser(user, appId, callback);
             }
         }
+    };
+
+    /**
+     * Asks for an all the gadget connections.
+     * @param connectionId: Array of all gadget connections except the starting one.
+     * @param type: Type of the poll to be started.
+     * @param socket:
+     */
+    createPoll = function (connectionId, type, socket) {
+        Connection.getGadgetArray(connectionId, type, socket);
+    };
+
+    /**
+     * Asks for an all the gadget connections.
+     * @param sockets: Array of all gadget connections except the starting one.
+     * @param type: Type of the poll to be started.
+     * @param connectionId: Connection ID of the gadget who started the poll.
+     * @param socket:
+     */
+    createPollFinally = function (sockets, type, connectionId, socket) {
+        Poll.create(type, sockets, connectionId, socket);
+
+    };
+
+    /**
+     * Create a user if its username does not exist yet.
+     *
+     * @param username
+     * @param password
+     * @param callback
+     */
+    createUser = function (username, password, callback) {
+        
+        if (!connected) {
+            return false;
+        }
+
+        User.findUserByUsername(username, password, callback);
     };
 
     /**
@@ -267,46 +333,38 @@ function modelHandler () {
     };
 
     /**
-     * Create a user if its username does not exist yet.
+     * Changes the status of a Gadget to inactive.
+     * @param connectionId: Id of the connection to be deleted.
+     * @param gadgetId: Id of the gadget to be deactivated.
+     */
+    deactivateGadget = function (connectionId, gadgetId) {
+        Gadget.deactivateGadget(gadgetId);
+        Connection.deleteConnection(connectionId);
+    };
+
+    /**
+     * Asks for an all the gadget connections.
+     * @param connectionId: Id of the connection who started the poll process.
+     * @param type: Type of the poll to be started.
+     */
+    getGadgetArray = function (connectionId, type) {
+        Connection.getGadgetArray(connectionId, type);
+    };
+
+    /**
+     * Get a user by its username & password
      *
      * @param username
      * @param password
      * @param callback
+     * @returns {boolean}
      */
-    createUser = function (username, password, callback) {
-        
-        if (!connected) {
-            return false;
-        }
-
-        User.findUserByUsername(username, password, callback);
-    };
-    
     getUser = function (username, password, callback) {
         if (!connected) {
             return false;
         }
         
         User.getUser(username, password, callback);
-    };
-
-    /**
-     * Login to an existing user.
-     *
-     * @param username - The username of the user who wants to log in.
-     * @param password - The password of the user who wants to log in.
-     * @param gadget - The user's gadget.
-     * @param socketId - The socket which is used by user.
-     * @param callback - call on login or on errors
-     */
-    loginUser = function (username, password, gadget, socketId, callback) {
-        if (!connected) {
-            callback(false, {message: 'The database could not be found.'});
-        }
-
-        User.findUserForLogin(username, password, callback, function (id, settings) {
-            handleLoggedInUser(id, username, gadget, socketId, settings, callback);
-        });
     };
 
     /**
@@ -356,28 +414,6 @@ function modelHandler () {
     };
 
     /**
-     * Finds the gadgetId which is related to the connection the mood change request comes from.
-     * @param connectionId: Id of the connection which the requesting gadget is using.
-     * @param currentMood: New mood status the user wants to set via his gadget.
-     * @param callback: call to display the new mood.
-     */
-    changeMood = function (connectionId, currentMood, callback) {
-        Connection.findConnectionAndChangeMood(connectionId, currentMood, function (gadgetId, currentMood) {
-            Mood.update(gadgetId, currentMood, function () {
-                callback();
-            });
-        });
-    };
-
-    /**
-     * Changes the status of a Gadget to active.
-     * @param id: name of the gadget the request comes from.
-     */
-    activateGadget = function (id) {
-        Gadget.activateGadget(id);
-    };
-
-    /**
      * Changes the status of a Gadget to active.
      * @param connectionId: ID of the connection to be linked.
      * @param gadgetId: ID of the gadget which should be linked to the connection.
@@ -386,16 +422,46 @@ function modelHandler () {
         Connection.update(connectionId, gadgetId, Connection.TYPE_GADGET);
         console.log('Connection: ' + connectionId + ' is now linked to gadget ' + gadgetId);
     };
-    
 
     /**
-     * Changes the status of a Gadget to inactive.
-     * @param connectionId: Id of the connection to be deleted.
-     * @param gadgetId: Id of the gadget to be deactivated.
+     * Login to an existing user.
+     *
+     * @param username - The username of the user who wants to log in.
+     * @param password - The password of the user who wants to log in.
+     * @param gadget - The user's gadget.
+     * @param socketId - The socket which is used by user.
+     * @param callback - call on login or on errors
      */
-    deactivateGadget = function (connectionId, gadgetId) {
-        Gadget.deactivateGadget(gadgetId);
-        Connection.deleteConnection(connectionId);
+    loginUser = function (username, password, gadget, socketId, callback) {
+        if (!connected) {
+            callback(false, {message: 'The database could not be found.'});
+        }
+
+        User.findUserForLogin(username, password, callback, function (id, settings) {
+            handleLoggedInUser(id, username, gadget, socketId, settings, callback);
+        });
+    };
+
+    /**
+     * Display the stuff on the arduino.
+     */
+    prepareDisplayForArduino = function (socketId, callback) {
+
+        Connection.findConnectionById(socketId, function (err, conn) {
+            if (err) {
+                // todo: handleError
+            } else {
+                Gadget.findGadgetById(parseInt(conn.gadgetId), function (err, gadget) {
+                    if (err) {
+                        // todo: handleError
+                    } else {
+                        User.getUserByUsername(gadget.lastUserName, function (err, user) {
+                            startDisplayOnArduino(socketId, callback, user);
+                        });
+                    }
+                });
+            }
+        });
     };
 
     /**
@@ -422,49 +488,10 @@ function modelHandler () {
         });
     };
 
-    /**
-     * Asks for an all the gadget connections.
-     * @param connectionId: Id of the connection who started the poll process.
-     * @param type: Type of the poll to be started.
-     */
-    getGadgetArray = function (connectionId, type) {
-        Connection.getGadgetArray(connectionId, type);
+    resetPoll = function () {
+        showPollDecision = null;
+        showPollContent = null;
     };
-
-    /**
-     * Asks for an all the gadget connections.
-     * @param connectionId: Array of all gadget connections except the starting one.
-     * @param type: Type of the poll to be started.
-     * @param socket:
-     */
-    createPoll = function (connectionId, type, socket) {
-        Connection.getGadgetArray(connectionId, type, socket);
-    };
-
-    /**
-     * Asks for an all the gadget connections.
-     * @param sockets: Array of all gadget connections except the starting one.
-     * @param type: Type of the poll to be started.
-     * @param connectionId: Connection ID of the gadget who started the poll.
-     * @param socket:
-     */
-    createPollFinally = function (sockets, type, connectionId, socket) {
-        Poll.create(type, sockets, connectionId, socket);
-        
-    };
-
-    /**
-     * Updates an ongoing poll with the answer of one user.
-     * @param socket:
-     * @param connectionId: Connection ID of the users gadget.
-     * @param type: Type of the ongoing poll the user wants to answer to.
-     * @param answer: Specific answer of the user.
-     */
-    updatePoll = function (socket, connectionId, type, answer) {
-        Poll.update(type, connectionId, socket, answer);
-
-    };
-
 
     /**
      * Save users new settings after checking if token is correct.
@@ -482,39 +509,6 @@ function modelHandler () {
         } else {
             callback(false);
         }
-    };
-
-    /**
-     * Asks for an all the gadget connections.
-     * @param sockets: Array of all gadget connections except the starting one.
-     * @param type: Type of the poll to be started.
-     * @param connectionId: Connection ID of the gadget who started the poll.
-     * @param socket:
-     */
-    startPoll = function (sockets, type, connectionId, socket) {
-        Poll.startPoll(sockets, type, connectionId, socket);
-    };
-
-    /**
-     * Display the stuff on the arduino.
-     */
-    prepareDisplayForArduino = function (socketId, callback) {
-
-        Connection.findConnectionById(socketId, function (err, conn) {
-            if (err) {
-                // todo: handleError
-            } else {
-                Gadget.findGadgetById(parseInt(conn.gadgetId), function (err, gadget) {
-                    if (err) {
-                        // todo: handleError
-                    } else {
-                        User.getUserByUsername(gadget.lastUserName, function (err, user) {
-                            startDisplayOnArduino(socketId, callback, user);
-                        });
-                    }
-                });
-            }
-        });
     };
 
     /**
@@ -543,6 +537,17 @@ function modelHandler () {
     };
 
     /**
+     * Asks for an all the gadget connections.
+     * @param sockets: Array of all gadget connections except the starting one.
+     * @param type: Type of the poll to be started.
+     * @param connectionId: Connection ID of the gadget who started the poll.
+     * @param socket:
+     */
+    startPoll = function (sockets, type, connectionId, socket) {
+        Poll.startPoll(sockets, type, connectionId, socket);
+    };
+
+    /**
      * Init the showing of the display here.
      * @param socketId
      * @param callback
@@ -557,7 +562,7 @@ function modelHandler () {
         var userApps;
         var userAppSettings;
         var i = 0;
-        var intervalTiming = 5000;
+        var intervalTiming = 20000;
         var oneMinute = 60000 / intervalTiming;
         var currentDisplay = null;
         var currentMood = null;
@@ -567,7 +572,7 @@ function modelHandler () {
 
         var getCurrentDisplay = function (display, step, stepDuration) {
             if (showPollDecision !== null) {
-                return AppHandler.getPollDecisionDisplay(showPollDecision);
+                return AppHandler.getPollDecisionDisplay(showPollDecision.type);
             } else if (display && display.app) {
                 return AppHandler.getActualAppDisplay(step, stepDuration);
             } else if (showPollContent) {
@@ -586,13 +591,13 @@ function modelHandler () {
                     counts: userApps.length,
                     active: currentAppIndex
                 };
+            } else if (currentApp && currentApp.poll) {
+                return AppHandler.getAppMenu(currentApp.app);
+            } else if (currentApp && currentApp.decision) {
+                return null;
             } else {
-                if (currentApp.poll) {
-                    return AppHandler.getAppMenu(currentApp.app);
-                } else {
-                    currentApp = null;
-                    currentAppIndex = -1;
-                }
+                currentApp = null;
+                currentAppIndex = -1;
                 return null;
             }
         };
@@ -627,13 +632,7 @@ function modelHandler () {
         }
 
         if (showPollDecision) {
-            // todo beni: AppHandler.prepareAppDisplay(xxxxxxxx);
-            // da wird das display vorbereitet
-            // todo beni: currentApp mit pollDecision versehen, diese variable wird an den socketHandler geschickt und dort gespeichert.
-            // zum beispiel so:
-            currentApp = {
-                decision: showPollDecision
-            };
+            currentApp = showPollDecision;
         } else if (showPollContent !== null) {
             AppHandler.prepareAppDisplay(showPollContent.app, showPollContent.type);
             currentApp = {
@@ -647,7 +646,6 @@ function modelHandler () {
             userAppSettings = JSON.parse(user.appSettings);
 
             if (!user.currentDisplay) {
-                console.log('set currentDisplay first, user has nothing to display at the moment.');
                 currentDisplay = {
                     app: userApps[0]
                 };
@@ -684,19 +682,23 @@ function modelHandler () {
         }
 
         updateMood();
-        showDisplayOnArduino(
-            callback,
-            user,
-            showTime,
-            getCurrentDisplay(currentDisplay, i, intervalTiming),
-            getMenu(currentDisplay),
-            currentMood,
-            currentApp
-        );
-        i++;
+
+        setTimeout(function () {
+            showDisplayOnArduino(
+                callback,
+                user,
+                showTime,
+                getCurrentDisplay(currentDisplay, i, intervalTiming),
+                getMenu(currentDisplay),
+                currentMood,
+                currentApp
+            );
+            i++;
+        }, 200);
 
         displayInterval = setInterval(function () {
-            var showTime = ((i + 10) % oneMinute == 0); // show time not after a minute, show it after 1 second (2*500ms)
+            // var showTime = ((i + 10) % oneMinute == 0); // show time not after a minute, show it after 1 second (2*500ms)
+            var showTime = true;
 
             if (showPollContent) {
                 // showTime = false;
@@ -721,11 +723,20 @@ function modelHandler () {
         }, intervalTiming);
     };
 
+    /**
+     * Stop the actual displaying on the arduino
+     */
     stopDisplaying = function () {
         clearInterval(displayInterval);
         displayInterval = null;
     };
 
+    /**
+     * Switch the possible answers of a poll
+     * @param direction
+     * @param socketId
+     * @param callback
+     */
     switchPollOnArduino = function (direction, socketId, callback) {
         Connection.findConnectionById(socketId, function (err, conn) {
             if (err || conn == null) {
@@ -745,6 +756,12 @@ function modelHandler () {
         })
     };
 
+    /**
+     * Switch the different user apps on the arduino
+     * @param direction
+     * @param socketId
+     * @param callback
+     */
     switchUserApp = function (direction, socketId, callback) {
         Connection.findConnectionById(socketId, function (err, conn) {
             if (err || conn === null) {
@@ -776,6 +793,21 @@ function modelHandler () {
             }
         });
     };
+
+    /**
+     * Updates an ongoing poll with the answer of one user.
+     * @param socket:
+     * @param connectionId: Connection ID of the users gadget.
+     * @param type: Type of the ongoing poll the user wants to answer to.
+     * @param answer: Specific answer of the user.
+     */
+    updatePoll = function (socket, connectionId, type, answer) {
+        Poll.update(type, connectionId, socket, answer);
+    };
+
+    /* ======================================================================
+     * Start the model-handler
+     * ====================================================================== */
 
     /**
      * Create all Schemas, mostly by constructing its model.js-files

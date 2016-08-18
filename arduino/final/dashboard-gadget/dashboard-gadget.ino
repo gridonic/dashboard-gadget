@@ -54,8 +54,8 @@ unsigned int  displayWidth     = 320;
 unsigned int  displayHeight    = 240;
 unsigned int  lastBigIcon      = 0;
 unsigned int  lastSmallIcon    = 0;
-unsigned int  lastIconLeft     = 0;
-unsigned int  lastIconRight    = 0;
+unsigned int  lastLeftIcon     = 0;
+unsigned int  lastRightIcon    = 0;
 unsigned int  lastMainDisplay  = 0;
 bool          showOnDisplay    = true;
 
@@ -154,8 +154,8 @@ String getIconSound84()   { return F("x142IDx19ADx18M-1Dx18M-1Dx18A-1Dx18A-1Dx17
 void resetIconVariables() {
   lastBigIcon = 0;
   lastSmallIcon = 0;
-  lastIconLeft = 0;
-  lastIconRight = 0;
+  lastLeftIcon = 0;
+  lastRightIcon = 0;
   lastMainDisplay = 0;
 }
 
@@ -603,12 +603,6 @@ void showMainDisplayOnScreen(String m)
   unsigned int borderColor;
   unsigned int color;
 
-//  if (splitString0 == "MEN" && lastMainDisplay < DISPLAY_MEN1) {
-//    clearMainDisplay
-//  } else if (splitString0 == "MEN" && lastMainDisplay == 
-//
-//  clearMainDisplay();
-
   if (splitString0 == "RECT") {
     if (lastMainDisplay != DISPLAY_RECT) {
       clearMainDisplay();
@@ -753,6 +747,54 @@ void showMainDisplayOnScreen(String m)
       
       if (iconSmall != "") {
         showOnScreen(iconSmall, 181, 72, 44);
+      }
+    }
+
+    //draw two Circles for poll
+    else if (splitString(m, '|', 1) == "3") {
+
+      
+      if (lastMainDisplay != DISPLAY_MEN3) {
+        clearMainDisplay();
+        delay(miniDelay);
+        showPollCircles();
+        delay(miniDelay);
+        lastMainDisplay = DISPLAY_MEN3;
+        logger("show poll circles");
+      }
+
+      String iconLeft = "";
+      String iconRight = "";
+      String iconData = splitString(m, '|', 2);
+
+      if (lastLeftIcon != ICON_POLL) {
+        iconLeft = getIconPoll84();
+        lastLeftIcon = ICON_POLL;
+      }
+
+      if (iconData == "BREAK" && lastBigIcon != ICON_COFFEE) {
+        iconRight = getIconCoffee84();
+        lastRightIcon = ICON_COFFEE;
+      } else if (iconData == "LUNCH" && lastBigIcon != ICON_FOOD) {
+        iconRight = getIconFood84();
+        lastRightIcon = ICON_FOOD;
+      } else if (iconData == "HOT" && lastBigIcon != ICON_HOT) {
+        iconRight = getIconHot84();
+        lastRightIcon = ICON_HOT;
+      } else if (iconData == "COLD" && lastBigIcon != ICON_COLD) {
+        iconRight = getIconCold84();
+        lastRightIcon = ICON_COLD;
+      } else if (iconData == "LOUD" && lastBigIcon != ICON_LOUD) {
+        iconRight = getIconLoud84();
+        lastRightIcon = ICON_LOUD;
+      }
+
+      if (iconRight != "") {
+        showOnScreen(iconRight, 70, 78, 84);
+      }
+
+      if (iconLeft != "") {
+        showOnScreen(iconLeft, 167, 78, 84);
       }
     }
   }

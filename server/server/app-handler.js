@@ -6,8 +6,9 @@ var https = require('https');
 function appHandler () {
 
     // Functions
+    var checkHTTP;
+    var checkHTTPS;
     var getActualAppDisplay;
-    var getPollDecisionDisplay;
     var getAppAtmung;
     var getAppMenu;
     var getAppMood;
@@ -21,7 +22,6 @@ function appHandler () {
     var getAppPollSoundStep;
     var getAppServer;
     var getAppTest;
-    var prepareAppDisplay;
     var getDisplayAppActiveMood;
     var getDisplayAppActivePollRoom;
     var getDisplayAppActivePollSound;
@@ -36,15 +36,16 @@ function appHandler () {
     var getDisplayDecisionPollLoud;
     var getDisplayAppServer;
     var getDisplayAppTest;
-    var checkHTTP;
-    var checkHTTPS;
+    var getPollDecisionDisplay;
+    var mod;
+    var prepareAppDisplay;
 
     // Variables
-    var actualDisplay   = null;
-    var appServerText   = {};
-    var Graphic         = new graphic();
-    var self            = this;
-    var actualPollStep  = 0;
+    var actualDisplay           = null;
+    var appServerText           = {};
+    var Graphic                 = new graphic();
+    var self                    = this;
+    var actualPollStep          = 0;
 
     // Constants
     var APP_ATMUNG_NAME         = 'Atmung';
@@ -64,7 +65,6 @@ function appHandler () {
      * ====================================================================== */
 
     this.getActualAppDisplay    = function (step, stepDuration) { return getActualAppDisplay(step, stepDuration); };
-    this.getPollDecisionDisplay = function (decisionData) { return getPollDecisionDisplay(decisionData);};
     this.getAppBreathing        = function () { return getAppAtmung(); };
     this.getAppMenu             = function (app) { return getAppMenu(app); };
     this.getAppMood             = function () { return getAppMood(); };
@@ -75,17 +75,13 @@ function appHandler () {
     this.getAppPollSoundStep    = function () { return getAppPollSoundStep(); };
     this.getAppServer           = function () { return getAppServer(); };
     this.getAppTest             = function () { return getAppTest(); };
+    this.getPollDecisionDisplay = function (decisionData) { return getPollDecisionDisplay(decisionData);};
     this.prepareAppDisplay      = function (app, settings) { return prepareAppDisplay(app, settings); };
     this.updatePollStep         = function (value) { actualPollStep = actualPollStep + value; console.log(value); };
 
     /* ======================================================================
      * Private functions
      * ====================================================================== */
-
-    function mod(n, m) {
-        return ((n % m) + m) % m;
-    }
-
 
     checkHTTPS = function (url) {
         https.get(url, function(res) {
@@ -440,6 +436,10 @@ function appHandler () {
         }
 
         return Graphic.getDisplayServer(serverResult);
+    };
+
+    mod = function (n, m) {
+        return ((n % m) + m) % m;
     };
 
 }

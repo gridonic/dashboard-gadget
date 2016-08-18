@@ -3,7 +3,6 @@ displayDrawer = function () {
     // Functions
     var bitToImage;
     var clearMainDisplay;
-    var clearDisplayForPoll;
     var drawWorkingIcon;
     var init;
     var log;
@@ -19,15 +18,15 @@ displayDrawer = function () {
     var showWorkTime;
 
     // Constants
-    var DISPLAY_WIDTH = 320;
-    var DISPLAY_HEIGHT = 240;
-    var COLOR_WHITE = '#ffffff';
-    var COLOR_BLACK = '#000000';
+    var DISPLAY_WIDTH   = 320;
+    var DISPLAY_HEIGHT  = 240;
+    var COLOR_WHITE     = '#ffffff';
+    var COLOR_BLACK     = '#000000';
 
     // Variables
-    var canvas = document.getElementById("display");
-    var projectBox = document.getElementById("project-box");
-    var moodBox = document.getElementById("mood-box");
+    var canvas          = document.getElementById("display");
+    var projectBox      = document.getElementById("project-box");
+    var moodBox         = document.getElementById("mood-box");
     var context;
 
     // Icons
@@ -172,11 +171,6 @@ displayDrawer = function () {
         context.fillRect(0, 50, 320, 140);
     };
 
-    clearDisplayForPoll = function () {
-        context.fillStyle = COLOR_WHITE;
-        context.fillRect(0, 50, 320, 240);
-    };
-
     /**
      * Draw the working icon.
      * @param x
@@ -219,8 +213,6 @@ displayDrawer = function () {
      * Initialize DisplayDrawer
      */
     init = function () {
-        console.log('init displayDrawer');
-
         if (canvas !== null) {
             context = canvas.getContext("2d");
         }
@@ -267,6 +259,8 @@ displayDrawer = function () {
      */
     showMainDisplay = function (data) {
         var drawData = data.draw.split('|');
+
+        log('showMainDisplay');
 
         clearMainDisplay();
 
@@ -479,19 +473,19 @@ displayDrawer = function () {
                         }
                     }
                 }
-
-                var textLeft = 'NO';
-                var textRight = 'YES';
-                var textSize = 15;
-                var padding = 10;
-
-                context.fillStyle = COLOR_WHITE;
-                context.fillRect(0, DISPLAY_HEIGHT - padding * 2 - textSize, DISPLAY_WIDTH, padding * 2 + textSize);
-
-                context.fillStyle = COLOR_BLACK;
-                context.font = textSize + "px Courier New";
-                context.fillText(textLeft, padding, DISPLAY_HEIGHT - padding);
-                context.fillText(textRight, padding+(DISPLAY_WIDTH-4.5*padding), DISPLAY_HEIGHT-padding);
+                //
+                // var textLeft = 'NO';
+                // var textRight = 'YES';
+                // var textSize = 15;
+                // var padding = 10;
+                //
+                // context.fillStyle = COLOR_WHITE;
+                // context.fillRect(0, DISPLAY_HEIGHT - padding * 2 - textSize, DISPLAY_WIDTH, padding * 2 + textSize);
+                //
+                // context.fillStyle = COLOR_BLACK;
+                // context.font = textSize + "px Courier New";
+                // context.fillText(textLeft, padding, DISPLAY_HEIGHT - padding);
+                // context.fillText(textRight, padding+(DISPLAY_WIDTH-4.5*padding), DISPLAY_HEIGHT-padding);
             }
         }
     };
@@ -522,8 +516,6 @@ displayDrawer = function () {
     };
 
     showPollCircles = function () {
-        clearDisplayForPoll();
-
         context.fillStyle = COLOR_BLACK;
 
         context.beginPath();
@@ -538,6 +530,7 @@ displayDrawer = function () {
     };
 
     showMenu = function (data) {
+        log('showMenu');
         var splitData = data.draw.split('|');
         var start = parseInt(splitData[0]);
         var padding = parseInt(splitData[1]);
@@ -560,7 +553,6 @@ displayDrawer = function () {
 
     showMood = function (data) {
         log('showMood');
-        log(data);
 
         if (data.color === undefined || data.color === null) {
             moodBox.style.backgroundColor = 'transparent';
@@ -575,7 +567,6 @@ displayDrawer = function () {
 
     showProject = function (data) {
         log('showProject');
-        log(data);
 
         if (data.color === undefined || data.color === null) {
             projectBox.style.backgroundColor = 'transparent';
@@ -594,7 +585,6 @@ displayDrawer = function () {
      */
     showWorkTime = function (data) {
         log("showWorkTime");
-        log(data);
 
         var splitData = data.draw.split('|');
         var iconSize = 12;
@@ -631,7 +621,7 @@ displayDrawer = function () {
      */
     showTime = function (data) {
         log("showTime");
-        log(data);
+        console.log(data);
 
         var splitData = data.draw.split('|');
         var textSize = 15;
