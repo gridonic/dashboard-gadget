@@ -14,6 +14,7 @@ function graphic () {
     var generateWorkTime;
     var getActualTimeDisplay;
     var getBlackDisplay;
+    var getDecisionDisplay;
     var getDefaultDisplay;
     var getDisplayAtmung;
     var getDisplayServer;
@@ -63,17 +64,18 @@ function graphic () {
      * Public functions
      * ====================================================================== */
 
-    this.getActualTimeDisplay = function () { return getActualTimeDisplay(); };
-    this.getBlackDisplay = function () { return getBlackDisplay(); };
-    this.getDefaultDisplay = function (time, workingPercent, icon) { return getDefaultDisplay(time, workingPercent, icon); };
-    this.getDisplayTest = function () { return generateRectangle(100, 100, 120, 40, COLOR_BLACK, COLOR_WHITE); };
-    this.getDisplayAtmung = function (size) { return getDisplayAtmung(size); };
-    this.getDisplayServer = function (string) { return getDisplayServer(string);};
-    this.getIconBitwise = function (icon) { return getIconBitwise(icon); };
-    this.getMenu = function (menu) { return generateMenu(menu.counts, menu.active); };
-    this.getStartDisplay = function () { return getStartDisplay(); };
-    this.getWhiteDisplay = function () { return getWhiteDisplay(); };
-    this.getWorktimeDisplay = function (workingPercent) { return getWorktimeDisplay(workingPercent); };
+    this.getActualTimeDisplay   = function () { return getActualTimeDisplay(); };
+    this.getBlackDisplay        = function () { return getBlackDisplay(); };
+    this.getDecisionDisplay     = function () { return getDecisionDisplay(); };
+    this.getDefaultDisplay      = function (time, workingPercent, icon) { return getDefaultDisplay(time, workingPercent, icon); };
+    this.getDisplayTest         = function () { return generateRectangle(100, 100, 120, 40, COLOR_BLACK, COLOR_WHITE); };
+    this.getDisplayAtmung       = function (size) { return getDisplayAtmung(size); };
+    this.getDisplayServer       = function (string) { return getDisplayServer(string);};
+    this.getIconBitwise         = function (icon) { return getIconBitwise(icon); };
+    this.getMenu                = function (menu) { return generateMenu(menu.counts, menu.active); };
+    this.getStartDisplay        = function () { return getStartDisplay(); };
+    this.getWhiteDisplay        = function () { return getWhiteDisplay(); };
+    this.getWorktimeDisplay     = function (workingPercent) { return getWorktimeDisplay(workingPercent); };
 
     /* ======================================================================
      * Private functions
@@ -260,6 +262,14 @@ function graphic () {
      */
     getBlackDisplay = function () {
         return stringToBits(generateFullLines(displayHeight));
+    };
+
+    /**
+     * Get the answer-text for the decisions.
+     * @returns {string}
+     */
+    getDecisionDisplay = function () {
+        return displayPadding + "|" + " NO                          YES";
     };
 
     /**

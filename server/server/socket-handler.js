@@ -107,7 +107,9 @@ function socketHandler (Handler) {
         }, time);
 
         setTimeout(function () {
-            if (updateTime) {
+            if (currentApp.decision) {
+                socket.emit('showTime', {draw: Graphic.getDecisionDisplay()});
+            } else if (updateTime) {
                 socket.emit('showTime', {draw: Graphic.getActualTimeDisplay()});
             }
         }, time * 2);

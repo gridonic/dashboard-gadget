@@ -3,7 +3,6 @@ displayDrawer = function () {
     // Functions
     var bitToImage;
     var clearMainDisplay;
-    var clearDisplayForPoll;
     var drawWorkingIcon;
     var init;
     var log;
@@ -170,11 +169,6 @@ displayDrawer = function () {
     clearMainDisplay = function () {
         context.fillStyle = COLOR_WHITE;
         context.fillRect(0, 50, 320, 140);
-    };
-
-    clearDisplayForPoll = function () {
-        context.fillStyle = COLOR_WHITE;
-        context.fillRect(0, 50, 320, 240);
     };
 
     /**
@@ -479,19 +473,19 @@ displayDrawer = function () {
                         }
                     }
                 }
-
-                var textLeft = 'NO';
-                var textRight = 'YES';
-                var textSize = 15;
-                var padding = 10;
-
-                context.fillStyle = COLOR_WHITE;
-                context.fillRect(0, DISPLAY_HEIGHT - padding * 2 - textSize, DISPLAY_WIDTH, padding * 2 + textSize);
-
-                context.fillStyle = COLOR_BLACK;
-                context.font = textSize + "px Courier New";
-                context.fillText(textLeft, padding, DISPLAY_HEIGHT - padding);
-                context.fillText(textRight, padding+(DISPLAY_WIDTH-4.5*padding), DISPLAY_HEIGHT-padding);
+                //
+                // var textLeft = 'NO';
+                // var textRight = 'YES';
+                // var textSize = 15;
+                // var padding = 10;
+                //
+                // context.fillStyle = COLOR_WHITE;
+                // context.fillRect(0, DISPLAY_HEIGHT - padding * 2 - textSize, DISPLAY_WIDTH, padding * 2 + textSize);
+                //
+                // context.fillStyle = COLOR_BLACK;
+                // context.font = textSize + "px Courier New";
+                // context.fillText(textLeft, padding, DISPLAY_HEIGHT - padding);
+                // context.fillText(textRight, padding+(DISPLAY_WIDTH-4.5*padding), DISPLAY_HEIGHT-padding);
             }
         }
     };
@@ -522,8 +516,6 @@ displayDrawer = function () {
     };
 
     showPollCircles = function () {
-        clearDisplayForPoll();
-
         context.fillStyle = COLOR_BLACK;
 
         context.beginPath();
@@ -629,6 +621,7 @@ displayDrawer = function () {
      */
     showTime = function (data) {
         log("showTime");
+        console.log(data);
 
         var splitData = data.draw.split('|');
         var textSize = 15;
