@@ -269,7 +269,7 @@ function graphic () {
      * @returns {string}
      */
     getDecisionDisplay = function () {
-        return displayPadding + "|" + " NO                          YES";
+        return displayPadding + "|" + " NO                  YES";
     };
 
     /**

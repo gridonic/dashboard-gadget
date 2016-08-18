@@ -94,7 +94,7 @@ unsigned long loopIndex       = 0;
 unsigned long msPrev          = 0;
 unsigned long msCurrent       = 0;
 long          interval        = 5000;
-const int     debug           = false;
+const int     debug           = true;
 const int     internet        = true;
 int           gadgetID        = 1;
 int           miniDelay       = 250;
@@ -751,14 +751,16 @@ void showMainDisplayOnScreen(String m)
     }
 
     //draw two Circles for poll
-    else if (splitString(m, '|', 1) == "2") {
+    else if (splitString(m, '|', 1) == "3") {
 
+      
       if (lastMainDisplay != DISPLAY_MEN3) {
         clearMainDisplay();
         delay(miniDelay);
         showPollCircles();
         delay(miniDelay);
         lastMainDisplay = DISPLAY_MEN3;
+        logger("show poll circles");
       }
 
       String iconLeft = "";
