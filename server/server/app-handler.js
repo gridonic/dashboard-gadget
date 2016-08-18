@@ -9,7 +9,6 @@ function appHandler () {
     var checkHTTP;
     var checkHTTPS;
     var getActualAppDisplay;
-    var getPollDecisionDisplay;
     var getAppAtmung;
     var getAppMenu;
     var getAppMood;
@@ -23,7 +22,6 @@ function appHandler () {
     var getAppPollSoundStep;
     var getAppServer;
     var getAppTest;
-    var prepareAppDisplay;
     var getDisplayAppActiveMood;
     var getDisplayAppActivePollRoom;
     var getDisplayAppActivePollSound;
@@ -38,7 +36,9 @@ function appHandler () {
     var getDisplayDecisionPollLoud;
     var getDisplayAppServer;
     var getDisplayAppTest;
+    var getPollDecisionDisplay;
     var mod;
+    var prepareAppDisplay;
 
     // Variables
     var actualDisplay           = null;
@@ -65,7 +65,6 @@ function appHandler () {
      * ====================================================================== */
 
     this.getActualAppDisplay    = function (step, stepDuration) { return getActualAppDisplay(step, stepDuration); };
-    this.getPollDecisionDisplay = function (decisionData) { return getPollDecisionDisplay(decisionData);};
     this.getAppBreathing        = function () { return getAppAtmung(); };
     this.getAppMenu             = function (app) { return getAppMenu(app); };
     this.getAppMood             = function () { return getAppMood(); };
@@ -76,6 +75,7 @@ function appHandler () {
     this.getAppPollSoundStep    = function () { return getAppPollSoundStep(); };
     this.getAppServer           = function () { return getAppServer(); };
     this.getAppTest             = function () { return getAppTest(); };
+    this.getPollDecisionDisplay = function (decisionData) { return getPollDecisionDisplay(decisionData);};
     this.prepareAppDisplay      = function (app, settings) { return prepareAppDisplay(app, settings); };
     this.updatePollStep         = function (value) { actualPollStep = actualPollStep + value; console.log(value); };
 
