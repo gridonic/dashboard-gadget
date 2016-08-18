@@ -107,29 +107,29 @@ function socketHandler (Handler) {
         }, time);
 
         setTimeout(function () {
+            if (updateTime) {
+                socket.emit('showTime', {draw: Graphic.getActualTimeDisplay()});
+            }
+        }, time * 2);
+
+        setTimeout(function () {
             if (menu !== null) {
                 // Display the menu on the display.
                 socket.emit('showMenu', {draw: Graphic.getMenu(menu)});
             }
-        }, time * 2);
+        }, time * 3);
 
         setTimeout(function () {
             if (currentDisplay !== null) {
                 // Display the current App, Poll or something else.
                 socket.emit('showMainDisplay', {draw: currentDisplay});
             }
-        }, time * 3);
-
-        setTimeout(function () {
-            if (updateTime) {
-                socket.emit('showTime', {draw: Graphic.getActualTimeDisplay()});
-            }
         }, time * 4);
 
         setTimeout(function () {
             if (updateTime && mood !== null) {
-                console.log('send mood to gadget');
-                console.log(mood);
+                // console.log('send mood to gadget');
+                // console.log(mood);
                 socket.emit('showMood', {color: mood});
             } else if (updateTime) {
                 // console.log('send null-mood to gadget');
@@ -139,8 +139,8 @@ function socketHandler (Handler) {
 
         setTimeout(function () {
             if (updateTime && project !== null) {
-                console.log('send project to gadget');
-                console.log(project.color);
+                // console.log('send project to gadget');
+                // console.log(project.color);
                 socket.emit('showProject', {color: project.color});
             } else if (updateTime) {
                 // console.log('send null-project to gadget');
@@ -181,22 +181,23 @@ function socketHandler (Handler) {
 
     onButtonsPushed = function (data) {
 
-        if (data.screen === 'pollToAnswer') {
-            if (data.right) {
-                Handler.updatePoll(socket, socket.id, data.type, true);
-                console.log(socket.id + ' answered with YES');
-            } else {
-                Handler.updatePoll(socket, socket.id, data.type, false);
-                console.log(socket.id + ' answered with NO');
-            }
-        } else {
-            console.log('buttons pushed');
+        Handler.stopDisplaying();
+
+        // if (data.screen === 'pollToAnswer') {
+        //     if (data.right) {
+        //         Handler.updatePoll(socket, socket.id, data.type, true);
+        //         console.log(socket.id + ' answered with YES');
+        //     } else {
+        //         Handler.updatePoll(socket, socket.id, data.type, false);
+        //         console.log(socket.id + ' answered with NO');
+        //     }
+        // } else {
+        console.log('buttons pushed');
 
             if (data.left && data.right) {
                 console.log('both');
 
                 if (currentApp && currentApp.poll) {
-                    // todo beni: poll wird hier bestätigt vom gadget aus, muss jetzt noch im system gespeichert werden (falls nötig).
                     Handler.activatedAppSelected(currentApp, socket.id, showDisplay);
                 } else if (currentApp !== null) {
                     Handler.activateApp(currentApp, socket.id, showDisplay);
@@ -210,7 +211,8 @@ function socketHandler (Handler) {
                 if (currentApp && currentApp.poll) {
                     Handler.switchPoll('left', socket.id, showDisplay);
                 } else if (currentApp && currentApp.decision) {
-                    // todo beni: hier kommt das resultat von der decision rein.
+                    Handler.resetPoll();
+                    Handler.setupDisplayForArduino(socket.id, showDisplay);
                 } else {
                     Handler.switchApp('left', socket.id, showDisplay);
                 }
@@ -220,14 +222,20 @@ function socketHandler (Handler) {
                 if (currentApp && currentApp.poll) {
                     Handler.switchPoll('right', socket.id, showDisplay);
                 } else if (currentApp && currentApp.decision) {
-                    // todo beni: hier kommt das resultat von der poll-decision rein.
+                    // todo beni: hier muss die poll an die weiteren gadgets geschickt werden.
+                    console.log('-----------------------------------------------------');
+                    console.log('beni: hier poll an weitere gadgets schicken.');
+                    console.log(currentApp.type);
+                    console.log('-----------------------------------------------------');
+                    Handler.resetPoll();
+                    Handler.setupDisplayForArduino(socket.id, showDisplay);
                 } else {
                     Handler.switchApp('right', socket.id, showDisplay);
                 }
             }
             // console.log(data);
 
-        }
+        // }
 
     };
 

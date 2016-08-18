@@ -219,8 +219,6 @@ displayDrawer = function () {
      * Initialize DisplayDrawer
      */
     init = function () {
-        console.log('init displayDrawer');
-
         if (canvas !== null) {
             context = canvas.getContext("2d");
         }
@@ -267,6 +265,8 @@ displayDrawer = function () {
      */
     showMainDisplay = function (data) {
         var drawData = data.draw.split('|');
+
+        log('showMainDisplay');
 
         clearMainDisplay();
 
@@ -538,6 +538,7 @@ displayDrawer = function () {
     };
 
     showMenu = function (data) {
+        log('showMenu');
         var splitData = data.draw.split('|');
         var start = parseInt(splitData[0]);
         var padding = parseInt(splitData[1]);
@@ -560,7 +561,6 @@ displayDrawer = function () {
 
     showMood = function (data) {
         log('showMood');
-        log(data);
 
         if (data.color === undefined || data.color === null) {
             moodBox.style.backgroundColor = 'transparent';
@@ -575,7 +575,6 @@ displayDrawer = function () {
 
     showProject = function (data) {
         log('showProject');
-        log(data);
 
         if (data.color === undefined || data.color === null) {
             projectBox.style.backgroundColor = 'transparent';
@@ -594,7 +593,6 @@ displayDrawer = function () {
      */
     showWorkTime = function (data) {
         log("showWorkTime");
-        log(data);
 
         var splitData = data.draw.split('|');
         var iconSize = 12;
@@ -631,7 +629,6 @@ displayDrawer = function () {
      */
     showTime = function (data) {
         log("showTime");
-        log(data);
 
         var splitData = data.draw.split('|');
         var textSize = 15;

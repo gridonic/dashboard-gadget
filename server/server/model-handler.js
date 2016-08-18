@@ -37,6 +37,7 @@ function modelHandler () {
     var loginUser;
     var prepareDisplayForArduino;
     var removeConnection;
+    var resetPoll;
     var saveUserSettings;
     var setupSchema;
     var showDisplayOnArduino;
@@ -88,6 +89,7 @@ function modelHandler () {
     this.isDisplayPaused            = function () { return displayInterval == null; };
     this.loginUser                  = function (username, password, gadget, socketId, callback) { return loginUser(username, password, gadget, socketId, callback); };
     this.removeConnection           = function (connectionId) { return removeConnection(connectionId); };
+    this.resetPoll                  = function () { return resetPoll(); };
     this.saveUserSettings           = function (token, username, settings, callback) { return saveUserSettings(token, username, settings, callback); };
     this.setupDisplayForArduino     = function (socketId, callback) { return prepareDisplayForArduino(socketId, callback); };
     this.stopDisplaying             = function () { return stopDisplaying(); };
@@ -171,15 +173,17 @@ function modelHandler () {
                                 if (app.app.name === AppHandler.APP_MOOD_NAME) {
 
                                     if (AppHandler.getAppMoodStep() === 1) {
-                                        showPollDecision = 'POLL_COFFEE';
-                                        console.log('----------------------------------------------------------');
-                                        console.log('ask user if he wants to start a poll about a break');
-                                        console.log('----------------------------------------------------------');
+                                        showPollDecision = {
+                                            decision: true,
+                                            type: 'POLL_COFFEE',
+                                            app: app
+                                        };
                                     } else if (AppHandler.getAppMoodStep() === 2) {
-                                        showPollDecision = 'POLL_LUNCH';
-                                        console.log('----------------------------------------------------------');
-                                        console.log('ask user if he wants to start a poll about going for lunch');
-                                        console.log('----------------------------------------------------------');
+                                        showPollDecision = {
+                                            decision: true,
+                                            type: 'POLL_LUNCH',
+                                            app: app.app
+                                        };
                                     }
 
                                     Connection.findConnectionAndChangeMood(socketId, AppHandler.getAppMoodStep(), function (gadgetId, currentMood) {
@@ -193,22 +197,25 @@ function modelHandler () {
 
                                     if (app.app.name === AppHandler.APP_POLL_ROOM_NAME) {
                                         if (AppHandler.getAppPollRoomStep() === 1) {
-                                            showPollDecision = 'POLL_COLD';
-                                            console.log('----------------------------------------------------------');
-                                            console.log('ask user if he wants to start a poll because it is too cold');
-                                            console.log('----------------------------------------------------------');
+                                            showPollDecision = {
+                                                decision: true,
+                                                type: 'POLL_COLD',
+                                                app: app.app
+                                            };
                                         } else if (AppHandler.getAppPollRoomStep() === 2) {
-                                            showPollDecision = 'POLL_HOT';
-                                            console.log('----------------------------------------------------------');
-                                            console.log('ask user if he wants to start a poll because it is too hot');
-                                            console.log('----------------------------------------------------------');
+                                            showPollDecision = {
+                                                decision: true,
+                                                type: 'POLL_HOT',
+                                                app: app.app
+                                            };
                                         }
                                     } else if (app.app.name === AppHandler.APP_POLL_SOUND_NAME) {
                                         if (AppHandler.getAppPollSoundStep() === 1) {
-                                            showPollDecision = true;
-                                            console.log('----------------------------------------------------------');
-                                            console.log('ask user if he wants to start a poll about room sound');
-                                            console.log('----------------------------------------------------------');
+                                            showPollDecision = {
+                                                decision: true,
+                                                type: 'POLL_SOUND',
+                                                app: app.app
+                                            };
                                         }
                                     }
 
@@ -517,6 +524,11 @@ function modelHandler () {
         });
     };
 
+    resetPoll = function () {
+        showPollDecision = null;
+        showPollContent = null;
+    };
+
     /**
      * Show the display.
      * We call this function very often, try not to make too much stuff in here.
@@ -557,7 +569,7 @@ function modelHandler () {
         var userApps;
         var userAppSettings;
         var i = 0;
-        var intervalTiming = 5000;
+        var intervalTiming = 20000;
         var oneMinute = 60000 / intervalTiming;
         var currentDisplay = null;
         var currentMood = null;
@@ -567,13 +579,11 @@ function modelHandler () {
 
         var getCurrentDisplay = function (display, step, stepDuration) {
             if (showPollDecision !== null) {
-                return AppHandler.getPollDecisionDisplay(showPollDecision);
+                return AppHandler.getPollDecisionDisplay(showPollDecision.type);
             } else if (display && display.app) {
                 return AppHandler.getActualAppDisplay(step, stepDuration);
             } else if (showPollContent) {
                 return AppHandler.getActualAppDisplay(step, stepDuration);
-            } else if (showPollDecision) {
-                // todo beni: jetzt die Anzeige im AppHandler holen.
             } else {
                 console.log('no display, no display.app');
                 return null;
@@ -588,13 +598,13 @@ function modelHandler () {
                     counts: userApps.length,
                     active: currentAppIndex
                 };
+            } else if (currentApp && currentApp.poll) {
+                return AppHandler.getAppMenu(currentApp.app);
+            } else if (currentApp && currentApp.decision) {
+                return null;
             } else {
-                if (currentApp && currentApp.poll) {
-                    return AppHandler.getAppMenu(currentApp.app);
-                } else {
-                    currentApp = null;
-                    currentAppIndex = -1;
-                }
+                currentApp = null;
+                currentAppIndex = -1;
                 return null;
             }
         };
@@ -629,13 +639,7 @@ function modelHandler () {
         }
 
         if (showPollDecision) {
-            // todo beni: AppHandler.prepareAppDisplay(xxxxxxxx);
-            // da wird das display vorbereitet
-            // todo beni: currentApp mit pollDecision versehen, diese variable wird an den socketHandler geschickt und dort gespeichert.
-            // zum beispiel so:
-            currentApp = {
-                decision: showPollDecision
-            };
+            currentApp = showPollDecision;
         } else if (showPollContent !== null) {
             AppHandler.prepareAppDisplay(showPollContent.app, showPollContent.type);
             currentApp = {
@@ -649,7 +653,6 @@ function modelHandler () {
             userAppSettings = JSON.parse(user.appSettings);
 
             if (!user.currentDisplay) {
-                console.log('set currentDisplay first, user has nothing to display at the moment.');
                 currentDisplay = {
                     app: userApps[0]
                 };
@@ -686,19 +689,23 @@ function modelHandler () {
         }
 
         updateMood();
-        showDisplayOnArduino(
-            callback,
-            user,
-            showTime,
-            getCurrentDisplay(currentDisplay, i, intervalTiming),
-            getMenu(currentDisplay),
-            currentMood,
-            currentApp
-        );
-        i++;
+
+        setTimeout(function () {
+            showDisplayOnArduino(
+                callback,
+                user,
+                showTime,
+                getCurrentDisplay(currentDisplay, i, intervalTiming),
+                getMenu(currentDisplay),
+                currentMood,
+                currentApp
+            );
+            i++;
+        }, 200);
 
         displayInterval = setInterval(function () {
-            var showTime = ((i + 10) % oneMinute == 0); // show time not after a minute, show it after 1 second (2*500ms)
+            // var showTime = ((i + 10) % oneMinute == 0); // show time not after a minute, show it after 1 second (2*500ms)
+            var showTime = true;
 
             if (showPollContent) {
                 // showTime = false;
