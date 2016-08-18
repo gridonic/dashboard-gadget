@@ -589,7 +589,7 @@ function modelHandler () {
                     active: currentAppIndex
                 };
             } else {
-                if (currentApp.poll) {
+                if (currentApp && currentApp.poll) {
                     return AppHandler.getAppMenu(currentApp.app);
                 } else {
                     currentApp = null;
