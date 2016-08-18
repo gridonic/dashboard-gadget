@@ -1,6 +1,6 @@
 # Interaktives Dashboard Gadget
 
-Informatik Projekt 6 / Bachelorthesis, Semester 8
+Informatik Projekt 6 / Bachelorthesis.
 
 Februar 2016 - August 2016, 8. Semester [iCompetence](http://www.fhnw.ch/technik/bachelor/icompetence) an der [Fachhochschule Nordwestschweiz](http://www.fhnw.ch/)
 
