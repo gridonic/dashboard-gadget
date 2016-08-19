@@ -103,7 +103,7 @@ function modelHandler () {
     this.saveUserSettings           = function (token, username, settings, callback) { return saveUserSettings(token, username, settings, callback); };
     this.setupDisplayForArduino     = function (socketId, callback) { return prepareDisplayForArduino(socketId, callback); };
     this.showPoll                   = function (socketId, callback, data) { return showPoll(socketId, callback, data); };
-    this.showPollResult             = function (sockets, type, result) { return showPollResult(sockets, type, result);};
+    this.showPollResult             = function (socketId, callback, data) { return showPollResult(sockets, callback, data); };
     this.startPoll                  = function (sockets, type, connectionId, socket) {return startPoll(sockets, type, connectionId, socket);};
     this.stopDisplaying             = function () { return stopDisplaying(); };
     this.switchApp                  = function (direction, socketId, callback) { return switchUserApp(direction, socketId, callback); };
@@ -496,6 +496,7 @@ function modelHandler () {
     resetPoll = function () {
         showPollDecision = null;
         showPollContent = null;
+        pollResult = null;
     };
 
     /**
@@ -575,15 +576,34 @@ function modelHandler () {
     /**
      * Asks for an all the gadget connections.
      * @param socketId: Array of all gadget connections except the starting one.
-     * @param type: Type of the poll to be started.
-     * @param result: Result of the finished poll.
+     * @param callback: Show on the screen
+     * @param data: Result of the finished poll.
      */
-    showPollResult = function (socketId, type, result) {
-        pollResult = {
-            type: type,
-            result: result
-        };
-        startDisplayOnArduino(pollResult);
+    showPollResult = function (socketId, callback, data) {
+
+        Connection.findConnectionById(socketId, function (err, conn) {
+            if (err) {
+                // todo: handleError
+            } else {
+                Gadget.findGadgetById(parseInt(conn.gadgetId), function (err, gadget) {
+                    if (err) {
+                        // todo: handleError
+                    } else {
+                        User.getUserByUsername(gadget.lastUserName, function (err, user) {
+
+                            var splitData = data.split('|');
+                            pollResult = {
+                                pollResult: true,
+                                type: splitData[0],
+                                result: splitData[1] === 'POS'
+                            };
+
+                            startDisplayOnArduino(socketId, callback, user);
+                        });
+                    }
+                });
+            }
+        });
     };
 
     /**
@@ -645,7 +665,7 @@ function modelHandler () {
                 };
             } else if (currentApp && currentApp.poll) {
                 return AppHandler.getAppMenu(currentApp.app);
-            } else if (currentApp && currentApp.decision) {
+            } else if (currentApp && (currentApp.decision || currentApp.pollResult)) {
                 return null;
             } else {
                 currentApp = null;
@@ -685,6 +705,8 @@ function modelHandler () {
 
         if (showPollDecision) {
             currentApp = showPollDecision;
+        } else if (pollResult) {
+            currentApp = pollResult;
         } else if (showPollContent !== null) {
             AppHandler.prepareAppDisplay(showPollContent.app, showPollContent.type);
             currentApp = {

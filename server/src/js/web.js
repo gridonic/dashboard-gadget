@@ -16,6 +16,7 @@ var handleDashboardLogin;
 var handleDashboardLogout;
 var handleDashboardUserSettingsUpdated;
 var handleNewPoll;
+var handleNewPollResult;
 var handleDashboardUserUpdated;
 var handleUpdateMood;
 var handleStartPoll;
@@ -484,6 +485,13 @@ handleNewPoll = function (data) {
     // actualScreen = SCREEN_POLL_ACTIVE;
 };
 
+handleNewPollResult = function (data) {
+    log('a poll was polled successfully. ');
+    log(data);
+    socket.emit('giveMePollResult', {data: data.data});
+};
+
+
 /**
  * Handle the UpdateMoood-Button.
  * Changes the mood of a user via gadget.
@@ -620,6 +628,10 @@ socket.on('userLoggedIn', function (data) {
 
 socket.on('newPoll', function (data) {
     handleNewPoll(data);
+});
+
+socket.on('newPollResult', function (data) {
+    handleNewPollResult(data);
 });
 
 socket.on('updateUserData', function (data) {

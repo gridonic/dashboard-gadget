@@ -92,6 +92,10 @@ io.on('connection', function (socket) {
         SocketHandler.onGiveMePoll(data);
     });
 
+    socket.on('giveMePollResult', function (data) {
+        SocketHandler.onGiveMePollResult(data);
+    });
+
     socket.on('hello', function (message) {
         SocketHandler.onHello(message);
     });

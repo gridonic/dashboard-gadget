@@ -17,6 +17,7 @@ function socketHandler (Handler) {
     var onDisconnect;
     var onError;
     var onGiveMePoll;
+    var onGiveMePollResult;
     var onHeartbeat;
     var onHello;
     var onLoginGadget;
@@ -53,6 +54,7 @@ function socketHandler (Handler) {
     this.onDisconnect               = function (data) { return onDisconnect(data); };
     this.onError                    = function (data) { return onError(data); };
     this.onGiveMePoll               = function (data) { return onGiveMePoll(data); };
+    this.onGiveMePollResult         = function (data) { return onGiveMePollResult(data); };
     this.onHeartbeat                = function (data) { return onHeartbeat(data); };
     this.onHello                    = function (data) { return onHello(data); };
     this.onLoginGadget              = function (data) { return onLoginGadget(data); };
@@ -193,7 +195,11 @@ function socketHandler (Handler) {
 
         console.log('buttons pushed');
 
-        if (data.left && data.right) {
+        if (currentApp.pollResult) {
+            Handler.resetPoll();
+            Handler.stopDisplaying();
+            Handler.setupDisplayForArduino(socket.id, showDisplay);
+        } else if (data.left && data.right) {
             console.log('both');
 
             if (currentApp && currentApp.poll) {
@@ -278,6 +284,11 @@ function socketHandler (Handler) {
     onGiveMePoll = function (data) {
         Handler.stopDisplaying();
         Handler.showPoll(socket.id, showDisplay, data);
+    };
+
+    onGiveMePoll = function (data) {
+        Handler.stopDisplaying();
+        Handler.showPollResult(socket.id, showDisplay, data);
     };
 
     onHeartbeat = function (data) {
