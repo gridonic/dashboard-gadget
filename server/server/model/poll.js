@@ -187,13 +187,22 @@ function poll (DB) {
                 }
                 if (positiveResponses > negativeResponses) {
                     console.log('The poll ended positive');
-                    DB.showPollResult(socket, socket.id, true);
+                    //DB.showPollResult(socket, socket.id, true);
+                    for (var i = 0; i<respondingUsers.length; i++) {
+                        socket.to(respondingUsers[i]).emit('newPollResult', {data: type + "|" + "POS"} );
+                    }
                 } else if (negativeResponses > positiveResponses) {
                     console.log('The poll ended negative');
-                    DB.showPollResult(socket, socket.id, false);
+                    //DB.showPollResult(socket, socket.id, false);
+                    for (var i = 0; i<respondingUsers.length; i++) {
+                        socket.to(respondingUsers[i]).emit('newPollResult', {data: type + "|" + "NEG"});
+                    }    
                 } else {
-                    console.log('The poll ended with a tie');
-                }
+                    console.log('The poll ended with a tie but is taken as positive');
+                    for (var i = 0; i < respondingUsers.length; i++) {
+                        socket.to(respondingUsers[i]).emit('newPollResult', {data: type + "|" + "POS"});
+                    }
+                }    
                 //cleanup
                 positiveResponses = 0;
                 negativeResponses = 0;
