@@ -219,7 +219,7 @@ function socketHandler (Handler) {
                 Handler.updatePoll(socket, socket.id, currentApp.type, false);
                 Handler.resetPoll();
                 Handler.setupDisplayForArduino(socket.id, showDisplay);
-            } else if (currentApp && currentApp.question) {
+            } else if (currentApp && currentApp.decision) {
                 Handler.resetPoll();
                 Handler.setupDisplayForArduino(socket.id, showDisplay);
             } else {
