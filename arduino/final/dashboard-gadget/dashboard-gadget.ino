@@ -77,6 +77,7 @@ unsigned int ICON_OK      = 8;
 unsigned int ICON_POLL    = 9;
 unsigned int ICON_ROOM    = 10;
 unsigned int ICON_SOUND   = 11;
+unsigned int ICON_DECLINE = 12;
 
 unsigned int DISPLAY_RECT = 1;
 unsigned int DISPLAY_CIRC = 2;
@@ -784,10 +785,21 @@ void showMainDisplayOnScreen(String m)
       String iconLeft = "";
       String iconRight = "";
       String iconData = splitString(m, '|', 2);
+      String iconDataLeft = splitString(m, '|', 3);
 
       if (lastLeftIcon != ICON_POLL) {
         iconLeft = getIconPoll84();
         lastLeftIcon = ICON_POLL;
+      }
+
+      if (iconDataLeft && iconDataLeft === "POS" && lastLeftIcon != ICON_OK) {
+        iconLeft = getIconOk84();
+        lastLeftIcon = ICON_OK;
+      }
+
+      if (iconDataLeft && iconDataLeft === "NEG" && lastLeftIcon != ICON_DECLINE) {
+        iconLeft = getIconDecline84();
+        lastLeftIcon = ICON_DECLINE;
       }
 
       if (iconData == "BREAK" && lastBigIcon != ICON_COFFEE) {
