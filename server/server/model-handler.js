@@ -561,7 +561,7 @@ function modelHandler () {
                             showPollDecision = {
                                 decision: true,
                                 question: true,
-                                type: 'POLL_LUNCH'
+                                type: data.data
                             };
 
                             startDisplayOnArduino(socketId, callback, user);

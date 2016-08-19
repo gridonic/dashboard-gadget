@@ -193,54 +193,50 @@ function socketHandler (Handler) {
 
         console.log('buttons pushed');
 
-            if (data.left && data.right) {
-                console.log('both');
+        if (data.left && data.right) {
+            console.log('both');
 
-                if (currentApp && currentApp.poll) {
-                    Handler.activatedAppSelected(currentApp, socket.id, showDisplay);
-                } else if (currentApp !== null) {
-                    Handler.activateApp(currentApp, socket.id, showDisplay);
-                    console.log('do action of app ' + currentApp);
-                } else {
-                    console.log('do something after both buttons was pushed.');
-                }
-            } else if (data.left) {
-                console.log('left');
-
-                if (currentApp && currentApp.poll) {
-                    Handler.switchPoll('left', socket.id, showDisplay);
-                } else if (currentApp && currentApp.decision && currentApp.question) {
-                    Handler.updatePoll(socket, socket.id, currentApp.type, false);
-                    Handler.resetPoll();
-                    Handler.setupDisplayForArduino(socket.id, showDisplay);
-                } else if (currentApp && currentApp.question) {
-                    Handler.resetPoll();
-                    Handler.setupDisplayForArduino(socket.id, showDisplay);
-                } else {
-                    Handler.switchApp('left', socket.id, showDisplay);
-                }
-            } else if (data.right) {
-                console.log('right');
-
-                if (currentApp && currentApp.poll) {
-                    Handler.switchPoll('right', socket.id, showDisplay);
-                } else if (currentApp && currentApp.decision && currentApp.question) {
-                    Handler.updatePoll(socket, socket.id, currentApp.type, true);
-                    Handler.resetPoll();
-                    Handler.setupDisplayForArduino(socket.id, showDisplay);
-                } else if (currentApp && currentApp.decision) {
-                    console.log(currentApp.type);
-                    Handler.createPoll(socket.id, currentApp.type , socket);
-                    Handler.resetPoll();
-                    Handler.setupDisplayForArduino(socket.id, showDisplay);
-                } else {
-                    Handler.switchApp('right', socket.id, showDisplay);
-                }
+            if (currentApp && currentApp.poll) {
+                Handler.activatedAppSelected(currentApp, socket.id, showDisplay);
+            } else if (currentApp !== null) {
+                Handler.activateApp(currentApp, socket.id, showDisplay);
+                console.log('do action of app ' + currentApp);
+            } else {
+                console.log('do something after both buttons was pushed.');
             }
-            // console.log(data);
+        } else if (data.left) {
+            console.log('left');
 
-        // }
+            if (currentApp && currentApp.poll) {
+                Handler.switchPoll('left', socket.id, showDisplay);
+            } else if (currentApp && currentApp.decision && currentApp.question) {
+                Handler.updatePoll(socket, socket.id, currentApp.type, false);
+                Handler.resetPoll();
+                Handler.setupDisplayForArduino(socket.id, showDisplay);
+            } else if (currentApp && currentApp.question) {
+                Handler.resetPoll();
+                Handler.setupDisplayForArduino(socket.id, showDisplay);
+            } else {
+                Handler.switchApp('left', socket.id, showDisplay);
+            }
+        } else if (data.right) {
+            console.log('right');
 
+            if (currentApp && currentApp.poll) {
+                Handler.switchPoll('right', socket.id, showDisplay);
+            } else if (currentApp && currentApp.decision && currentApp.question) {
+                Handler.updatePoll(socket, socket.id, currentApp.type, true);
+                Handler.resetPoll();
+                Handler.setupDisplayForArduino(socket.id, showDisplay);
+            } else if (currentApp && currentApp.decision) {
+                console.log(currentApp.type);
+                Handler.createPoll(socket.id, currentApp.type , socket);
+                Handler.resetPoll();
+                Handler.setupDisplayForArduino(socket.id, showDisplay);
+            } else {
+                Handler.switchApp('right', socket.id, showDisplay);
+            }
+        }
     };
 
     onCreateUser = function (data) {
@@ -280,7 +276,7 @@ function socketHandler (Handler) {
     };
 
     onGiveMePoll = function (data) {
-        this.stopDisplaying();
+        Handler.stopDisplaying();
         Handler.showPoll(socket.id, showDisplay, data);
     };
 
