@@ -885,6 +885,16 @@ void handleResponse()
     }
   }
 
+  else if (RID == "newPoll")
+  {
+    client.send("giveMePoll", "data", Rcontent);
+  }
+
+  else if (RID == "newPollResult")
+  {
+    client.send("giveMePollResult", "data", Rcontent);
+  }
+
   else if (RID == "showDisplay")
   {
     showOnDisplay = true;
