@@ -187,8 +187,10 @@ function poll (DB) {
                 }
                 if (positiveResponses > negativeResponses) {
                     console.log('The poll ended positive');
+                    DB.showPollResult(socket, socket.id, true);
                 } else if (negativeResponses > positiveResponses) {
                     console.log('The poll ended negative');
+                    DB.showPollResult(socket, socket.id, false);
                 } else {
                     console.log('The poll ended with a tie');
                 }

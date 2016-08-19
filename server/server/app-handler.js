@@ -34,9 +34,20 @@ function appHandler () {
     var getDisplayDecisionPollCold;
     var getDisplayDecisionPollHot;
     var getDisplayDecisionPollLoud;
+    var getDisplayResultPositiveBreak;
+    var getDisplayResultPositiveLunch;
+    var getDisplayResultPositiveCold;
+    var getDisplayResultPositiveHot;
+    var getDisplayResultPositiveLoud;
+    var getDisplayResultNegativeBreak;
+    var getDisplayResultNegativeLunch;
+    var getDisplayResultNegativeCold;
+    var getDisplayResultNegativeHot;
+    var getDisplayResultNegativeLoud;
     var getDisplayAppServer;
     var getDisplayAppTest;
     var getPollDecisionDisplay;
+    var getPollResultDisplay;
     var mod;
     var prepareAppDisplay;
 
@@ -76,6 +87,7 @@ function appHandler () {
     this.getAppServer           = function () { return getAppServer(); };
     this.getAppTest             = function () { return getAppTest(); };
     this.getPollDecisionDisplay = function (decisionData) { return getPollDecisionDisplay(decisionData);};
+    this.getPollResultDisplay   = function (resultData) {return getPollResultDisplay(resultData);};
     this.prepareAppDisplay      = function (app, settings) { return prepareAppDisplay(app, settings); };
     this.updatePollStep         = function (value) { actualPollStep = actualPollStep + value; console.log(value); };
 
@@ -132,8 +144,8 @@ function appHandler () {
         return null;
     };
 
-    getPollDecisionDisplay = function (decisionData){
-        if(decisionData === 'POLL_COFFEE') {
+    getPollDecisionDisplay = function (decisionData) {
+        if (decisionData === 'POLL_COFFEE') {
             return getDisplayDecisionPollBreak();
         } else if (decisionData === 'POLL_LUNCH') {
             return getDisplayDecisionPollLunch();
@@ -148,6 +160,38 @@ function appHandler () {
         }
 
     };
+
+        getPollResultDisplay = function (resultData) {
+            if (resultData.result) {
+                if (resultData.type === 'POLL_COFFEE') {
+                    return getDisplayResultPositiveBreak();
+                } else if ( resultData.type=== 'POLL_LUNCH') {
+                    return getDisplayResultPositiveLunch();
+                } else if (resultData.type === 'POLL_HOT') {
+                    return getDisplayResultPositiveHot();
+                } else if (resultData.type === 'POLL_COLD') {
+                    return getDisplayResultPositiveCold();
+                } else if (resultData.type === 'POLL_LOUD') {
+                    return getDisplayResultPositiveLoud();
+                } else {
+                console.log('No Poll started!');
+                }
+            } else {
+                if (resultData.type === 'POLL_COFFEE') {
+                    return getDisplayResultNegativeBreak();
+                } else if (resultData.type === 'POLL_LUNCH') {
+                    return getDisplayResultNegativeLunch();
+                } else if (resultData.type === 'POLL_HOT') {
+                    return getDisplayResultNegativeHot();
+                } else if (resultData.type === 'POLL_COLD') {
+                    return getDisplayResultNegativeCold();
+                } else if (resultData.type === 'POLL_LOUD') {
+                    return getDisplayResultNegativeLoud();
+                } else {
+                    console.log('No Poll started!');
+                }
+            }
+        };
 
     /**
      * Get structure of the app "Atmung"
@@ -398,6 +442,63 @@ function appHandler () {
         var icon = Graphic.getIconBitwise(Graphic.iconLoud84);
         return 'MEN|3|LOUD';
     };
+
+    /**
+     * Return the display-string.
+     *  MEN: show menu with circle
+     *  3: show two big circles in the middle
+     * @returns {string}
+     */
+    getDisplayResultPositiveBreak = function() {
+        var icon = Graphic.getIconBitwise(Graphic.iconCoffee84);
+        return 'MEN|3|BREAK|POS';
+    };
+
+    getDisplayResultPositiveLunch = function() {
+        var icon = Graphic.getIconBitwise(Graphic.iconFood84);
+        return 'MEN|3|LUNCH|POS';
+    };
+
+    getDisplayResultPositiveCold = function() {
+        var icon = Graphic.getIconBitwise(Graphic.iconCold84);
+        return 'MEN|3|COLD|POS';
+    };
+
+    getDisplayResultPositiveHot = function() {
+        var icon = Graphic.getIconBitwise(Graphic.iconHot84);
+        return 'MEN|3|HOT|POS';
+    };
+
+    getDisplayResultPositiveLoud = function() {
+        var icon = Graphic.getIconBitwise(Graphic.iconLoud84);
+        return 'MEN|3|LOUD|POST';
+    };
+
+    getDisplayResultNegativeBreak = function() {
+        var icon = Graphic.getIconBitwise(Graphic.iconCoffee84);
+        return 'MEN|3|BREAK|NEG';
+    };
+
+    getDisplayResultNegativeLunch = function() {
+        var icon = Graphic.getIconBitwise(Graphic.iconFood84);
+        return 'MEN|3|LUNCH|NEG';
+    };
+
+    getDisplayResultNegativeCold = function() {
+        var icon = Graphic.getIconBitwise(Graphic.iconCold84);
+        return 'MEN|3|COLD|NEG';
+    };
+
+    getDisplayResultNegativeHot = function() {
+        var icon = Graphic.getIconBitwise(Graphic.iconHot84);
+        return 'MEN|3|HOT|NEG';
+    };
+
+    getDisplayResultNegativeLoud = function() {
+        var icon = Graphic.getIconBitwise(Graphic.iconLoud84);
+        return 'MEN|3|LOUD|NEG';
+    };
+
 
     getDisplayAppTest = function () {
         return Graphic.getDisplayTest();

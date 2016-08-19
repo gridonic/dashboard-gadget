@@ -429,18 +429,49 @@ displayDrawer = function () {
                 context.fillStyle = COLOR_WHITE;
                 context.fillRect(70, 78, 84, 84);
                 context.fillRect(167, 78, 84, 84);
+                 if (drawData.length === 4) {
+                     if (drawData[3] === 'POS') {
+                         iconLeft = iconOk84;
+                         if (drawData[2] === 'BREAK') {
+                             iconRight = iconCoffee84;
+                         } else if (drawData[2] === 'LUNCH') {
+                             iconRight = iconFood84;
+                         } else if (drawData[2] === 'HOT') {
+                             iconRight = iconHot84;
+                         } else if (drawData[2] === 'COLD') {
+                             iconRight = iconCold84;
+                         } else if (drawData[2] === 'LOUD') {
+                             iconRight = iconLoud84;
+                         }
+                     } else if (drawData[3] === 'NEG') {
+                         //TODO icon declined erstellen
+                         iconLeft = iconFocused84;
+                         if (drawData[2] === 'BREAK') {
+                             iconRight = iconCoffee84;
+                         } else if (drawData[2] === 'LUNCH') {
+                             iconRight = iconFood84;
+                         } else if (drawData[2] === 'HOT') {
+                             iconRight = iconHot84;
+                         } else if (drawData[2] === 'COLD') {
+                             iconRight = iconCold84;
+                         } else if (drawData[2] === 'LOUD') {
+                             iconRight = iconLoud84;
+                         }
+                     }
+                 } else {
 
-                if (drawData[2] === 'BREAK') {
-                    iconRight = iconCoffee84;
-                } else if (drawData[2] === 'LUNCH') {
-                    iconRight = iconFood84;
-                } else if (drawData[2] === 'HOT') {
-                    iconRight = iconHot84;
-                } else if (drawData[2] === 'COLD') {
-                    iconRight = iconCold84;
-                } else if (drawData[2] === 'LOUD') {
-                    iconRight = iconLoud84;
-                }
+                     if (drawData[2] === 'BREAK') {
+                         iconRight = iconCoffee84;
+                     } else if (drawData[2] === 'LUNCH') {
+                         iconRight = iconFood84;
+                     } else if (drawData[2] === 'HOT') {
+                         iconRight = iconHot84;
+                     } else if (drawData[2] === 'COLD') {
+                         iconRight = iconCold84;
+                     } else if (drawData[2] === 'LOUD') {
+                         iconRight = iconLoud84;
+                     }
+                 }
 
                 if (iconLeft !== null) {
                     imageString = bitToImage(iconLeft);

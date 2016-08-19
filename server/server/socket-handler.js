@@ -228,11 +228,8 @@ function socketHandler (Handler) {
                 if (currentApp && currentApp.poll) {
                     Handler.switchPoll('right', socket.id, showDisplay);
                 } else if (currentApp && currentApp.decision) {
-                    // todo beni: hier muss die poll an die weiteren gadgets geschickt werden.
-                    console.log('-----------------------------------------------------');
-                    console.log('beni: hier poll an weitere gadgets schicken.');
                     console.log(currentApp.type);
-                    console.log('-----------------------------------------------------');
+                    Handler.createPoll(socket.id, currentApp.type , socket);
                     Handler.resetPoll();
                     Handler.setupDisplayForArduino(socket.id, showDisplay);
                 } else {

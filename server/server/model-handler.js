@@ -41,6 +41,7 @@ function modelHandler () {
     var saveUserSettings;
     var setupSchema;
     var showDisplayOnArduino;
+    var showPollResult;
     var startDisplayOnArduino;
     var startPoll;
     var stopDisplaying;
@@ -56,6 +57,7 @@ function modelHandler () {
     var displayInterval     = null;
     var showPollContent     = null;
     var showPollDecision    = null;
+    var pollResult          = null;
 
     // Models
     var App                 = new app(this);
@@ -99,6 +101,7 @@ function modelHandler () {
     this.resetPoll                  = function () { return resetPoll(); };
     this.saveUserSettings           = function (token, username, settings, callback) { return saveUserSettings(token, username, settings, callback); };
     this.setupDisplayForArduino     = function (socketId, callback) { return prepareDisplayForArduino(socketId, callback); };
+    this.showPollResult             = function (sockets, type, result) { return showPollResult(sockets, type, result);};
     this.startPoll                  = function (sockets, type, connectionId, socket) {return startPoll(sockets, type, connectionId, socket);};
     this.stopDisplaying             = function () { return stopDisplaying(); };
     this.switchApp                  = function (direction, socketId, callback) { return switchUserApp(direction, socketId, callback); };
@@ -538,6 +541,20 @@ function modelHandler () {
 
     /**
      * Asks for an all the gadget connections.
+     * @param socketId: Array of all gadget connections except the starting one.
+     * @param type: Type of the poll to be started.
+     * @param result: Result of the finished poll.
+     */
+    showPollResult = function (socketId, type, result) {
+        pollResult = {
+            type: type,
+            result: result
+        };
+        startDisplayOnArduino(pollResult);
+    };
+
+    /**
+     * Asks for an all the gadget connections.
      * @param sockets: Array of all gadget connections except the starting one.
      * @param type: Type of the poll to be started.
      * @param connectionId: Connection ID of the gadget who started the poll.
@@ -573,6 +590,8 @@ function modelHandler () {
         var getCurrentDisplay = function (display, step, stepDuration) {
             if (showPollDecision !== null) {
                 return AppHandler.getPollDecisionDisplay(showPollDecision.type);
+            } else if(pollResult !== null) {
+                return AppHandler.getPollResultDisplay(pollResult);
             } else if (display && display.app) {
                 return AppHandler.getActualAppDisplay(step, stepDuration);
             } else if (showPollContent) {
