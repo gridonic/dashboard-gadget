@@ -367,7 +367,7 @@ function appHandler () {
 
         switch (step) {
             case 0:
-                return 'MEN|2|MOOD|OK'; // + '|' + Graphic.getIconBitwise(Graphic.iconOk84);
+                return 'MEN|2|MOOD|OK'; // + '|' + Graphic.getIconBitwise(Graphic.iconDecline84);
                 break;
             case 1:
                 return 'MEN|2|MOOD|COFFEE'; // + '|' + Graphic.getIconBitwise(Graphic.iconCoffee84);
@@ -388,7 +388,8 @@ function appHandler () {
             size = 2 - size;
         }
 
-        return Graphic.getDisplayAtmung(size);
+        // return Graphic.getDisplayAtmung(size);
+        return 'APP|ATM|' + settings.Geschwindigkeit;
     };
 
     /**

@@ -27,11 +27,13 @@ displayDrawer = function () {
     var canvas          = document.getElementById("display");
     var projectBox      = document.getElementById("project-box");
     var moodBox         = document.getElementById("mood-box");
+    var appAtmungInterval = null;
     var context;
 
     // Icons
     var iconCoffee84    = 'x316O-14Px5M-14Bx5I-15Hx4I-15Bx4I-16Px3I-16Hx3I-16Dx3I-16Bx3I-17Px2I-17Px2I-17Hx2I-13O-3Hx2I-13PI-2Dx2I-13PM-2Dx2I-13PM-2Dx2I-13PO-2Dx2I-13PO-2Dx2I-13Px1A-1Bx2I-13Px1A-1Bx2I-13Px1A-1Bx2I-13PO-2Dx2I-13PO-2Dx2I-13PM-2Dx2I-13PM-2Dx2I-13PI-2Hx2I-13O-3Hx2I-17Hx2I-17Px2I-17Px2I-16Bx3I-16Dx3I-16Hx3I-16Px3I-15Bx4I-15Hx4I-14Bx5I-14Px5I-13Px6I-13Px6I-13Px6I-13Px6I-13Px6M-12Bx7M-12Bx7M-12Bx7O-12Dx7O-12Dx8A-11Hx8A-11Px8I-11Px8O-10Dx10A-9Hx10M-8Bx12I-7Px323';
     var iconCold84      = 'x94AHx19AHx19AHx19AHx17Dx1AHOHx14OBx1AHMDx14M-1P-1HIBx14O-1H-1H-1Dx15AD-1G-1Hx15IB-1E-1Px15M-3Bx12ODx2O-3Dx2MHx8MBx3A-2Hx2MDx8MBx3I-2Px2IDx8OBx3M-1Bx3IHx8OBx3O-1Dx3IHx8O-1Px3AHx3IHx6OHx1Ax4AHx3AHODx4MBx1Ax4AHx3Ax1IBx4M-1P-1Hx3AHx3Ax1ABx4M-1D-1Hx3AHx2O-1M-1Dx4O-3Hx3AHx2O-3Hx5I-2Hx3AHx2O-2Bx6O-2Dx3AHx2O-2Hx7I-1Dx3AHx2M-2Px7M-1Bx3AHx2I-1Dx8A-2Px2AHx2A-2Hx6A-3Dx5M-4Px4I-5Px4A-5Px3I-2HI-1Dx3M-1BO-3Px3I-1Hx1O-1Bx3M-1Hx1O-1Bx4IHx3IDx1AHMBx3OBx9MDO-1BODx15HM-2Ox17I-2Px17A-2Hx17A-2Hx17A-2Hx17A-2Hx17A-2Hx17I-2Hx15OHI-2OHx9Mx4MDM-1BMBx4Jx4IBx3ABx1ADM-1Hx2IBx4I-1Bx1M-1Bx3M-1Dx1M-2Px3I-2B-2Hx3O-2I-3Px3M-4Bx5I-4Dx5I-3Dx5O-3Dx7I-2Px2AHx2I-1Bx8I-1Dx3AHx2M-1Bx8A-1Dx3AHx2O-2Hx6M-2Hx3AHx2O-2Dx6A-2Hx3AHx2O-3Px4O-3Hx3AHx2O-1I-1Dx4I-1H-1Hx3AHx3AO-1Bx4I-1P-1Px3AHx3Ax1IDx4MDx1Ax4AHx3AHODx4Ox1O-1Px3AHx3IHx1Hx6O-1Px3AHx3IHx8OBx3O-1Dx3IHx8OBx3M-1Bx3IDx8MBx3I-2Px2MDx8MDx3A-2Hx2MDx9Dx2O-3Dx2Mx13M-3Bx16IB-1E-1Px15AD-1G-1Hx14O-1H-1H-1Dx14M-1P-1HIBx14OBx1AHMDx15Dx1AHOHx17AHx19AHx19AHx19AHx114';
+    var iconDecline84   = 'x320OHx8Dx10MDx7OBx10IBx7M-1Px9A-1Px6I-1Hx8O-2Hx6A-1Dx8M-2Dx5O-2Bx8I-2Bx5M-3Px7A-3Px4I-3Hx7A-3Hx4A-3Hx7I-3Dx3O-4Px7M-3Bx3M-3Bx8O-4Px2I-3Dx9A-3Hx2A-3Hx9I-3Dx1O-4Px9M-3Bx1M-3Bx10O-4PI-3Dx11A-3H-4Hx11I-3C-4Px11M-7Bx12O-7Dx13A-6Hx13I-6Px13M-5Bx14O-5Dx15A-4Hx15I-4Px15M-3Bx16I-4Px15A-4Hx14O-5Dx14M-5Bx14I-6Px13A-6Hx12O-7Dx12M-7Bx12I-3C-4Px11A-3H-4Hx10O-4PI-3Dx10M-3Bx1M-3Bx10I-3Dx1O-4Px9A-3Hx2A-3Hx8O-4Px2I-3Dx8M-3Bx3M-3Bx8I-3Dx3O-4Px7A-3Hx4A-3Hx7A-3Px4I-3Hx7I-2Bx5M-3Px7M-2Dx5O-2Bx8O-2Hx6A-1Dx9A-1Px6I-1Hx9IBx7M-1Px9MDx7OBx10OHx8Dx341';
     var iconFocused84   = 'x114A-2Px16A-4Hx14I-6Px12O-7Dx12I-8Px10O-9Dx10I-10Px9A-10Hx8O-11Dx8M-11Bx8A-12Hx7A-12Hx6O-13Bx6M-13Bx6I-14Px5A-14Hx4O-15Dx4O-15Dx4M-15Bx4M-15Bx4I-16Px3I-16Px3A-16Hx3A-16Hx2O-17Dx2O-17Dx2O-17Dx2M-17Bx2M-17Bx2M-17Bx2M-2Bx11M-2Bx2I-2Hx12A-2Px1I-2Px12I-2Px1I-2Px12I-2Px1I-1Bx13M-2Px1I-1Bx13M-2Px1I-1Bx13M-2Px1I-1Bx13M-2Px1I-1Bx13M-2Px1I-1Bx13M-2Px1I-1Bx13M-2Px1I-2Px12I-2Px1I-2Px12I-2Px1M-2Hx12A-1Bx2M-2Bx11M-2Bx2M-17Bx2M-17Bx2M-17Bx2O-17Dx2O-17Dx2O-17Dx3A-16Hx3A-16Hx3I-16Px3I-16Px3M-15Bx4M-15Bx4O-15Dx4O-15Dx5A-14Hx5I-14Px5M-13Bx6M-13Dx7A-12Dx7A-12Px7M-12Px7O-11Dx9A-10Hx9I-10Px9O-9Dx11I-8Px11O-7Dx13I-6Px14A-4Hx16A-2Px92';
     var iconFood84      = 'x344O-3Px15O-5Px14I-6Px12M-7Dx12A-8Px10M-9Dx10I-9Bx10A-10Px8M-11Hx8M-11Bx8A-11Bx8A-12Px6O-13Hx6M-13Dx6M-13Dx6I-13Bx6I-13Bx6A-14Px49Bx2MHx1ODx2Ax9O-1Px1IDx1MBx1O-1Hx8I-1BO-2P-2DI-2Px6G-13Dx6A-13Bx6A-14Px5A-1G-2DI-1BO-2P-2Px5ADx1M-1PO-1Hx1IDx1O-1Px5Ix2ODx2Ax2MHx2Mx48O-13Hx6I-13Bx6I-13Bx6Bx13Ix6Dx13Mx6Bx13Ix6I-13Bx6I-13Bx6M-13Dx49I-11Bx7M-13Dx6I-13Bx6A-13Bx6A-14Px5A-14Px5A-14Px5I-13Bx6I-13Bx6M-13Dx7I-11Bx319';
     var iconHot84       = 'x114O-1Dx18O-1Dx18O-1Dx18O-1Dx18O-1Dx18O-1Dx18O-1Dx18O-1Dx18O-1Dx13Nx4O-1Dx4Nx8Ix4O-1Dx4Ix8AHx3O-1Dx4AHx6O-1Dx3O-1Dx3O-1Dx6M-1Bx9M-1Bx6O-2Px8I-1Dx7A-1Hx8A-1Hx7I-1Dx7O-2Px7M-1Bx7M-1Bx8O-1Bx7M-1Dx9ADx2M-1Bx2O-1Hx9IHx1O-3Dx2Ax10Mx2I-4Px1Jx12O-5Dx14M-5Bx14I-6Px13A-6Hx12O-7Hx12O-7Dx12M-7Bx12M-7Bx12I-8Px11I-8Px11I-8Px11A-8Hx6I-2Dx1A-8HO-3Px1I-2Dx1A-8HO-3Px1I-2Dx1A-8HO-3Px1I-2Dx1A-8HO-3Px1I-2Dx1A-8HO-3Px1I-2Dx1A-8HO-3Px1I-2Dx1A-8HO-3Px6A-8Hx11I-8Px11I-8Px11I-8Px11M-7Bx12M-7Bx12O-7Dx12O-7Dx13A-6Hx13I-6Px13M-5Bx15A-4Dx12Mx2I-4Px1Jx10IHx1O-3Dx2Ax10ADx2M-1Bx2O-1Hx8O-1Bx7M-1Dx8M-1Bx7M-1Bx8I-1Dx7O-2Px7A-1Hx8A-1Hx6O-2Px8I-1Dx6M-1Bx9M-1Bx6O-1Dx3O-1Dx3O-1Dx7AHx3O-1Dx4AHx7Ix4O-1Dx4Ix8Nx4O-1Dx4Nx13O-1Dx18O-1Dx18O-1Dx18O-1Dx18O-1Dx18O-1Dx18O-1Dx18O-1Dx18O-1Dx93';
@@ -263,6 +265,9 @@ displayDrawer = function () {
         log('showMainDisplay');
 
         clearMainDisplay();
+        if (appAtmungInterval && drawData[0] !== 'APP' && drawData[1] !== 'ATM') {
+            clearInterval(appAtmungInterval);
+        }
 
         if (drawData[0] === 'RECT') {
 
@@ -414,6 +419,10 @@ displayDrawer = function () {
                     }
                 }
 
+                if (drawData.length === 5) {
+                    console.log(drawData[4]);
+                }
+
             //draw two Circles for poll
             } else if(drawData[1] === '3') {
                 showPollCircles();
@@ -504,19 +513,33 @@ displayDrawer = function () {
                         }
                     }
                 }
-                //
-                // var textLeft = 'NO';
-                // var textRight = 'YES';
-                // var textSize = 15;
-                // var padding = 10;
-                //
-                // context.fillStyle = COLOR_WHITE;
-                // context.fillRect(0, DISPLAY_HEIGHT - padding * 2 - textSize, DISPLAY_WIDTH, padding * 2 + textSize);
-                //
-                // context.fillStyle = COLOR_BLACK;
-                // context.font = textSize + "px Courier New";
-                // context.fillText(textLeft, padding, DISPLAY_HEIGHT - padding);
-                // context.fillText(textRight, padding+(DISPLAY_WIDTH-4.5*padding), DISPLAY_HEIGHT-padding);
+            }
+        } else if (drawData[0] === "APP") {
+            if (drawData[1] === "ATM" && appAtmungInterval === null) {
+                var speed = parseInt(drawData[2]);
+                var size = 0;
+                var i = 0;
+                var circleSize = DISPLAY_HEIGHT / 4;
+                var timer = 250;
+
+                appAtmungInterval = setInterval(function () {
+                    size = (i * timer / speed) % 2;
+
+                    if (size > 1) {
+                        size = 2 - size;
+                        context.fillStyle = COLOR_WHITE;
+                        context.fillRect(DISPLAY_WIDTH / 2 - circleSize, DISPLAY_HEIGHT / 2 - circleSize, circleSize * 2, circleSize * 2);
+                    }
+
+                    context.fillStyle = COLOR_BLACK;
+                    context.beginPath();
+                    context.arc(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2, circleSize * size, 0, 2 * Math.PI);
+                    context.closePath();
+                    context.fill();
+
+                    i++;
+                }, timer);
+
             }
         }
     };
