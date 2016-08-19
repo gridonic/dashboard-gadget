@@ -103,7 +103,7 @@ function modelHandler () {
     this.saveUserSettings           = function (token, username, settings, callback) { return saveUserSettings(token, username, settings, callback); };
     this.setupDisplayForArduino     = function (socketId, callback) { return prepareDisplayForArduino(socketId, callback); };
     this.showPoll                   = function (socketId, callback, data) { return showPoll(socketId, callback, data); };
-    this.showPollResult             = function (socketId, callback, data) { return showPollResult(sockets, callback, data); };
+    this.showPollResult             = function (socketId, callback, data) { return showPollResult(socketId, callback, data); };
     this.startPoll                  = function (sockets, type, connectionId, socket) {return startPoll(sockets, type, connectionId, socket);};
     this.stopDisplaying             = function () { return stopDisplaying(); };
     this.switchApp                  = function (direction, socketId, callback) { return switchUserApp(direction, socketId, callback); };
@@ -591,6 +591,9 @@ function modelHandler () {
                     } else {
                         User.getUserByUsername(gadget.lastUserName, function (err, user) {
 
+                            console.log('modelHandler: showPollResult');
+                            console.log(data);
+
                             var splitData = data.split('|');
                             pollResult = {
                                 pollResult: true,
@@ -614,6 +617,8 @@ function modelHandler () {
      * @param socket:
      */
     startPoll = function (sockets, type, connectionId, socket) {
+        console.log('model-handler: start Poll');
+        console.log(sockets);
         Poll.startPoll(sockets, type, connectionId, socket);
     };
 

@@ -283,12 +283,16 @@ function socketHandler (Handler) {
 
     onGiveMePoll = function (data) {
         Handler.stopDisplaying();
+        console.log('onGiveMePoll');
+        console.log(data);
         Handler.showPoll(socket.id, showDisplay, data);
     };
 
-    onGiveMePoll = function (data) {
+    onGiveMePollResult = function (data) {
         Handler.stopDisplaying();
-        Handler.showPollResult(socket.id, showDisplay, data);
+        console.log('onGiveMePollResult');
+        console.log(data);
+        Handler.showPollResult(socket.id, showDisplay, data.data);
     };
 
     onHeartbeat = function (data) {
