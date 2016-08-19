@@ -138,7 +138,7 @@ dashboardUpdateContent = function () {
                         user: StorageHandler.getUser(),
                         token: StorageHandler.getToken(),
                         appId: apps[i]._id,
-                        appSettings: null,
+                        appSettings: null
                     });
                 }
 
@@ -224,7 +224,7 @@ dashboardUserApps = function () {
                 user: StorageHandler.getUser(),
                 token: StorageHandler.getToken(),
                 appId: appId,
-                appSettings: settingsData,
+                appSettings: settingsData
             });
         }
     }
@@ -235,7 +235,7 @@ dashboardUserApps = function () {
             socket.emit('deactivateApp', {
                 user: StorageHandler.getUser(),
                 token: StorageHandler.getToken(),
-                appId: appId,
+                appId: appId
             });
         }
     }

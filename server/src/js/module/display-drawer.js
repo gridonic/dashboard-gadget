@@ -453,8 +453,7 @@ displayDrawer = function () {
                              iconRight = iconLoud84;
                          }
                      } else if (drawData[3] === 'NEG') {
-                         //TODO icon declined erstellen
-                         iconLeft = iconFocused84;
+                         iconLeft = iconDecline84;
                          if (drawData[2] === 'BREAK') {
                              iconRight = iconCoffee84;
                          } else if (drawData[2] === 'LUNCH') {
