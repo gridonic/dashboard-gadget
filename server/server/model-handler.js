@@ -41,6 +41,7 @@ function modelHandler () {
     var saveUserSettings;
     var setupSchema;
     var showDisplayOnArduino;
+    var showPoll;
     var showPollResult;
     var startDisplayOnArduino;
     var startPoll;
@@ -101,6 +102,7 @@ function modelHandler () {
     this.resetPoll                  = function () { return resetPoll(); };
     this.saveUserSettings           = function (token, username, settings, callback) { return saveUserSettings(token, username, settings, callback); };
     this.setupDisplayForArduino     = function (socketId, callback) { return prepareDisplayForArduino(socketId, callback); };
+    this.showPoll                   = function (socketId, callback, data) { return showPoll(socketId, callback, data); };
     this.showPollResult             = function (sockets, type, result) { return showPollResult(sockets, type, result);};
     this.startPoll                  = function (sockets, type, connectionId, socket) {return startPoll(sockets, type, connectionId, socket);};
     this.stopDisplaying             = function () { return stopDisplaying(); };
@@ -537,6 +539,37 @@ function modelHandler () {
         }
 
         callback(worktime, updateTime, project, mood, currentDisplay, menu, app);
+    };
+
+    /**
+     * Show a poll on each gadget, after somebody wanted this.
+     *
+     * @param socketId
+     * @param callback
+     */
+    showPoll = function (socketId, callback, data) {
+        Connection.findConnectionById(socketId, function (err, conn) {
+            if (err) {
+                // todo: handleError
+            } else {
+                Gadget.findGadgetById(parseInt(conn.gadgetId), function (err, gadget) {
+                    if (err) {
+                        // todo: handleError
+                    } else {
+                        User.getUserByUsername(gadget.lastUserName, function (err, user) {
+
+                            showPollDecision = {
+                                decision: true,
+                                question: true,
+                                type: 'POLL_LUNCH'
+                            };
+
+                            startDisplayOnArduino(socketId, callback, user);
+                        });
+                    }
+                });
+            }
+        });
     };
 
     /**

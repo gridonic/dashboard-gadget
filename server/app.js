@@ -88,6 +88,10 @@ io.on('connection', function (socket) {
         SocketHandler.onError(error);
     });
 
+    socket.on('giveMePoll', function (data) {
+        SocketHandler.onGiveMePoll(data);
+    });
+
     socket.on('hello', function (message) {
         SocketHandler.onHello(message);
     });

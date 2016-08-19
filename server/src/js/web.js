@@ -479,8 +479,9 @@ handleDashboardUserUpdated = function (data) {
  */
 handleNewPoll = function (data) {
     log('new incoming poll of type ' + data.type);
-    actualPollType = data.type;
-    actualScreen = SCREEN_POLL_ACTIVE;
+    socket.emit('giveMePoll', {data: data.type});
+    // actualPollType = data.type;
+    // actualScreen = SCREEN_POLL_ACTIVE;
 };
 
 /**

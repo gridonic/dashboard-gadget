@@ -16,6 +16,7 @@ function socketHandler (Handler) {
     var onDeactivateApp;
     var onDisconnect;
     var onError;
+    var onGiveMePoll;
     var onHeartbeat;
     var onHello;
     var onLoginGadget;
@@ -51,6 +52,7 @@ function socketHandler (Handler) {
     this.onDeactivateApp            = function (data) { return onDeactivateApp(data); };
     this.onDisconnect               = function (data) { return onDisconnect(data); };
     this.onError                    = function (data) { return onError(data); };
+    this.onGiveMePoll               = function (data) { return onGiveMePoll(data); };
     this.onHeartbeat                = function (data) { return onHeartbeat(data); };
     this.onHello                    = function (data) { return onHello(data); };
     this.onLoginGadget              = function (data) { return onLoginGadget(data); };
@@ -189,15 +191,6 @@ function socketHandler (Handler) {
 
         Handler.stopDisplaying();
 
-        // if (data.screen === 'pollToAnswer') {
-        //     if (data.right) {
-        //         Handler.updatePoll(socket, socket.id, data.type, true);
-        //         console.log(socket.id + ' answered with YES');
-        //     } else {
-        //         Handler.updatePoll(socket, socket.id, data.type, false);
-        //         console.log(socket.id + ' answered with NO');
-        //     }
-        // } else {
         console.log('buttons pushed');
 
             if (data.left && data.right) {
@@ -216,7 +209,11 @@ function socketHandler (Handler) {
 
                 if (currentApp && currentApp.poll) {
                     Handler.switchPoll('left', socket.id, showDisplay);
-                } else if (currentApp && currentApp.decision) {
+                } else if (currentApp && currentApp.decision && currentApp.question) {
+                    Handler.updatePoll(socket, socket.id, currentApp.type, false);
+                    Handler.resetPoll();
+                    Handler.setupDisplayForArduino(socket.id, showDisplay);
+                } else if (currentApp && currentApp.question) {
                     Handler.resetPoll();
                     Handler.setupDisplayForArduino(socket.id, showDisplay);
                 } else {
@@ -227,6 +224,10 @@ function socketHandler (Handler) {
 
                 if (currentApp && currentApp.poll) {
                     Handler.switchPoll('right', socket.id, showDisplay);
+                } else if (currentApp && currentApp.decision && currentApp.question) {
+                    Handler.updatePoll(socket, socket.id, currentApp.type, true);
+                    Handler.resetPoll();
+                    Handler.setupDisplayForArduino(socket.id, showDisplay);
                 } else if (currentApp && currentApp.decision) {
                     console.log(currentApp.type);
                     Handler.createPoll(socket.id, currentApp.type , socket);
@@ -276,6 +277,11 @@ function socketHandler (Handler) {
     onError = function (data) {
         console.log("error on socket.");
         console.log(data.message);
+    };
+
+    onGiveMePoll = function (data) {
+        this.stopDisplaying();
+        Handler.showPoll(socket.id, showDisplay, data);
     };
 
     onHeartbeat = function (data) {
