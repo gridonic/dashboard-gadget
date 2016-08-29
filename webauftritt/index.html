@@ -1,0 +1,183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" >
+
+<head>
+    <title>Interaktives Dashboard-Gadget | Benjamin Buff und Beat Temperli | Fachhochschule Nordwestschweiz FHNW</title>
+    <meta name='copyright' content='FHNW' />
+    <meta name='author' content='benjamin.buff@students.fhnw.ch and beat.temperli@students.fhnw.ch' />
+    <meta name='Description' content='FHNW - Fachhochschule Nordwestschweiz' />
+    <meta name='Keywords' content='fhnw,fachhochschule,nordwestschweiz,hochschulen,hochschule fuer technik,studiengang,informatik,bachelor thesis' />
+    <meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1' />
+    <link rel='SHORTCUT ICON' href='favicon.ico' />
+    <meta name="robots" content="INDEX,FOLLOW" />
+    <meta name="Expires" content="0" />
+    <meta name="Revisit" content="7 days" />
+    <meta name="Language" content="Deutsch" />
+    <meta name="distribution" content="global" />
+    <link rel="stylesheet" type="text/css" media="screen" href="css/nw_screen.css" />
+</head>
+<body>
+
+<div id='Header_FHNW'>
+
+    <div id='Logo_FHNW'>
+        <a href='http://www.fhnw.ch/'>
+            <img src='img/nw_logo.png' alt='nw' />
+        </a>
+        <a name='top'>&nbsp;</a>
+    </div>
+
+    <div id="Titel_ohne_menu">
+        <div id='Otitel_FHNW'>
+            <a href="http://www.fhnw.ch/technik/" style="text-decoration: none;"><h1>Hochschule f&uuml;r Technik</h1></a>
+        </div>
+
+        <div id='Utitel_FHNW'>
+            <a href="http://www.fhnw.ch/technik/i/" style="text-decoration: none;"><h1>Bachelor Thesis im Studiengang Informatik</h1>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div id='Content_FHNW'>
+
+    <div id='lmenu_wrap'>
+        <div id='lmenu'>
+            <!-- Der Link zur aktiven Seite hat jeweils die Klasse 'navactive', alle anderen haben die Klase 'nav' -->
+            <!-- <br /> als Abschluss nicht vergessen! -->
+            <a href='../index.php' class='navactive'>Startseite</a><br />
+        </div>
+    </div>
+
+    <!-- Inhalt -->
+    <div id='content_mit_menu'>
+        <!-- _______________________________________________________________________ -->
+
+        <!-- Und hier kommt der Content rein. er beginnt IMMER mit einem <h4> Tag. -->
+
+        <h4>Interaktives Dashboard Gadget</h4>
+
+        <h5>Zusammenfassung</h5>
+        <p>
+            Eine erg&auml;nzende Hardware Komponente zu einem Web Dashboard welche einen neuen Ansatz zur Erleichterung
+            der B&uuml;ro Organisation darstellt.
+        </p>
+
+        <h5>Schl&uuml;sselbegriffe</h5>
+        <p>3D-Druck, AutoCAD, C++, Arduino, JavaScript, Node.js, Socket.io, MongoDB</p>
+
+        <h5>Zielsetzung</h5>
+        <p>
+            Die Informationen, welchen den Mitarbeitenden via einem web-basierten Dashboard angezeigt werden, lenken diese zu stark ab.
+            Die Mitarbeitenden m&uuml;ssen jeweils in den Browser wechseln um sich spezifische Informationen beschaffen zu k&ouml;nnen.
+            Der Auftraggeber stellt sich ein Gadget vor, welches verschiedene Informationen abseits des Screens darstellen kann.
+            Ein Schwerpunkt liegt beim Punkt, dass die jeweiligen Mitarbeitenden &uuml;ber ihr eigenes Gadget spezifische Stati wie
+            ihr eigenes Befinden und die aktuelle und oft ändernde Projektzugeh&ouml;rigkeit anzeigen k&ouml;nnen. Diese Settings sollen vom Gadget aus gesetzt werden k&ouml;nnen.
+        </p>
+
+        <h5>Ausgangslage</h5>
+        <p>
+            Das bestehende Dashboard ist web-basiert und als normale Webseite im Internet zu finden.
+            F&uuml;r gewisse Inhalte vom Dashboard ist das geeignet, der Mitarbeitende kann diese Informationen bei Bedarf abrufen.
+            Andere Inhalte vom Dashboard wie beispielsweise Server-Stati oder die aktuelle Arbeitszeit sollten regelm&auml;ssig eingesehen
+            werden k&ouml;nnen. Die Firma hatte daraufhin die Idee, f&uuml;r solche regelm&auml;ssige Benachrichtungen oder andauernd &auml;ndernde
+            Informationen an ein externes Ger&auml;t auszulagern, welches f&uuml;r den Mitarbeiter oder die Mitarbeiterin jederzeit sichtbar ist.
+            So kann sichergestellt werden, dass nicht andauernd das web-basierte Dashboard ge&ouml;ffnet ist sondern dass dieses wirklich nur von Zeit zu Zeit
+            abgerufen werden muss. Auf dem externen Gadget geht der Fokus beim normalen Arbeiten nicht verloren und trotzdem hat man
+            jederzeit Einblick in die wichtigsten Informationen.
+        </p>
+
+        <h5>Ergebnisse</h5>
+
+        <p>
+            Mittels einer gr&ouml;sseren Umfrage und langen Gespr&auml;chen mit dem Auftraggeber konnten wir analysieren, was heutige B&uuml;roangestellte
+            f&uuml;r ihre t&auml;gliche Arbeit nutzen und wie man sie dabei unterst&uuml;tzen kann. Dabei ist auch unsere eigenen Arbeitserfahrung
+            in diese Analyse miteingeflossen.
+            <br>
+            Anhand der Anforderungen, welche wir so definierten, haben wir die Hardware des Gadgets gestaltet und die Einzelteile daf&uuml;r
+            dreidimensional ausgedruckt.
+            <br>
+            Die finalen Prototypen werden von je einem Arduino MEGA gesteuert und besitzen jeweils ein 240x320px Display um der nutzenden Person
+            die Interaktion zu erleichtern. &Uuml;ber dieses Display wird der nutzenden Person das Menu sowie auch Informationen zur eigenen
+            Arbeitszeit angezeigt. Die Aussenh&uuml;lle der Gadgets wird mittels LED's in zwei verschiedenen Farben beleuchtet, um die aktuelle
+            Projektzugeh&ouml;rigkeit und den pers&ouml;nlichen Status der jeweiligen Person f&uuml;r alle anderen Personen im B&uuml;ro sichtbar zu machen.
+            <br>
+            Um die Ger&auml;te m&ouml;glichst ergonomisch zu gestalten, haben wir ein Scharnier entwickelt, welches dem Nutzer erlaubt,
+            den Winkel vom Display zu &auml;ndern. So kann jeder Mitarbeiter bzw. jede Mitarbeiterin den Winkel so einstellen, dass er für seine Sicht auf das Gadget passt.
+            <br>
+            Mit dem Gadget kann &uuml;ber zwei Buttons, welche wir selber entwickelt haben, interagiert werden. Die Buttons beinhalten jeweils einen Fotodetektor
+            und reagieren auf Ver&auml;nderung des Umgebungslichts. Deckt man die Buttons also mit einem Finger kurz ab, werden sie bet&auml;tigt.
+            Eine physische Ber&uuml;hrung der Buttons ist so nicht notwendig.
+            <br>
+            Die Gadgets werden von einem Node.js Server angesteuert, in welchem eine MongoDB Datenbank zur Verwaltung der Daten eingebaut ist. Die
+            Verbindung zwischen Gadget und Server wird via einer Socket Verbindung sichergestellt.
+        </p>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <div style="width: 33%; float: left">
+                <img src="img/druck_sockel.jpg" height="150px" alt="Sockel gedruckt" />
+            </div>
+            <div style="width: 33%; float: left">
+                <img src="img/gadget_final_cut_front.jpg" height="150px" alt="Ansicht fertiges Gadget"/>
+            </div>
+            <div style="width: 33%; float: left">
+                <img src="img/umsetzung_kugel.png" height="150px" alt="Umsetzung der Kugel, technische Ansicht" />
+            </div>
+            <div style="width: 33%; float: left; margin-bottom: 20px;">
+                <p style="font-size: 9px; text-align: center;">
+                    Ansicht vom gedruckten Sockel
+                </p>
+            </div>
+            <div style="width: 33%; float: left; margin-bottom: 20px;">
+                <p style="font-size: 9px; text-align: center;">
+                    Das fertige Gadget
+                </p>
+            </div>
+            <div style="width: 33%; float: left; margin-bottom: 20px;">
+                <p style="font-size: 9px; text-align: center;">
+                    Technische Zeichnung der Kugel
+                </p>
+            </div>
+        </div>
+
+
+
+
+        <h5 style="margin-bottom: 5px;">Projektdaten</h5>
+        <p>
+            Dauer: Februar-August 2016<br/>
+            Typ: Bachelorarbeit<br />
+            Aufwand: circa 720 Stunden
+        </p>
+
+        <h5 style="margin-bottom: 5px;">Auftraggeber</h5>
+        <p>Gridonic GmbH<br />
+            Ernastrasse 22<br />
+            8004 Z&uuml;rich<br />
+            <a href="http://www.gridonic.ch" target="_blank">www.gridonic.ch</a>
+        </p>
+
+        <h5 style="margin-bottom: 5px;">Projektteam</h5>
+        <p>
+            <a href="https://twitter.com/BeniBuff" target="_blank">Benjamin Buff</a>
+            <br />
+            <a href="https://twitter.com/btemperli" target="_blank">Beat Temperli</a>
+        </p>
+
+        <h5 style="margin-bottom: 5px;">Kontakt</h5>
+        <p> Ruedi M&uuml;ller,
+            <a href="mailto:ruedi.mueller@fhnw.ch">ruedi.mueller@fhnw.ch</a><br>
+            Ulrike Schock,
+            <a href="mailto:ulrike.schock@fhnw.ch">ulrike.schock@fhnw.ch</a>
+        </p>
+
+        <h5><a href="../index.php"><< zur&uuml;ck</a></h5>
+
+        <!-- _______________________________________________________________________ -->
+    </div>
+
+    <!-- Ende Content_FHNW -->
+</div>
+
+</body>
+</html>

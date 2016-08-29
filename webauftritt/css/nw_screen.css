@@ -1,0 +1,404 @@
+/******************************************************************************/
+/*                                                                            */
+/*     Webdienste FHNW                                                        */
+/*     2006 Urban Meier                                                       */
+/*     nw_screen.css : Please edit ONLY the colors as shown below             */
+/*                                                                            */
+/******************************************************************************/
+
+/* in jeder Zeile, wo der Text:
+ * "Hier die FHNW Farbe einsetzen"
+ * steht, muss der bestehende Farbwert durch den gewünschten
+ * FHNW Farbwert ersetzt werden!
+*/
+/******************************************************************************/
+/* Header */
+#Logo_FHNW img {
+ position:absolute;
+ left:0;
+ top:0;
+ border:none;
+}
+
+#Logo_FHNW a {
+ text-decoration:none;
+}
+
+#Titel_mit_menu {
+ position:absolute;
+ left:0px;
+ width: 100%;
+}
+
+#Otitel_FHNW h1, #Utitel_FHNW h1 {
+	position:absolute;
+	left:209px;
+	font-family:verdana,sans-serif;
+	font-weight:normal;
+	font-size:18px;
+	color:#000;
+	margin:0;
+	padding:0;
+	line-hight: 25px;
+	height: 25px;
+}
+#Otitel_FHNW h1{top:75px; }
+#Utitel_FHNW h1{top:98px; }
+
+h1 a, h1 a:hover {color:#000; background: #FFF; text-decoration: none;}
+
+/******************************************************************************/
+
+/*Allgemein*/
+body,p,td,th,form {
+ font: 85% Verdana,Arial,sans-serif;
+ background-color: #FFFFFF;
+ color: #000000;
+ margin: 0;
+ padding: 0;
+}
+/******************************************************************************/
+/*Text*/
+p {
+ text-align: left;
+ line-height: 1.2em;
+ padding: 0em 0em 0.2em 0em;
+}
+/******************************************************************************/
+/*Hochgestellt*/
+sup {
+ font-size: 70%;
+}
+/******************************************************************************/
+/*Fett*/
+b,strong {
+ font-weight: bold;
+}
+/******************************************************************************/
+/*Titel*/
+h1, h2 {
+ font-size: 100%;
+ margin: 0;
+}
+/*************************************/
+/*Seitentitel innerhalb des Dokumentes*/
+h1,h4 {
+ font-size: 100%;
+ font-weight: bold;
+ text-decoration: none;
+ padding: 0.0em 0em 0.0em 0em;
+}
+/*************************************/
+/*Texttitel innerhalb des Dokumentes*/
+h2 {
+ font-size: 85%;
+ font-weight: bold;
+ text-decoration: none;
+ padding: 0em 0em 0.0em 0em;
+}
+
+h5 {
+ font-size: 85%;
+ font-weight: bold;
+ line-height: 1em;
+ text-decoration: none;
+ padding: 0em 0em 0em 0em;
+}
+
+h6 {
+ font-size: 85%;
+ font-weight: bold;
+ text-decoration: none;
+ border-bottom: 1px dashed #000000;
+ display: inline;
+ padding: 1.4em 1.0em 0.4em 0em;
+}
+
+/******************************************************************************/
+/*Listen*/
+ul,ol {
+ font: 85% Verdana,Arial,sans-serif;
+ line-height: 1.4em;
+ background-color: #FFFFFF;
+ color: #000000;
+ margin: 0;
+}
+ul{
+ padding: 0.0em 0em 0.7em 1.1em;
+}
+ol{
+
+ padding: 0.0em 0em 0.7em 1.7em;
+}
+
+.sublist {
+ font: 100% Verdana,Arial,sans-serif;
+ line-height: 1.4em;
+ background-color: #FFFFFF;
+ color: #000000;
+ margin: 0;
+ padding: 0em 0em 0em 0em;
+}
+/*************************************/
+ul li {
+ list-style-type: square;
+}
+
+ol li {
+ list-style-type: decimal;
+}
+/******************************************************************************/
+/*Links*/
+a {
+ line-height: 1.2em;
+ background-color: transparent;
+ color: #000000;
+}
+a:hover {
+ line-height: 1.2em;
+ background-color: #C9C9C9; /*Hier die FHNW Farbe einsetzen*/
+ color: #000000;
+}
+/*************************************/
+/*Links mit Bildern*/
+.image
+{
+ background-color: #FFFFFF;
+ color: #000000;
+ text-decoration: none;
+}
+
+.image:hover
+{
+ background-color: #FFFFFF;
+ color: #000000;
+ text-decoration: none;
+}
+
+/*************************************/
+/*Links der Navigation*/
+.nav {
+ font: 85% Verdana,Arial,sans-serif;
+ line-height: 1.4em;
+ background-color: #FFFFFF;
+ color: #000000;
+ text-decoration: none;
+}
+.nav:hover {
+ line-height: 1.4em;
+ background-color: #C9C9C9; /*Hier die FHNW Farbe einsetzen*/
+ color: #000000;
+ text-decoration: none;
+}
+
+/*************************************/
+/*Aktiver Link zu geladener Seite*/
+.navactive {
+ font: 85% Verdana,Arial,sans-serif;
+ line-height: 1.4em;
+ font-weight: bold;
+ background-color: #FFFFFF;
+ color: #000000;
+ text-decoration: none;
+}
+.navactive:hover {
+ line-height: 1.4em;
+ font-weight: bold;
+ background-color: #C9C9C9; /*Hier die FHNW Farbe einsetzen*/
+ color: #000000;
+ text-decoration: none;
+ }
+
+/******************************************************************************/
+table
+{
+ position: relative;
+ top: -0.3em;
+ width: 100%;
+ border-top: 0.1em solid #000000;
+ border-bottom: 0.1em solid #000000;
+ border-collapse: collapse;
+}
+
+.noline
+{
+ border-top: 0em solid #000000;
+ border-bottom: 0em solid #000000;
+}
+
+/*************************************/
+tr
+{
+
+}
+/*************************************/
+th
+{
+ font-weight: bold;
+ border-top: none;
+ padding: 0.6em 0em 0.3em 0em;
+ text-align: left;
+ vertical-align: top;
+ line-height: 1em;
+}
+
+.space
+{
+ width: 2%;
+ border-style: none;
+}
+/*************************************/
+td
+{
+ vertical-align: top;
+ border-top: 0.1em solid #000000;
+ padding: 0.3em 0em 0.3em 0em;
+ line-height: 1.4em;
+}
+
+.space
+{
+ width: 2%;
+ border-style: none;
+}
+
+.noline
+{
+ border-top: 0em solid #000000;
+ border-bottom: 0em solid #000000;
+}
+
+/******************************************************************************/
+/*Formulare*/
+form {
+    border: none;
+    margin: 0;
+}
+
+fieldset {
+border: none;
+    border-top: 1px solid #000;
+    border-right: 1px solid #000;
+    border-bottom: 1px solid #000;
+    margin: 1em 0em 1.5em 0em;
+    padding: 0.5em 0.5em 1em 0em;
+    line-height: 1.5em;
+}
+
+legend {
+    background: transparent;
+    margin: 0 0 1.5em 0;
+    padding: 0.5em 0.5em 0.5em 0;
+    font-size: 100%;
+}
+
+label {
+    font-weight: bold;
+}
+
+input,select,textarea
+{
+ font: 100% Verdana,Arial,sans-serif;
+ border: 1px solid #000000;
+ color: #000000;
+ background-color: #FFFFFF;
+ margin: 0;
+ padding: 0;
+ vertical-align: middle;
+ padding-left: 0.5em;
+}
+
+input.button,
+button
+{
+ font: 100% Verdana,Arial,sans-serif;
+ border: 1px solid #000000;
+ color: #FFFFFF;
+ background-color: #000000;
+ margin: 0;
+ padding: 0;
+ vertical-align: middle;
+ padding-left: 0.5em;
+ cursor: pointer;
+}
+
+abbr, acronym, .explain {
+ border-bottom: 1px solid #000;
+ color: #000000;
+ background-color: transparent;
+ cursor: help;
+}
+
+
+/******************************************************************************/
+/*Linie*/
+hr {
+ display: none;
+}
+/******************************************************************************/
+/*Bilder*/
+img
+{
+ border: none;
+ margin: 0;
+ padding: 0;
+}
+
+/******************************************************************************/
+/*DIV's*/
+
+/*Wrapper*/
+#Header_FHNW {
+ position: absolute;
+ left: 0;
+ top: 0;
+ display: block;
+ width: 100%;
+ height: 146px;
+ border-bottom:4px solid #000; /*Hier die FHNW Farbe einsetzen*/
+}
+
+#Content_FHNW {
+ position: absolute;
+ left: 0;
+ top: 206px;
+ display: block;
+ width: 925px;
+}
+
+/*Menu*/
+#lmenu_wrap {
+	position: absolute;
+	left: 8px;
+	top: 0px;
+	display: block;
+	width: 202px;
+	border-top: 1px solid #000000;
+}
+
+#lmenu {
+ display: block;
+ width: 190px;
+ padding: 5px 0 3px 0;
+ border-bottom: 1px solid #000000;
+}
+
+/*Content*/
+#content_mit_menu {
+ position: absolute;
+ left: 210px;
+ top: 0;
+ display: block;
+ width: 715px;
+ border-top: 1px solid #000;
+ border-bottom:1px solid #000;
+}
+
+#content_ohne_menu {
+ position: absolute;
+ left: 0;
+ top: 0;
+ display: block;
+ width: 783px;
+ padding-left: 142px;
+}

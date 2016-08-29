@@ -41,7 +41,7 @@ unsigned int buttonLeftValue      = 0;
 unsigned int buttonRightValue     = 0;
 unsigned int buttonLeftValues[]   = {0, 0, 0, 0};
 unsigned int buttonRightValues[]  = {0, 0, 0, 0};
-unsigned int buttonActivateDiff   = 8; // was 3
+unsigned int buttonActivateDiff   = 25; // was 3
 //unsigned int buttonActivateDiffL   = 5;
 //unsigned int buttonActivateDiffR   = 3;
 unsigned int buttonDeactivateDiff = 1;
@@ -111,12 +111,12 @@ unsigned int  heartbeatNumber = 1;
 unsigned int  lastHeartbeat   = 0;
 
 // Variables Gadget 1
-int           gadgetID        = 1;
-byte          mac[]           = { 0x20, 0x67, 0x89, 0x4F, 0x60, 0x75 }; // generated here: http://www.miniwebtool.com/mac-address-generator/
+//int           gadgetID        = 1;
+//byte          mac[]           = { 0x20, 0x67, 0x89, 0x4F, 0x60, 0x75 }; // generated here: http://www.miniwebtool.com/mac-address-generator/
 
 // Variables Gadget 2
-//int           gadgetID        = 2;
-//byte          mac[]           = { 0x90, 0x29, 0x42, 0x89, 0x63, 0x8F }; // generated here: http://www.miniwebtool.com/mac-address-generator/
+int           gadgetID        = 2;
+byte          mac[]           = { 0x90, 0x29, 0x42, 0x89, 0x63, 0x8F }; // generated here: http://www.miniwebtool.com/mac-address-generator/
 
 // Functions
 void logger(String message);
