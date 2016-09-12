@@ -69,7 +69,7 @@ function graphic () {
     this.getBlackDisplay        = function () { return getBlackDisplay(); };
     this.getDecisionDisplay     = function () { return getDecisionDisplay(); };
     this.getDefaultDisplay      = function (time, workingPercent, icon) { return getDefaultDisplay(time, workingPercent, icon); };
-    this.getDisplayTest         = function () { return generateRectangle(100, 100, 120, 40, COLOR_BLACK, COLOR_WHITE); };
+    this.getDisplayTest         = function () { return generateRectangle(100, 100, 40, 40, COLOR_WHITE, COLOR_WHITE); };
     this.getDisplayAtmung       = function (size) { return getDisplayAtmung(size); };
     this.getDisplayServer       = function (string) { return getDisplayServer(string);};
     this.getIconBitwise         = function (icon) { return getIconBitwise(icon); };
