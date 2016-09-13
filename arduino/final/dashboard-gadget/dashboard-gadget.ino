@@ -88,7 +88,7 @@ unsigned int DISPLAY_MEN3 = 6;
 
 // Variables for the ethernet-module
 SocketIOClient client;
-char          hostname[]  = "192.168.43.231"; // "192.168.2.98";
+char          hostname[]  = "192.168.43.114"; // "192.168.2.98";
 int           port        = 3000;
 bool          loggedIn    = false;
 bool          helloed     = false;
@@ -111,12 +111,12 @@ unsigned int  heartbeatNumber = 1;
 unsigned int  lastHeartbeat   = 0;
 
 // Variables Gadget 1
-//int           gadgetID        = 1;
-//byte          mac[]           = { 0x20, 0x67, 0x89, 0x4F, 0x60, 0x75 }; // generated here: http://www.miniwebtool.com/mac-address-generator/
+int           gadgetID        = 1;
+byte          mac[]           = { 0x20, 0x67, 0x89, 0x4F, 0x60, 0x75 }; // generated here: http://www.miniwebtool.com/mac-address-generator/
 
 // Variables Gadget 2
-int           gadgetID        = 2;
-byte          mac[]           = { 0x90, 0x29, 0x42, 0x89, 0x63, 0x8F }; // generated here: http://www.miniwebtool.com/mac-address-generator/
+//int           gadgetID        = 2;
+//byte          mac[]           = { 0x90, 0x29, 0x42, 0x89, 0x63, 0x8F }; // generated here: http://www.miniwebtool.com/mac-address-generator/
 
 // Functions
 void logger(String message);
